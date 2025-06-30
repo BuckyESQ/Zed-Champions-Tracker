@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint",
+    "audit": "npm audit",
+    "audit-fix": "npm audit fix",
+    "clean": "rm -rf .next node_modules",
+    "reinstall": "npm run clean && npm install"
   },
   "dependencies": {
     "next": "^14.2.30",
