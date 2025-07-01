@@ -1343,7 +1343,7 @@
             try {
                 showStatus('Importing racing horses...', 'warning', 'settings-status');
                 
-                const data = await callZedAPI('horses?type=racing', {
+                const data = await callZedAPI('stable/racing', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
@@ -1377,18 +1377,12 @@
             try {
                 showStatus('Importing breeding horses...', 'warning', 'settings-status');
                 
-                const response = await fetch(`${ZED_API}/horses?type=breeding`, {
+                const data = await callZedAPI('stable/breeding', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
                     }
                 });
-                
-                if (!response.ok) {
-                    throw new Error(`API responded with ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
                 
                 if (data.horses && data.horses.length > 0) {
                     const importedCount = await importHorsesToStable(data.horses);

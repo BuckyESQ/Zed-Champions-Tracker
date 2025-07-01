@@ -31,6 +31,13 @@ export default async function handler(req, res) {
       }
     }
 
+    // Fix common endpoint mapping issues
+    if (apiPath === 'horses?type=racing') {
+      apiPath = 'stable/racing';
+    } else if (apiPath === 'horses?type=breeding') {
+      apiPath = 'stable/breeding';
+    }
+
     console.log(`Proxying to ZED API: ${apiPath} (original: ${Array.isArray(path) ? path.join('/') : path})`);
     console.log(`Full URL: https://api.zedchampions.com/v1/${apiPath}`);
     console.log(`Method: ${req.method}`);
