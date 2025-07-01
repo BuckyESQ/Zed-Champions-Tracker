@@ -1258,6 +1258,286 @@
             }
         });
 
+        // ========== ZEDSIGHT API INTEGRATION ==========
+        
+        // ZedSight API Endpoints (discovered from zedsightexample.html)
+        const ZEDSIGHT_ENDPOINTS = {
+            searchHorse: '/api/search-horse',
+            horseHistory: '/api/horse-history', 
+            augmentCombinations: '/api/augment-combinations',
+            fieldAverages: '/api/field-averages',
+            globalAverages: '/api/global-averages',
+            scheduledRace: '/api/scheduled-race'
+        };
+
+        // Global Augment Analysis (main ZedSight feature)
+        async function loadGlobalAugmentAnalysis() {
+            try {
+                showAnalysisLoading();
+                
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.augmentCombinations}`);
+                const data = await response.json();
+                
+                if (data.success && data.combinations) {
+                    displayGlobalAugmentTable(data.combinations);
+                    updateAnalysisStats(data.globalStats);
+                } else {
+                    showAnalysisError('Failed to load augment analysis');
+                }
+            } catch (error) {
+                console.error('Error loading global augment analysis:', error);
+                showAnalysisError('Connection error while loading analysis');
+            }
+        }
+
+        // Display Global Augment Combinations Table
+        function displayGlobalAugmentTable(combinations) {
+            const tableBody = document.getElementById('global-augment-tbody');
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = combinations.map(combo => `
+                <tr>
+                    <td>
+                        <div class="augment-combo">
+                            ${combo.augments.map(aug => `
+                                <span class="augment-${aug.type}">${aug.name}</span>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td>${combo.races}</td>
+                    <td>${combo.winRate}%</td>
+                    <td>${combo.avgFinish}</td>
+                    <td>${combo.avgOdds}</td>
+                    <td>${combo.avgField}</td>
+                    <td>${combo.mmRating || 'N/A'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Field Averages and Performance Analysis
+        async function loadFieldAverages(filters = {}) {
+            try {
+                const params = new URLSearchParams(filters);
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.fieldAverages}?${params}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayFieldAveragesChart(data.fieldData);
+                    displayFinishTimeChart(data.timeData);
+                }
+            } catch (error) {
+                console.error('Error loading field averages:', error);
+            }
+        }
+
+        // Global Statistics
+        async function loadGlobalStats() {
+            try {
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.globalAverages}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateGlobalStatsDisplay(data.stats);
+                }
+            } catch (error) {
+                console.error('Error loading global stats:', error);
+            }
+        }
+
+        // Horse-Specific Augment Analysis
+        async function loadHorseAugmentAnalysis(horseId) {
+            try {
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.horseHistory}?id=${horseId}&augments=true`);
+                const data = await response.json();
+                
+                if (data.success && data.augmentAnalysis) {
+                    displayHorseAugmentAnalysis(data.augmentAnalysis);
+                }
+            } catch (error) {
+                console.error('Error loading horse augment analysis:', error);
+            }
+        }
+
+        // Scheduled Races
+        async function loadScheduledRaces(horseId) {
+            try {
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.scheduledRace}?horse=${horseId}`);
+                const data = await response.json();
+                
+                if (data.success && data.race) {
+                    displayScheduledRace(data.race);
+                }
+            } catch (error) {
+                console.error('Error loading scheduled race:', error);
+            }
+        }
+
+        // Advanced Filtering Functions
+        function applyAugmentFilters() {
+            const bloodline = document.getElementById('bloodline-filter').value;
+            const minRaces = document.getElementById('min-races-filter').value;
+            const winRateRange = document.getElementById('winrate-range').value;
+            
+            const filters = {
+                bloodline: bloodline !== 'all' ? bloodline : '',
+                minRaces: minRaces || 10,
+                winRateMin: 0,
+                winRateMax: winRateRange || 100
+            };
+            
+            loadGlobalAugmentAnalysis(filters);
+        }
+
+        // Chart Display Functions
+        function displayFieldAveragesChart(fieldData) {
+            const ctx = document.getElementById('field-chart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: fieldData.map(d => d.fieldSize),
+                    datasets: [{
+                        label: 'Average Finish Time',
+                        data: fieldData.map(d => d.avgTime),
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(0, 212, 170, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Field Size vs Average Finish Time'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Finish Time (seconds)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Field Size'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayFinishTimeChart(timeData) {
+            const ctx = document.getElementById('time-trend-chart');
+            if (!ctx) return;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeData.map(d => d.date),
+                    datasets: [{
+                        label: 'Average Finish Time Trend',
+                        data: timeData.map(d => d.avgTime),
+                        borderColor: 'var(--secondary)',
+                        backgroundColor: 'rgba(108, 92, 231, 0.1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Finish Time Trends Over Time'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Utility Functions for Analysis
+        function showAnalysisLoading() {
+            const container = document.getElementById('analysis-results');
+            if (container) {
+                container.innerHTML = '<div class="spinner"></div><p>Loading ZedSight analysis data...</p>';
+            }
+        }
+
+        function showAnalysisError(message) {
+            const container = document.getElementById('analysis-results');
+            if (container) {
+                container.innerHTML = `<div class="status-message status-error">${message}</div>`;
+            }
+        }
+
+        function updateAnalysisStats(stats) {
+            if (!stats) return;
+            
+            const elements = {
+                'total-combinations': stats.totalCombinations || 0,
+                'total-races-analyzed': stats.totalRaces || 0,
+                'avg-global-winrate': `${stats.avgWinRate || 0}%`,
+                'top-combination': stats.topCombination || 'N/A'
+            };
+            
+            Object.entries(elements).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
+            });
+        }
+
+        function updateGlobalStatsDisplay(stats) {
+            const container = document.getElementById('global-stats-container');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value">${stats.totalHorses || 0}</span>
+                        <div class="stat-label">Total Horses Tracked</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${stats.totalRaces || 0}</span>
+                        <div class="stat-label">Total Races Analyzed</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${stats.avgWinRate || 0}%</span>
+                        <div class="stat-label">Global Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${stats.avgFinishTime || 0}s</span>
+                        <div class="stat-label">Average Finish Time</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize Analysis Tab
+        function initializeAnalysisTab() {
+            loadGlobalAugmentAnalysis();
+            loadGlobalStats();
+            loadFieldAverages();
+        }
+
+        // Enhanced error handling for API calls
+        function handleApiError(error, context) {
+            console.error(`API Error (${context}):`, error);
+            if (error.response && error.response.data) {
+                return error.response.data.message || 'Unknown error occurred';
+            }
+            return 'Network error or invalid response';
+        }
+        
         console.log('🚀 StableFields ZED Champions Tracker Pro ready!');
     </script>
 </body>
