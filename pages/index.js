@@ -5,7 +5,7 @@ export default function Home() {
   const router = useRouter();
   
   useEffect(() => {
-    // Redirect to the main tracker
+    // Redirect to the main tracker (in public folder for Vercel)
     window.location.href = '/stablefields-tracker.html';
   }, []);
   
