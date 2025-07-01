@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test ZedSight API</title>
+</head>
+<body>
+    <h1>ZedSight API Test</h1>
+    <input type="text" id="search-input" placeholder="Enter horse name" value="Lightning">
+    <button onclick="testSearch()">Search</button>
+    <div id="results"></div>
+
+    <script>
+        const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
+
+        async function testSearch() {
+            const searchTerm = document.getElementById('search-input').value;
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                console.log(`Searching for: ${searchTerm}`);
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(searchTerm)}`);
+                const data = await response.json();
+                
+                console.log('Response:', data);
+                
+                if (data.success && data.horses) {
+                    resultsDiv.innerHTML = `
+                        <h2>Found ${data.horses.length} horses:</h2>
+                        <ul>
+                            ${data.horses.slice(0, 5).map(horse => `
+                                <li>
+                                    <strong>${horse.name}</strong> - ${horse.bloodline} 
+                                    (Gen ${horse.generation}, Rating: ${horse.complete_rating})
+                                    <button onclick="getHorseDetails('${horse.id}')">Get Details</button>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = '<p>No horses found</p>';
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function getHorseDetails(horseId) {
+            try {
+                console.log(`Getting details for horse: ${horseId}`);
+                const response = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${encodeURIComponent(horseId)}`);
+                const data = await response.json();
+                
+                console.log('Horse details:', data);
+                
+                if (data.success) {
+                    alert(`Horse: ${data.horse.name}\nTotal Races: ${data.total_races}\nWin Rate: ${data.win_percentage.toFixed(1)}%\nAvg Finish Time: ${data.avg_finish_time.toFixed(2)}s`);
+                } else {
+                    alert('Failed to get horse details');
+                }
+            } catch (error) {
+                console.error('Details error:', error);
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        // Test on page load
+        window.addEventListener('load', testSearch);
+    </script>
+</body>
+</html>

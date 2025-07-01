@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StableFields Import Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .test-section { margin: 20px 0; padding: 15px; background: #2a2a2a; border-radius: 8px; }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        button { padding: 10px 15px; margin: 5px; background: #007acc; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; background: #333; color: white; border: 1px solid #555; border-radius: 4px; }
+        pre { background: #000; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>StableFields Import Functionality Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Test ZedSight API Connectivity</h2>
+        <button onclick="testZedSightAPI()">Test Search API</button>
+        <button onclick="testHorseDetails()">Test Horse Details</button>
+        <div id="zedsight-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test Horse Search</h2>
+        <input type="text" id="search-name" placeholder="Horse name" value="Lightning">
+        <button onclick="searchHorses()">Search Horses</button>
+        <div id="search-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test Horse Import to Stable</h2>
+        <input type="text" id="horse-id" placeholder="Horse ID" value="907ccacb-4dba-4c73-83af-166ba18ef4e7">
+        <button onclick="importHorse()">Import to Stable</button>
+        <div id="import-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Test Local Storage</h2>
+        <button onclick="checkStorage()">Check Storage</button>
+        <button onclick="clearStorage()">Clear Storage</button>
+        <div id="storage-results"></div>
+    </div>
+
+    <script>
+        const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
+        let myStable = JSON.parse(localStorage.getItem('stablefields_horses') || '[]');
+
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            const className = isError ? 'error' : 'success';
+            element.innerHTML += `<div class="${className}">${message}</div>`;
+        }
+
+        async function testZedSightAPI() {
+            const resultsDiv = document.getElementById('zedsight-results');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                log('zedsight-results', '🧪 Testing ZedSight API connectivity...');
+                
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=Lightning`);
+                const data = await response.json();
+                
+                if (data.success && data.horses) {
+                    log('zedsight-results', `✅ API Working! Found ${data.horses.length} horses`);
+                    log('zedsight-results', `<pre>${JSON.stringify(data.horses[0], null, 2)}</pre>`);
+                } else {
+                    log('zedsight-results', `❌ API Error: ${JSON.stringify(data)}`, true);
+                }
+            } catch (error) {
+                log('zedsight-results', `❌ Network Error: ${error.message}`, true);
+            }
+        }
+
+        async function testHorseDetails() {
+            const resultsDiv = document.getElementById('zedsight-results');
+            
+            try {
+                log('zedsight-results', '🧪 Testing horse details API...');
+                
+                const response = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=907ccacb-4dba-4c73-83af-166ba18ef4e7`);
+                const data = await response.json();
+                
+                if (data.success && data.horse) {
+                    log('zedsight-results', `✅ Horse Details Working!`);
+                    log('zedsight-results', `Horse: ${data.horse.name}, Races: ${data.total_races}, Win Rate: ${data.win_percentage.toFixed(1)}%`);
+                } else {
+                    log('zedsight-results', `❌ Details Error: ${JSON.stringify(data)}`, true);
+                }
+            } catch (error) {
+                log('zedsight-results', `❌ Network Error: ${error.message}`, true);
+            }
+        }
+
+        async function searchHorses() {
+            const searchTerm = document.getElementById('search-name').value;
+            const resultsDiv = document.getElementById('search-results');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                log('search-results', `🔍 Searching for "${searchTerm}"...`);
+                
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(searchTerm)}`);
+                const data = await response.json();
+                
+                if (data.success && data.horses) {
+                    log('search-results', `✅ Found ${data.horses.length} horses:`);
+                    data.horses.slice(0, 3).forEach(horse => {
+                        log('search-results', `• ${horse.name} (${horse.bloodline}, Gen ${horse.generation})`);
+                    });
+                } else {
+                    log('search-results', `❌ No horses found`, true);
+                }
+            } catch (error) {
+                log('search-results', `❌ Search Error: ${error.message}`, true);
+            }
+        }
+
+        async function importHorse() {
+            const horseId = document.getElementById('horse-id').value;
+            const resultsDiv = document.getElementById('import-results');
+            resultsDiv.innerHTML = '';
+            
+            try {
+                log('import-results', `📥 Importing horse ${horseId}...`);
+                
+                // Get horse details
+                const response = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${encodeURIComponent(horseId)}`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    log('import-results', `❌ Failed to get horse data`, true);
+                    return;
+                }
+
+                // Check if already in stable
+                if (myStable.find(h => h.id === horseId)) {
+                    log('import-results', `⚠️ Horse already in stable`, true);
+                    return;
+                }
+
+                // Process horse data
+                const horse = data.horse;
+                const races = data.races || [];
+                
+                const stableHorse = {
+                    ...horse,
+                    dateAdded: new Date().toISOString(),
+                    totalRaces: races.length,
+                    wins: races.filter(r => r.finish_position === 1).length,
+                    earnings: races.reduce((sum, race) => sum + parseFloat(race.earnings || 0), 0),
+                    avgFinishTime: data.avg_finish_time,
+                    winPercentage: data.win_percentage,
+                    lastRaceDate: races.length > 0 ? races[0].start_time : null
+                };
+
+                // Add to stable
+                myStable.push(stableHorse);
+                localStorage.setItem('stablefields_horses', JSON.stringify(myStable));
+                
+                log('import-results', `✅ Successfully imported ${horse.name}!`);
+                log('import-results', `Stats: ${races.length} races, ${stableHorse.wins} wins, $${stableHorse.earnings.toFixed(2)} earnings`);
+                
+            } catch (error) {
+                log('import-results', `❌ Import Error: ${error.message}`, true);
+            }
+        }
+
+        function checkStorage() {
+            const resultsDiv = document.getElementById('storage-results');
+            resultsDiv.innerHTML = '';
+            
+            const horses = JSON.parse(localStorage.getItem('stablefields_horses') || '[]');
+            const settings = JSON.parse(localStorage.getItem('stablefields_settings') || '{}');
+            
+            log('storage-results', `💾 Storage Status:`);
+            log('storage-results', `Horses in stable: ${horses.length}`);
+            log('storage-results', `Settings stored: ${Object.keys(settings).length} keys`);
+            
+            if (horses.length > 0) {
+                log('storage-results', `Last horse: ${horses[horses.length - 1].name}`);
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('stablefields_horses');
+            localStorage.removeItem('stablefields_settings');
+            myStable = [];
+            log('storage-results', `🗑️ Storage cleared`);
+        }
+
+        // Auto-run connectivity test
+        window.addEventListener('load', () => {
+            testZedSightAPI();
+        });
+    </script>
+</body>
+</html>
