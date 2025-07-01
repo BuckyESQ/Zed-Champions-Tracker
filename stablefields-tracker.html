@@ -595,16 +595,130 @@
 
         <!-- Analysis Tab -->
         <div id="analysis" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-chart-bar"></i>
-                        Advanced Analysis
-                    </h2>
+            <div class="container">
+                <h2 style="margin-bottom: 2rem; color: var(--primary);">
+                    <i class="fas fa-chart-bar"></i> Global Augment Analysis
+                </h2>
+                
+                <!-- Filters Section -->
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">Filters</h3>
+                    
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="filter-label">Bloodline:</label>
+                            <div class="bloodline-filters">
+                                <div class="filter-btn active" data-filter="bloodline" data-value="all">All</div>
+                                <div class="filter-btn" data-filter="bloodline" data-value="nakamoto">Nakamoto</div>
+                                <div class="filter-btn" data-filter="bloodline" data-value="szabo">Szabo</div>
+                                <div class="filter-btn" data-filter="bloodline" data-value="finney">Finney</div>
+                                <div class="filter-btn" data-filter="bloodline" data-value="buterin">Buterin</div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Overall Rating:</label>
+                            <div class="rating-filters">
+                                <div class="filter-btn active" data-filter="rating" data-value="all">All</div>
+                                <div class="filter-btn" data-filter="rating" data-value="<2.5">&lt;2.5★</div>
+                                <div class="filter-btn" data-filter="rating" data-value="2.5">2.5★</div>
+                                <div class="filter-btn" data-filter="rating" data-value="3.0">3.0★</div>
+                                <div class="filter-btn" data-filter="rating" data-value="3.5">3.5★</div>
+                                <div class="filter-btn" data-filter="rating" data-value="4.0">4.0★</div>
+                                <div class="filter-btn" data-filter="rating" data-value="4.5+">4.5+★</div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Speed Rating:</label>
+                            <div class="speed-filters">
+                                <div class="filter-btn active" data-filter="speed" data-value="all">All</div>
+                                <div class="filter-btn" data-filter="speed" data-value="<2.5">&lt;2.5★</div>
+                                <div class="filter-btn" data-filter="speed" data-value="2.5">2.5★</div>
+                                <div class="filter-btn" data-filter="speed" data-value="3.0">3.0★</div>
+                                <div class="filter-btn" data-filter="speed" data-value="3.5">3.5★</div>
+                                <div class="filter-btn" data-filter="speed" data-value="4.0">4.0★</div>
+                                <div class="filter-btn" data-filter="speed" data-value="4.5+">4.5+★</div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Sprint Rating:</label>
+                            <div class="sprint-filters">
+                                <div class="filter-btn active" data-filter="sprint" data-value="all">All</div>
+                                <div class="filter-btn" data-filter="sprint" data-value="<2.5">&lt;2.5★</div>
+                                <div class="filter-btn" data-filter="sprint" data-value="2.5">2.5★</div>
+                                <div class="filter-btn" data-filter="sprint" data-value="3.0">3.0★</div>
+                                <div class="filter-btn" data-filter="sprint" data-value="3.5">3.5★</div>
+                                <div class="filter-btn" data-filter="sprint" data-value="4.0">4.0★</div>
+                                <div class="filter-btn" data-filter="sprint" data-value="4.5+">4.5+★</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label class="filter-label">Augment Size:</label>
+                            <div class="size-filters">
+                                <div class="filter-btn active" data-filter="size" data-value="1">Singles</div>
+                                <div class="filter-btn" data-filter="size" data-value="2">Pairs</div>
+                                <div class="filter-btn" data-filter="size" data-value="3">Triples</div>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Actions:</label>
+                            <div class="action-buttons">
+                                <button class="btn" onclick="loadAugmentData()">
+                                    <i class="fas fa-download"></i> Load Data
+                                </button>
+                                <button class="btn btn-secondary" onclick="resetFilters()">
+                                    <i class="fas fa-undo"></i> Reset Filters
+                                </button>
+                                <button class="btn btn-secondary" onclick="excludeVoidAugments()">
+                                    <i class="fas fa-filter"></i> Exclude Void
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="chart-container">
-                    <canvas id="analysis-chart"></canvas>
+                <!-- Loading/Status -->
+                <div id="analytics-status" class="status-message" style="display: none;"></div>
+                <div id="analytics-loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <span>Loading augment data...</span>
+                </div>
+                
+                <!-- Results Table -->
+                <div class="card">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">Augment Combinations</h3>
+                    <div id="results-table-container" style="display: none;">
+                        <div class="table-container">
+                            <table id="augment-results-table">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable" data-column="cpu">CPU</th>
+                                        <th class="sortable" data-column="ram">RAM</th>
+                                        <th class="sortable" data-column="hydraulic">Hydraulic</th>
+                                        <th class="sortable" data-column="avg_position">Avg Position</th>
+                                        <th class="sortable" data-column="avg_odds">Avg Odds</th>
+                                        <th class="sortable" data-column="avg_time">Avg Time</th>
+                                        <th class="sortable" data-column="win_percentage">Win %</th>
+                                        <th class="sortable" data-column="races">Races</th>
+                                        <th class="horse-data-column" style="display: none;">Horse Odds</th>
+                                        <th class="horse-data-column" style="display: none;">Horse Sample</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="augment-results-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="no-augment-data" style="display: block; text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>Click "Load Data" to see global augment performance analysis</p>
+                    </div>
                 </div>
             </div>
         </div>
