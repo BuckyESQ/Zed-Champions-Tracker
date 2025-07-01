@@ -1034,11 +1034,11 @@
                 console.log(`🌐 API Call: ${useProxy ? 'proxy' : 'direct'} → ${endpoint}`);
                 
                 // Check if this endpoint requires authentication
-                const protectedEndpoints = ['me', 'stable/racing', 'stable/breeding', 'horses'];
+                const protectedEndpoints = ['me', 'racing', 'breeding', 'horses'];
                 const requiresAuth = protectedEndpoints.some(protected => endpoint.startsWith(protected));
                 
                 if (requiresAuth && (!options.headers || !options.headers.Authorization)) {
-                    throw new Error('This endpoint requires authentication. Please set your API token in Settings first.');
+                    throw new Error('Authentication required: Please set your API token in Settings first');
                 }
                 
                 const response = await fetch(url, {
@@ -1397,7 +1397,7 @@
             try {
                 showStatus('Importing racing horses...', 'warning', 'settings-status');
                 
-                const data = await callZedAPI('stable/racing', {
+                const data = await callZedAPI('racing', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
@@ -1431,7 +1431,7 @@
             try {
                 showStatus('Importing breeding horses...', 'warning', 'settings-status');
                 
-                const data = await callZedAPI('stable/breeding', {
+                const data = await callZedAPI('breeding', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
@@ -1467,13 +1467,13 @@
                 
                 // Import both racing and breeding horses
                 const [racingData, breedingData] = await Promise.all([
-                    callZedAPI('horses?type=racing', {
+                    callZedAPI('racing', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Accept': 'application/json'
                         }
                     }),
-                    callZedAPI('horses?type=breeding', {
+                    callZedAPI('breeding', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Accept': 'application/json'
