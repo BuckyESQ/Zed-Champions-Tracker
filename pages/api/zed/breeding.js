@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     console.log('Query:', req.query);
     
     // Map to the correct ZED API endpoint
-    const apiUrl = 'https://api.zedchampions.com/v1/stable/breeding';
+    const apiUrl = 'https://api.zedchampions.com/v1/breeding';
     
     // Headers for the ZED API request
     const headers = {
