@@ -641,6 +641,305 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* New Search & Import Styles */
+        .info-banner {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.1), rgba(108, 92, 231, 0.1));
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .info-banner i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-header h3 {
+            color: var(--primary);
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .horses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .horse-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .horse-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.2);
+        }
+
+        .horse-card.selected {
+            border-color: var(--primary);
+            background: rgba(0, 212, 170, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.2);
+        }
+
+        .horse-card .selection-indicator {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .horse-card.selected .selection-indicator {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #000;
+        }
+
+        .horse-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .horse-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .horse-bloodline {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .horse-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+        }
+
+        .horse-stat {
+            background: var(--bg-card);
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .horse-stat-value {
+            font-weight: 600;
+            color: var(--primary);
+            display: block;
+        }
+
+        .horse-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .import-controls {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .selection-summary {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #00a085);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #00a085, #008a73);
+        }
+
+        .progress-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            background: var(--bg-card);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, rgba(0, 184, 148, 0.1), rgba(0, 212, 170, 0.1));
+            border: 1px solid var(--success);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .success-message i {
+            font-size: 3rem;
+            color: var(--success);
+            margin-bottom: 1rem;
+        }
+
+        .success-message h3 {
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .feature-highlight {
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .status-info {
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .status-success {
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-error {
+            background: rgba(232, 67, 147, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .horses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .import-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -717,25 +1016,74 @@
 
         <!-- Horse Search Tab -->
         <div id="search" class="tab-content">
+            <!-- Search & Import Section -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">
                         <i class="fas fa-search"></i>
-                        Horse Search & Analysis
+                        Search & Import Horses
                     </h2>
+                    <div class="feature-highlight">NEW</div>
                 </div>
                 
                 <div class="search-section">
                     <input type="text" id="horse-search-input" class="search-input" 
-                           placeholder="Search by horse name..." maxlength="50">
-                    <input type="text" id="horse-id-input" class="search-input" 
-                           placeholder="Or enter Horse ID..." maxlength="50">
-                    <button class="btn" onclick="searchHorse()">
+                           placeholder="Enter horse name to search..." maxlength="50"
+                           onkeypress="if(event.key==='Enter') searchHorses()">
+                    <button id="search-btn" class="btn" onclick="searchHorses()">
                         <i class="fas fa-search"></i> Search
                     </button>
                 </div>
 
-                <div id="horse-results" class="horse-results"></div>
+                <div class="info-banner">
+                    <i class="fas fa-info-circle"></i>
+                    <p><strong>New Import System:</strong> Search for your horses by name, select them visually, and import all data to your local stable. No Bearer tokens required!</p>
+                </div>
+
+                <!-- Search Results -->
+                <div id="search-results" style="display: none;">
+                    <div class="section-header">
+                        <h3><i class="fas fa-list"></i> Search Results</h3>
+                        <span id="results-count" class="badge">0 horses found</span>
+                    </div>
+                    
+                    <div id="horses-grid" class="horses-grid">
+                        <!-- Search results will appear here -->
+                    </div>
+                    
+                    <div class="import-controls" id="import-controls" style="display: none;">
+                        <div class="selection-summary">
+                            <span id="selected-count">0</span> horses selected
+                        </div>
+                        <button id="import-btn" class="btn btn-success" onclick="importSelectedHorses()">
+                            <i class="fas fa-download"></i> Import Selected Horses
+                        </button>
+                        <button class="btn btn-secondary" onclick="selectAllHorses()">
+                            <i class="fas fa-check-square"></i> Select All
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearSelection()">
+                            <i class="fas fa-times"></i> Clear Selection
+                        </button>
+                    </div>
+                    
+                    <!-- Import Progress -->
+                    <div id="import-progress" class="progress-container" style="display: none;">
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                        <p class="progress-text">Importing horses to your stable...</p>
+                    </div>
+                    
+                    <!-- Import Complete -->
+                    <div id="import-complete" class="success-message" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Import Complete!</h3>
+                        <p>Successfully imported <span id="imported-count">0</span> horses to your stable.</p>
+                        <button class="btn" onclick="switchTab('stable')">
+                            <i class="fas fa-home"></i> View My Stable
+                        </button>
+                    </div>
+                </div>
 
                 <div id="search-status" class="status-message" style="display: none;"></div>
             </div>
@@ -747,34 +1095,66 @@
                 <div class="card-header">
                     <h2 class="card-title">
                         <i class="fas fa-home"></i>
-                        My Stable
+                        My Stable (<span id="stable-count">0</span> horses)
                     </h2>
-                    <button class="btn" onclick="showAddHorseForm()">
-                        <i class="fas fa-plus"></i> Add Horse
-                    </button>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="switchTab('search')">
+                            <i class="fas fa-search"></i> Import More Horses
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportStableData()">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="clearAllHorses()" style="background: var(--danger);">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div id="stable-stats" class="stats-grid" style="display: none;">
+                    <div class="stat-card">
+                        <span class="stat-value" id="stable-total-races">0</span>
+                        <div class="stat-label">Total Races</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="stable-avg-rating">0</span>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="stable-win-rate">0%</span>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="stable-bloodlines">0</span>
+                        <div class="stat-label">Bloodlines</div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div id="stable-filters" class="search-section" style="display: none;">
+                    <input type="text" id="stable-search" class="search-input" 
+                           placeholder="Filter horses by name..." onkeyup="filterStableHorses()">
+                    <select id="bloodline-filter" class="search-input" onchange="filterStableHorses()">
+                        <option value="">All Bloodlines</option>
+                    </select>
+                    <select id="generation-filter" class="search-input" onchange="filterStableHorses()">
+                        <option value="">All Generations</option>
+                    </select>
                 </div>
                 
-                <div class="table-container">
-                    <table id="stable-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Bloodline</th>
-                                <th>Rating</th>
-                                <th>Races</th>
-                                <th>Wins</th>
-                                <th>Earnings</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stable-tbody">
-                            <tr>
-                                <td colspan="7" style="text-align: center; color: var(--text-secondary);">
-                                    No horses in your stable yet. Add some horses to get started!
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Empty State -->
+                <div id="empty-stable" class="empty-state">
+                    <i class="fas fa-horse-head"></i>
+                    <h3>Your Stable is Empty</h3>
+                    <p>Start building your stable by importing horses from the search tab.</p>
+                    <button class="btn" onclick="switchTab('search')">
+                        <i class="fas fa-search"></i> Search & Import Horses
+                    </button>
+                </div>
+
+                <!-- Horses Grid -->
+                <div id="stable-horses-grid" class="horses-grid" style="display: none;">
+                    <!-- Stable horses will appear here -->
                 </div>
             </div>
         </div>
@@ -1117,6 +1497,484 @@
             if (tabId === 'dashboard') loadDashboard();
             if (tabId === 'stable') loadStable();
             if (tabId === 'analysis') initializeAnalysisTab();
+        }
+
+        // Search & Import Functions
+        let selectedHorses = [];
+
+        async function searchHorses() {
+            const searchTerm = document.getElementById('horse-search-input').value.trim();
+            
+            if (!searchTerm) {
+                showStatus('Please enter a horse name to search for.', 'error', 'search-status');
+                return;
+            }
+
+            const searchBtn = document.getElementById('search-btn');
+            const originalText = searchBtn.innerHTML;
+            
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+
+            try {
+                console.log(`🔍 Searching for horses with name: ${searchTerm}`);
+                
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(searchTerm)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Search failed with status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success && data.horses && data.horses.length > 0) {
+                    console.log(`✅ Found ${data.horses.length} horses`);
+                    await displaySearchResults(data.horses, searchTerm);
+                } else {
+                    showStatus(`No horses found with the name "${searchTerm}". Try a different name or check the spelling.`, 'error', 'search-status');
+                }
+
+            } catch (error) {
+                console.error('Search error:', error);
+                showStatus(`Search failed: ${error.message}. Please try again.`, 'error', 'search-status');
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = originalText;
+                document.getElementById('search-status').style.display = 'none';
+            }
+        }
+
+        async function displaySearchResults(horses, searchTerm) {
+            const resultsDiv = document.getElementById('search-results');
+            const horsesGrid = document.getElementById('horses-grid');
+            const resultsCount = document.getElementById('results-count');
+            
+            // Show loading while getting detailed data
+            horsesGrid.innerHTML = '<div class="loading" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading detailed horse data...</div>';
+            resultsDiv.style.display = 'block';
+            resultsCount.textContent = `${horses.length} horses found`;
+
+            // Get detailed data for each horse
+            const horsesWithDetails = [];
+            
+            for (let i = 0; i < horses.length; i++) {
+                const horse = horses[i];
+                
+                try {
+                    const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
+                    
+                    if (detailResponse.ok) {
+                        const details = await detailResponse.json();
+                        horsesWithDetails.push({
+                            ...horse,
+                            details: details
+                        });
+                    } else {
+                        horsesWithDetails.push(horse);
+                    }
+                } catch (error) {
+                    console.warn(`Failed to get details for horse ${horse.id}:`, error);
+                    horsesWithDetails.push(horse);
+                }
+            }
+
+            // Render horse cards
+            horsesGrid.innerHTML = horsesWithDetails.map(horse => createHorseCard(horse)).join('');
+            
+            // Show import controls
+            document.getElementById('import-controls').style.display = 'flex';
+            updateSelectionCount();
+        }
+
+        function createHorseCard(horse) {
+            const hasDetails = horse.details && horse.details.success;
+            const races = hasDetails ? horse.details.total_races || 0 : 'N/A';
+            const winRate = hasDetails && horse.details.win_percentage ? `${horse.details.win_percentage.toFixed(1)}%` : 'N/A';
+            
+            return `
+                <div class="horse-card" onclick="toggleHorseSelection('${horse.id}')">
+                    <div class="selection-indicator">
+                        <i class="fas fa-check" style="display: none;"></i>
+                    </div>
+                    
+                    <div class="horse-header">
+                        <div>
+                            <div class="horse-name">${horse.name}</div>
+                            <div class="horse-bloodline">
+                                <i class="fas fa-certificate"></i>
+                                ${horse.bloodline} • Gen ${horse.generation} • ${horse.gender}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="horse-stats">
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${horse.speed_rating || 'N/A'}</span>
+                            <div class="horse-stat-label">Speed</div>
+                        </div>
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${horse.endurance_rating || 'N/A'}</span>
+                            <div class="horse-stat-label">Endurance</div>
+                        </div>
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${races}</span>
+                            <div class="horse-stat-label">Races</div>
+                        </div>
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${winRate}</span>
+                            <div class="horse-stat-label">Win Rate</div>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        ID: ${horse.id}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleHorseSelection(horseId) {
+            const card = document.querySelector(`[onclick="toggleHorseSelection('${horseId}')"]`);
+            const indicator = card.querySelector('.selection-indicator i');
+            
+            if (card.classList.contains('selected')) {
+                // Deselect
+                card.classList.remove('selected');
+                indicator.style.display = 'none';
+                selectedHorses = selectedHorses.filter(id => id !== horseId);
+            } else {
+                // Select
+                card.classList.add('selected');
+                indicator.style.display = 'block';
+                selectedHorses.push(horseId);
+            }
+            
+            updateSelectionCount();
+        }
+
+        function selectAllHorses() {
+            document.querySelectorAll('.horse-card').forEach(card => {
+                if (!card.classList.contains('selected')) {
+                    const horseId = card.onclick.toString().match(/'([^']+)'/)[1];
+                    toggleHorseSelection(horseId);
+                }
+            });
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('.horse-card.selected').forEach(card => {
+                const horseId = card.onclick.toString().match(/'([^']+)'/)[1];
+                toggleHorseSelection(horseId);
+            });
+        }
+
+        function updateSelectionCount() {
+            document.getElementById('selected-count').textContent = selectedHorses.length;
+            const importBtn = document.getElementById('import-btn');
+            importBtn.disabled = selectedHorses.length === 0;
+        }
+
+        async function importSelectedHorses() {
+            if (selectedHorses.length === 0) {
+                showStatus('Please select at least one horse to import.', 'error', 'search-status');
+                return;
+            }
+
+            const importBtn = document.getElementById('import-btn');
+            const progressBar = document.getElementById('import-progress');
+            const progressFill = document.getElementById('progress-fill');
+            
+            importBtn.disabled = true;
+            importBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
+            progressBar.style.display = 'block';
+
+            try {
+                // Get existing stable data
+                let stableHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+                
+                let importedCount = 0;
+                
+                // Get full horse data for selected horses
+                const horsesToImport = [];
+                const horseCards = document.querySelectorAll('.horse-card.selected');
+                
+                for (let card of horseCards) {
+                    const horseId = card.onclick.toString().match(/'([^']+)'/)[1];
+                    const horseName = card.querySelector('.horse-name').textContent;
+                    const bloodline = card.querySelector('.horse-bloodline').textContent.split(' • ')[0].replace('🏆 ', '');
+                    const generation = card.querySelector('.horse-bloodline').textContent.match(/Gen (\d+)/)[1];
+                    const gender = card.querySelector('.horse-bloodline').textContent.split(' • ')[2];
+                    
+                    const stats = card.querySelectorAll('.horse-stat-value');
+                    const speed = stats[0].textContent !== 'N/A' ? parseInt(stats[0].textContent) : 0;
+                    const endurance = stats[1].textContent !== 'N/A' ? parseInt(stats[1].textContent) : 0;
+                    const races = stats[2].textContent !== 'N/A' ? parseInt(stats[2].textContent) : 0;
+                    const winRate = stats[3].textContent !== 'N/A' ? parseFloat(stats[3].textContent) : 0;
+                    
+                    horsesToImport.push({
+                        id: horseId,
+                        name: horseName,
+                        bloodline: bloodline,
+                        generation: parseInt(generation),
+                        gender: gender,
+                        speed_rating: speed,
+                        endurance_rating: endurance,
+                        total_races: races,
+                        win_percentage: winRate
+                    });
+                }
+                
+                for (let i = 0; i < horsesToImport.length; i++) {
+                    const horse = horsesToImport[i];
+                    
+                    // Check if horse already exists
+                    const existsIndex = stableHorses.findIndex(h => h.id === horse.id);
+                    
+                    // Prepare horse data for StableFields
+                    const stableHorse = {
+                        ...horse,
+                        type: 'racing',
+                        imported_at: new Date().toISOString(),
+                        source: 'zedsight_search'
+                    };
+                    
+                    if (existsIndex >= 0) {
+                        // Update existing horse with new data
+                        stableHorses[existsIndex] = { ...stableHorses[existsIndex], ...stableHorse };
+                        console.log(`🔄 Updated existing horse: ${horse.name}`);
+                    } else {
+                        // Add new horse
+                        stableHorses.push(stableHorse);
+                        console.log(`➕ Added new horse: ${horse.name}`);
+                    }
+                    
+                    importedCount++;
+                    
+                    // Update progress
+                    const progress = (i + 1) / horsesToImport.length * 100;
+                    progressFill.style.width = progress + '%';
+                    
+                    // Small delay for visual feedback
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('horses', JSON.stringify(stableHorses));
+                localStorage.setItem('stableHorses', JSON.stringify(stableHorses));
+                
+                // Show completion
+                showImportComplete(importedCount);
+                
+                console.log(`🎉 Successfully imported ${importedCount} horses to StableFields!`);
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                showStatus(`Import failed: ${error.message}`, 'error', 'search-status');
+            } finally {
+                importBtn.disabled = false;
+                importBtn.innerHTML = '<i class="fas fa-download"></i> Import Selected Horses';
+                progressBar.style.display = 'none';
+                progressFill.style.width = '0%';
+            }
+        }
+
+        function showImportComplete(count) {
+            document.getElementById('imported-count').textContent = count;
+            document.getElementById('import-complete').style.display = 'block';
+            
+            // Scroll to completion section
+            document.getElementById('import-complete').scrollIntoView({ behavior: 'smooth' });
+            
+            // Clear selection
+            selectedHorses = [];
+            clearSelection();
+            updateSelectionCount();
+        }
+
+        // My Stable Functions
+        function loadStable() {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const stableCount = document.getElementById('stable-count');
+            const emptyState = document.getElementById('empty-stable');
+            const stableStats = document.getElementById('stable-stats');
+            const stableFilters = document.getElementById('stable-filters');
+            const horsesGrid = document.getElementById('stable-horses-grid');
+            
+            stableCount.textContent = horses.length;
+            
+            if (horses.length === 0) {
+                emptyState.style.display = 'block';
+                stableStats.style.display = 'none';
+                stableFilters.style.display = 'none';
+                horsesGrid.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                stableStats.style.display = 'grid';
+                stableFilters.style.display = 'grid';
+                horsesGrid.style.display = 'grid';
+                
+                updateStableStats(horses);
+                populateFilters(horses);
+                displayStableHorses(horses);
+            }
+        }
+
+        function updateStableStats(horses) {
+            const totalRaces = horses.reduce((sum, h) => sum + (h.total_races || 0), 0);
+            const avgRating = horses.length > 0 ? 
+                Math.round(horses.reduce((sum, h) => sum + (h.speed_rating || 0), 0) / horses.length) : 0;
+            const avgWinRate = horses.filter(h => h.win_percentage).length > 0 ?
+                (horses.reduce((sum, h) => sum + (h.win_percentage || 0), 0) / horses.filter(h => h.win_percentage).length).toFixed(1) : 0;
+            const uniqueBloodlines = new Set(horses.map(h => h.bloodline)).size;
+            
+            document.getElementById('stable-total-races').textContent = totalRaces;
+            document.getElementById('stable-avg-rating').textContent = avgRating;
+            document.getElementById('stable-win-rate').textContent = `${avgWinRate}%`;
+            document.getElementById('stable-bloodlines').textContent = uniqueBloodlines;
+        }
+
+        function populateFilters(horses) {
+            const bloodlineFilter = document.getElementById('bloodline-filter');
+            const generationFilter = document.getElementById('generation-filter');
+            
+            // Populate bloodlines
+            const bloodlines = [...new Set(horses.map(h => h.bloodline))].sort();
+            bloodlineFilter.innerHTML = '<option value="">All Bloodlines</option>';
+            bloodlines.forEach(bloodline => {
+                bloodlineFilter.innerHTML += `<option value="${bloodline}">${bloodline}</option>`;
+            });
+            
+            // Populate generations
+            const generations = [...new Set(horses.map(h => h.generation))].sort((a, b) => a - b);
+            generationFilter.innerHTML = '<option value="">All Generations</option>';
+            generations.forEach(gen => {
+                generationFilter.innerHTML += `<option value="${gen}">Generation ${gen}</option>`;
+            });
+        }
+
+        function displayStableHorses(horses) {
+            const horsesGrid = document.getElementById('stable-horses-grid');
+            
+            horsesGrid.innerHTML = horses.map(horse => createStableHorseCard(horse)).join('');
+        }
+
+        function createStableHorseCard(horse) {
+            return `
+                <div class="horse-card">
+                    <div class="horse-header">
+                        <div>
+                            <div class="horse-name">${horse.name}</div>
+                            <div class="horse-bloodline">
+                                <i class="fas fa-certificate"></i>
+                                ${horse.bloodline} • Gen ${horse.generation} • ${horse.gender}
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="removeHorseFromStable('${horse.id}')" 
+                                style="padding: 0.5rem; font-size: 0.875rem; background: var(--danger);">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="horse-stats">
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${horse.speed_rating || 'N/A'}</span>
+                            <div class="horse-stat-label">Speed</div>
+                        </div>
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${horse.endurance_rating || 'N/A'}</span>
+                            <div class="horse-stat-label">Endurance</div>
+                        </div>
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${horse.total_races || 'N/A'}</span>
+                            <div class="horse-stat-label">Races</div>
+                        </div>
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${horse.win_percentage ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</span>
+                            <div class="horse-stat-label">Win Rate</div>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                        ID: ${horse.id} • Imported: ${horse.imported_at ? new Date(horse.imported_at).toLocaleDateString() : 'Unknown'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterStableHorses() {
+            const nameFilter = document.getElementById('stable-search').value.toLowerCase();
+            const bloodlineFilter = document.getElementById('bloodline-filter').value;
+            const generationFilter = document.getElementById('generation-filter').value;
+            
+            const allHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+            
+            const filteredHorses = allHorses.filter(horse => {
+                const matchesName = !nameFilter || horse.name.toLowerCase().includes(nameFilter);
+                const matchesBloodline = !bloodlineFilter || horse.bloodline === bloodlineFilter;
+                const matchesGeneration = !generationFilter || horse.generation == generationFilter;
+                
+                return matchesName && matchesBloodline && matchesGeneration;
+            });
+            
+            displayStableHorses(filteredHorses);
+        }
+
+        function removeHorseFromStable(horseId) {
+            if (confirm('Are you sure you want to remove this horse from your stable?')) {
+                let horses = JSON.parse(localStorage.getItem('horses') || '[]');
+                horses = horses.filter(h => h.id !== horseId);
+                
+                localStorage.setItem('horses', JSON.stringify(horses));
+                localStorage.setItem('stableHorses', JSON.stringify(horses));
+                
+                loadStable(); // Refresh the display
+                showStatus('Horse removed from stable', 'success', 'search-status');
+            }
+        }
+
+        function clearAllHorses() {
+            if (confirm('Are you sure you want to clear ALL horses from your stable? This cannot be undone.')) {
+                localStorage.removeItem('horses');
+                localStorage.removeItem('stableHorses');
+                loadStable(); // Refresh the display
+                showStatus('All horses cleared from stable', 'success', 'search-status');
+            }
+        }
+
+        function exportStableData() {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            
+            if (horses.length === 0) {
+                showStatus('No horses to export', 'error', 'search-status');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(horses, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `stablefields-horses-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            showStatus(`Exported ${horses.length} horses to JSON file`, 'success', 'search-status');
+        }
+
+        // Utility function for showing status messages
+        function showStatus(message, type = 'info', elementId = 'search-status') {
+            const statusDiv = document.getElementById(elementId);
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message ${type === 'error' ? 'status-error' : type === 'success' ? 'status-success' : 'status-info'}`;
+            statusDiv.style.display = 'block';
+            
+            // Auto-hide after 5 seconds for success/info messages
+            if (type !== 'error') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
         }
 
         // Initialize Analysis Tab
