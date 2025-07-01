@@ -1019,6 +1019,41 @@
         // Configuration
         const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
         const ZED_API = 'https://api.zedchampions.com/v1';
+        const PROXY_API = '/api/zed'; // Next.js API proxy
+        let useProxy = false; // Flag to switch between direct and proxy API calls
+        
+        // Enhanced API call function with automatic fallback
+        async function callZedAPI(endpoint, options = {}) {
+            const baseUrl = useProxy ? PROXY_API : ZED_API;
+            const url = `${baseUrl}/${endpoint}`;
+            
+            try {
+                console.log(`🌐 API Call: ${useProxy ? 'proxy' : 'direct'} → ${endpoint}`);
+                
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                if (!useProxy && (error.message.includes('ERR_NAME_NOT_RESOLVED') || 
+                                 error.message.includes('Failed to fetch') ||
+                                 error.message.includes('NetworkError'))) {
+                    console.log('🔄 Direct API failed, switching to proxy...');
+                    useProxy = true;
+                    return await callZedAPI(endpoint, options); // Retry with proxy
+                }
+                throw error;
+            }
+        }
         
         // Global State
         let currentHorseData = null;
@@ -1305,18 +1340,12 @@
             try {
                 showStatus('Importing racing horses...', 'warning', 'settings-status');
                 
-                const response = await fetch(`${ZED_API}/horses?type=racing`, {
+                const data = await callZedAPI('horses?type=racing', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json'
                     }
                 });
-                
-                if (!response.ok) {
-                    throw new Error(`API responded with ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
                 
                 if (data.horses && data.horses.length > 0) {
                     const importedCount = await importHorsesToStable(data.horses);
@@ -1386,23 +1415,20 @@
                 showStatus('Importing all horses...', 'warning', 'settings-status');
                 
                 // Import both racing and breeding horses
-                const [racingResponse, breedingResponse] = await Promise.all([
-                    fetch(`${ZED_API}/horses?type=racing`, {
+                const [racingData, breedingData] = await Promise.all([
+                    callZedAPI('horses?type=racing', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Accept': 'application/json'
                         }
                     }),
-                    fetch(`${ZED_API}/horses?type=breeding`, {
+                    callZedAPI('horses?type=breeding', {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Accept': 'application/json'
                         }
                     })
                 ]);
-                
-                const racingData = racingResponse.ok ? await racingResponse.json() : { horses: [] };
-                const breedingData = breedingResponse.ok ? await breedingResponse.json() : { horses: [] };
                 
                 const allHorses = [
                     ...(racingData.horses || []),
@@ -1508,18 +1534,16 @@
                 return;
             }
             
-            fetch('https://api.zedchampions.com/v1/me', {
-                method: 'GET',
+            callZedAPI('me', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Accept': 'application/json'
                 }
             })
-            .then(response => {
-                if (response.ok) {
-                    showStatus('API connection successful', 'success', 'settings-status');
-                } else {
-                    throw new Error('Invalid API token or connection issue');
+            .then(data => {
+                showStatus(`API connection successful! Welcome, ${data.username || data.email || 'Unknown'}`, 'success', 'settings-status');
+                if (useProxy) {
+                    showStatus('ℹ️ Using proxy API due to network restrictions', 'warning', 'settings-status');
                 }
             })
             .catch(error => {
