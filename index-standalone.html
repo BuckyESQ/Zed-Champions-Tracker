@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StableFields - ZED Champions Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0c0c0c 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #03dac6;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #b3b3b3;
+        }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #03dac6;
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+        }
+        .btn:hover {
+            background: #00b894;
+            transform: translateY(-2px);
+        }
+        .features {
+            margin-top: 3rem;
+            text-align: left;
+        }
+        .features h3 {
+            color: #03dac6;
+            margin-bottom: 1rem;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            margin: 0.5rem 0;
+            color: #b3b3b3;
+        }
+        .features li::before {
+            content: "✅ ";
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏇 StableFields</h1>
+        <p>Professional ZED Champions Horse Tracking Platform</p>
+        
+        <a href="stablefields-standalone.html" class="btn">
+            🚀 Launch Application
+        </a>
+        
+        <div class="features">
+            <h3>Features:</h3>
+            <ul>
+                <li>Search and track ZED Champions horses</li>
+                <li>Build and manage your personal stable</li>
+                <li>Performance analytics and statistics</li>
+                <li>Import/export stable data</li>
+                <li>Works on any web hosting (no server required)</li>
+                <li>Responsive design for desktop and mobile</li>
+            </ul>
+        </div>
+        
+        <p style="margin-top: 2rem; font-size: 0.9rem; color: #666;">
+            This standalone version works with ZedSight API for horse data.<br>
+            No server setup required - just upload to your web hosting!
+        </p>
+    </div>
+</body>
+</html>
