@@ -4,11 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StableFields ZED Champions Tracker</title>
-    <meta name="description" content="Track your ZED Champions horses, races, and breeding operations with this comprehensive management tool.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 500px;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00d4aa, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        .redirect-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00d4aa, #0099cc);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+        .redirect-link:hover {
+            transform: translateY(-2px);
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #00d4aa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏇 StableFields</h1>
+        <p>ZED Champions Tracker Pro</p>
+        <div class="spinner"></div>
+        <p>Redirecting to the full application...</p>
+        <a href="/stablefields-tracker.html" class="redirect-link">
+            Click here if not redirected automatically
+        </a>
+    </div>
+
+    <script>
+        // Auto-redirect after 2 seconds
+        setTimeout(() => {
+            window.location.href = '/stablefields-tracker.html';
+        }, 2000);
+    </script>
+</body>
+</html>
     
     <style>
         /* Theme Colors and Variables */
