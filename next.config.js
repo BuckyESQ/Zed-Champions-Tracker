@@ -46,6 +46,10 @@ const nextConfig = {
         destination: '/zed-api-test-enhanced.html',
       },
       {
+        source: '/status',
+        destination: '/api-status.html',
+      },
+      {
         source: '/legacy',
         destination: '/archive/legacy-tracker.html',
       },
