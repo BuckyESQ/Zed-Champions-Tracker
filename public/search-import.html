@@ -827,7 +827,28 @@
 ✅ Advanced analytics included
 
 Ready to import your ZED Champions horses! 🚀
+API Endpoint: ${ZEDSIGHT_API}
         `);
+
+        // Test function for debugging
+        async function testAPI() {
+            console.log('🧪 Testing API connection...');
+            try {
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=Thunder`);
+                console.log(`📡 Test response status: ${response.status}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ API test successful:', data);
+                    alert('✅ API is working! Check console for details.');
+                } else {
+                    console.log('❌ API test failed with status:', response.status);
+                    alert('❌ API test failed. Check console for details.');
+                }
+            } catch (error) {
+                console.error('❌ API test error:', error);
+                alert('❌ API connection failed. Check console for details.');
+            }
+        }
     </script>
 </body>
 </html>
