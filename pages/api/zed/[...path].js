@@ -39,11 +39,8 @@ export default async function handler(req, res) {
     }
 
     console.log(`Proxying to ZED API: ${apiPath} (original: ${Array.isArray(path) ? path.join('/') : path})`);
-    console.log(`Full URL: https://api.zedchampions.com/v1/${apiPath}`);
     console.log(`Method: ${req.method}`);
     console.log(`Has Authorization: ${!!req.headers.authorization}`);
-    
-    const apiUrl = `https://api.zedchampions.com/v1/${apiPath}`;
     
     // Headers for the ZED API request
     const headers = {
@@ -56,28 +53,72 @@ export default async function handler(req, res) {
       headers.Authorization = req.headers.authorization;
     }
 
-    // Make the request to ZED API
-    const response = await fetch(apiUrl, {
-      method: req.method,
-      headers: headers,
-      body: req.method !== 'GET' && req.method !== 'HEAD' && req.body ? 
-        JSON.stringify(req.body) : undefined
-    });
+    // Try multiple endpoints with DNS fallback
+    const endpoints = [
+      `https://api.zedchampions.com/v1/${apiPath}`,
+      // IP fallback (if we can resolve the IP)
+      // `https://104.21.35.179/v1/${apiPath}`, // Example IP, would need actual
+      // Alternative: use a different proxy or CDN endpoint
+    ];
 
-    // Get response data
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-      const data = await response.json();
-      return res.status(response.status).json(data);
-    } else {
-      const text = await response.text();
-      return res.status(response.status).send(text);
+    let lastError = null;
+    
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Attempting API call to: ${endpoint}`);
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
+        const response = await fetch(endpoint, {
+          method: req.method,
+          headers: {
+            ...headers,
+            // Add Host header for IP-based requests
+            ...(endpoint.includes('api.zedchampions.com') ? {} : { 'Host': 'api.zedchampions.com' })
+          },
+          body: req.method !== 'GET' && req.method !== 'HEAD' && req.body ? 
+            JSON.stringify(req.body) : undefined,
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+
+        // Get response data
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          console.log(`Success with endpoint: ${endpoint}`);
+          return res.status(response.status).json(data);
+        } else {
+          const text = await response.text();
+          console.log(`Success with endpoint: ${endpoint}`);
+          return res.status(response.status).send(text);
+        }
+      } catch (error) {
+        console.error(`Failed with endpoint ${endpoint}:`, error.message);
+        lastError = error;
+        continue; // Try next endpoint
+      }
     }
+
+    // If all endpoints failed, return error with diagnostic info
+    console.error('All API endpoints failed. Last error:', lastError);
+    return res.status(500).json({ 
+      error: lastError?.message || 'DNS Resolution Failed',
+      detail: "Unable to connect to ZED Champions API. This may be a temporary DNS issue.",
+      diagnostic: {
+        endpoints_tried: endpoints,
+        path: apiPath,
+        method: req.method,
+        has_auth: !!req.headers.authorization
+      }
+    });
   } catch (error) {
-    console.error('API proxy error:', error);
+    console.error('Outer API proxy error:', error);
     return res.status(500).json({ 
       error: error.message,
-      detail: "Error connecting to ZED Champions API"
+      detail: "Unexpected error in API proxy"
     });
   }
 }

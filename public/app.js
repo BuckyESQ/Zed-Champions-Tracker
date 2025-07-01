@@ -90,45 +90,97 @@ class ZedApiService {
       options.body = JSON.stringify(data);
     }
     
-    // Make the request
-    try {
-      console.log("Fetching from API:", url);
-      const response = await fetch(url, options);
-      
-      if (!response.ok) {
-        let errorMessage = `HTTP error: ${response.status}`;
-        try {
-          // Try to get more details from the error response
-          const errorData = await response.json();
-          if (errorData && errorData.error) {
-            errorMessage = `API error: ${errorData.error}`;
-          }
-        } catch (e) {
-          // If parsing fails, use the response text
-          try {
-            errorMessage = await response.text();
-          } catch (textError) {
-            // Fallback to status
-            errorMessage = `HTTP error: ${response.status}`;
-          }
-        }
-        throw new Error(errorMessage);
-      }
-      
-      // Get response as text first
-      const text = await response.text();
-      
-      // Try to parse as JSON
+    // Make the request with retries and better error handling
+    let lastError = null;
+    const maxRetries = 2;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        return text ? JSON.parse(text) : {};
-      } catch (e) {
-        console.error("Error parsing JSON:", e);
-        throw new Error(`Invalid JSON response: ${text.substring(0, 100)}...`);
+        console.log(`API attempt ${attempt}/${maxRetries}: ${url}`);
+        
+        const response = await fetch(url, options);
+        
+        if (!response.ok) {
+          let errorMessage = `HTTP error: ${response.status}`;
+          let errorData = null;
+          
+          try {
+            // Try to get more details from the error response
+            errorData = await response.json();
+            if (errorData && errorData.error) {
+              errorMessage = `API error: ${errorData.error}`;
+              
+              // Check for DNS-specific errors
+              if (errorData.error.includes('DNS') || 
+                  errorData.error.includes('getaddrinfo') || 
+                  errorData.error.includes('ENOTFOUND') ||
+                  errorData.diagnostic) {
+                
+                console.warn('DNS failure detected:', errorData);
+                
+                // Show user-friendly DNS error message
+                if (attempt === maxRetries) {
+                  throw new Error(`🌐 Connection Issue: Unable to reach ZED Champions API. This appears to be a temporary DNS issue on Vercel's end. Please try again in a few minutes, or check if ZED Champions API is accessible from your location.`);
+                }
+                
+                // Wait before retry
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                continue;
+              }
+            }
+          } catch (e) {
+            // If parsing fails, use the response text
+            try {
+              errorMessage = await response.text();
+            } catch (textError) {
+              // Fallback to status
+              errorMessage = `HTTP error: ${response.status}`;
+            }
+          }
+          
+          if (attempt === maxRetries) {
+            throw new Error(errorMessage);
+          }
+          continue;
+        }
+        
+        // Get response as text first
+        const text = await response.text();
+        
+        // Try to parse as JSON
+        try {
+          return text ? JSON.parse(text) : {};
+        } catch (e) {
+          console.error("Error parsing JSON:", e);
+          throw new Error(`Invalid JSON response: ${text.substring(0, 100)}...`);
+        }
+        
+      } catch (error) {
+        lastError = error;
+        
+        // Check for network-level DNS errors
+        if (error.message.includes('Failed to fetch') || 
+            error.message.includes('NetworkError') ||
+            error.message.includes('ERR_NAME_NOT_RESOLVED')) {
+          
+          console.warn(`Network error on attempt ${attempt}:`, error.message);
+          
+          if (attempt === maxRetries) {
+            throw new Error(`🌐 Network Issue: Cannot connect to the API. This might be a temporary DNS or network problem. Please check your internet connection and try again.`);
+          }
+          
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+          continue;
+        }
+        
+        // For other errors, don't retry
+        break;
       }
-    } catch (error) {
-      console.error(`API request failed: ${endpoint}`, error);
-      throw error;
     }
+    
+    console.error(`API request failed after ${maxRetries} attempts: ${endpoint}`, lastError);
+    throw lastError;
   }
   
   async testConnection() {
