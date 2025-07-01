@@ -1020,7 +1020,10 @@
         const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
         const ZED_API = 'https://api.zedchampions.com/v1';
         const PROXY_API = '/api/zed'; // Next.js API proxy
-        let useProxy = false; // Flag to switch between direct and proxy API calls
+        
+        // Use proxy by default on production domains (stablefields.com, vercel.app)
+        let useProxy = window.location.hostname.includes('stablefields.com') || 
+                      window.location.hostname.includes('vercel.app'); 
         
         // Enhanced API call function with automatic fallback
         async function callZedAPI(endpoint, options = {}) {

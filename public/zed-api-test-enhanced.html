@@ -217,7 +217,10 @@
         let racingHorses = [];
         let breedingHorses = [];
         let myStable = JSON.parse(localStorage.getItem('stablefields_horses') || '[]');
-        let useProxy = false; // Flag to switch between direct and proxy API calls
+        
+        // Use proxy by default on production domains (stablefields.com, vercel.app)
+        let useProxy = window.location.hostname.includes('stablefields.com') || 
+                      window.location.hostname.includes('vercel.app');
 
         function log(elementId, message, type = 'info') {
             const element = document.getElementById(elementId);
