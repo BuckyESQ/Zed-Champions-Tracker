@@ -3,6 +3,19 @@ export default async function handler(req, res) {
   const path = req.query.path || [];
   let apiPath = Array.isArray(path) ? path.join('/') : path;
   
+  // Add query string parameters if they exist
+  if (req.url && req.url.includes('?')) {
+    const urlParts = req.url.split('?');
+    if (urlParts[1]) {
+      const queryString = urlParts[1];
+      // Remove Next.js internal parameters and keep ZED API parameters
+      const cleanQuery = queryString.replace(/path=[^&]*/g, '').replace(/&&/g, '&').replace(/^&|&$/g, '');
+      if (cleanQuery) {
+        apiPath += (apiPath.includes('?') ? '&' : '?') + cleanQuery;
+      }
+    }
+  }
+  
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -41,6 +54,19 @@ export default async function handler(req, res) {
     console.log(`Proxying to ZED API: ${apiPath} (original: ${Array.isArray(path) ? path.join('/') : path})`);
     console.log(`Method: ${req.method}`);
     console.log(`Has Authorization: ${!!req.headers.authorization}`);
+    console.log(`Full URL: ${req.url}`);
+    
+    // Validate that we have an authorization header for protected endpoints
+    const protectedEndpoints = ['me', 'stable/racing', 'stable/breeding', 'horses'];
+    const isProtectedEndpoint = protectedEndpoints.some(endpoint => apiPath.startsWith(endpoint));
+    
+    if (isProtectedEndpoint && !req.headers.authorization) {
+      return res.status(401).json({
+        error: 'Authorization required',
+        detail: `The endpoint '${apiPath}' requires a Bearer token. Please provide an Authorization header.`,
+        required_header: 'Authorization: Bearer YOUR_TOKEN_HERE'
+      });
+    }
     
     // Headers for the ZED API request
     const headers = {

@@ -1301,6 +1301,51 @@
             document.getElementById('horse-modal').style.display = 'none';
         }
 
+        function addToStable() {
+            if (!currentHorseData || !currentHorseData.horse) {
+                showStatus('No horse data available to add', 'error', 'search-status');
+                return;
+            }
+            
+            const horse = currentHorseData.horse;
+            
+            // Check if horse is already in stable
+            const existingIndex = myStable.findIndex(h => h.id === horse.id);
+            
+            if (existingIndex !== -1) {
+                showStatus('Horse is already in your stable', 'warning', 'search-status');
+                return;
+            }
+            
+            // Add horse to stable
+            myStable.push({
+                id: horse.id,
+                name: horse.name,
+                bloodline: horse.bloodline,
+                gender: horse.gender,
+                breeding_counter: horse.breeding_counter || 0,
+                speed_rating: horse.speed_rating,
+                sprint_rating: horse.sprint_rating,
+                endurance_rating: horse.endurance_rating,
+                added_date: new Date().toISOString(),
+                source: 'manual_search'
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('stablefields_horses', JSON.stringify(myStable));
+            
+            showStatus(`${horse.name} has been added to your stable!`, 'success', 'search-status');
+            
+            // Refresh stable view if we're on that tab
+            const currentTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
+            if (currentTab === 'stable') {
+                loadStable();
+            }
+            
+            // Close modal
+            closeHorseModal();
+        }
+
         // Utility Functions
         function showStatus(message, type, containerId) {
             const container = document.getElementById(containerId);
