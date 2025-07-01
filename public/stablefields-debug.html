@@ -41,6 +41,7 @@
     
     <button onclick="testAddToStable()">Test addToStable Function</button>
     <button onclick="testAPIProxy()">Test API Proxy (No Auth)</button>
+    <button onclick="testImportEndpoints()">Test Import Endpoints</button>
     <button onclick="testZedSight()">Test ZedSight API</button>
     <button onclick="clearOutput()">Clear Output</button>
     
@@ -108,6 +109,39 @@
             }
         }
         
+        async function testImportEndpoints() {
+            try {
+                console.log('Testing import endpoints...');
+                
+                // Test racing endpoint
+                const racingResponse = await fetch('/api/zed/racing');
+                const racingData = await racingResponse.json();
+                
+                if (racingResponse.status === 401 || racingData.error === 'fetch failed') {
+                    showResult('✅ Racing endpoint reachable (expected auth error)', 'success');
+                } else if (racingResponse.status === 404) {
+                    showResult('❌ Racing endpoint returns 404', 'error');
+                } else {
+                    showResult('⚠️ Racing endpoint unexpected response: ' + racingResponse.status, 'warning');
+                }
+                
+                // Test breeding endpoint  
+                const breedingResponse = await fetch('/api/zed/breeding');
+                const breedingData = await breedingResponse.json();
+                
+                if (breedingResponse.status === 401 || breedingData.error === 'fetch failed') {
+                    showResult('✅ Breeding endpoint reachable (expected auth error)', 'success');
+                } else if (breedingResponse.status === 404) {
+                    showResult('❌ Breeding endpoint returns 404', 'error');
+                } else {
+                    showResult('⚠️ Breeding endpoint unexpected response: ' + breedingResponse.status, 'warning');
+                }
+                
+            } catch (error) {
+                showResult('❌ Error testing import endpoints: ' + error.message, 'error');
+            }
+        }
+        
         async function testAPIProxy() {
             try {
                 console.log('Testing API proxy without authentication...');
@@ -152,6 +186,7 @@
             console.log('🐞 StableFields Debug Tool loaded');
             setTimeout(testAddToStable, 1000);
             setTimeout(testAPIProxy, 2000);
+            setTimeout(testImportEndpoints, 3000);
         });
     </script>
 </body>
