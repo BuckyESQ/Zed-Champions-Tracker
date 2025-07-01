@@ -371,6 +371,227 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Bloodline badges */
+        .bloodline-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .bloodline-NAKAMOTO { background: #ff6b6b; color: #fff; }
+        .bloodline-FINNEY { background: #4ecdc4; color: #000; }
+        .bloodline-BUTERIN { background: #45b7d1; color: #fff; }
+        .bloodline-SZABO { background: #f9ca24; color: #000; }
+
+        /* Horse grid for search results */
+        .horse-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Success/Error messages */
+        .status-success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .status-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 2px solid #f44336;
+            color: #f44336;
+        }
+
+        /* Breeding Analytics Styles */
+        .breeding-prediction {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(253, 121, 168, 0.1));
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1rem 0;
+        }
+
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .prediction-score {
+            background: var(--gradient);
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .prediction-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .prediction-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .genetic-breakdown {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .genetic-breakdown h5 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Bloodline Compatibility Matrix */
+        .bloodline-matrix {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .compatibility-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .compatibility-table th,
+        .compatibility-table td {
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .bloodline-header {
+            background: var(--bg-card);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .bloodline-header.nakamoto { color: #ff6b6b; }
+        .bloodline-header.finney { color: #4ecdc4; }
+        .bloodline-header.buterin { color: #45b7d1; }
+        .bloodline-header.szabo { color: #f9ca24; }
+
+        .compatibility {
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 0.5rem;
+        }
+
+        .compatibility.excellent {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .compatibility.good {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+            border: 1px solid #FFC107;
+        }
+
+        .compatibility.average {
+            background: rgba(255, 152, 0, 0.2);
+            color: #FF9800;
+            border: 1px solid #FF9800;
+        }
+
+        /* Breeding Recommendations */
+        .breeding-recommendation {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .breeding-recommendation:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.2);
+        }
+
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-score {
+            background: var(--gradient);
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .horse-pair {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1rem;
+            align-items: center;
+            margin: 1rem 0;
+        }
+
+        .horse-info {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .horse-info .horse-name {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .plus-icon {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        /* Form elements */
+        .form-label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -955,9 +1176,6 @@
                 <button class="tab-btn active" data-tab="dashboard">
                     <i class="fas fa-chart-line"></i> Dashboard
                 </button>
-                <button class="tab-btn" data-tab="search">
-                    <i class="fas fa-search"></i> Horse Search
-                </button>
                 <button class="tab-btn" data-tab="stable">
                     <i class="fas fa-home"></i> My Stable
                 </button>
@@ -967,8 +1185,9 @@
                 <button class="tab-btn" data-tab="breeding">
                     <i class="fas fa-heart"></i> Breeding
                 </button>
-                <button class="tab-btn" data-tab="settings">
-                    <i class="fas fa-cog"></i> Settings
+                <button class="tab-btn" onclick="window.location.href='/search-import.html'" style="background: var(--gradient); color: white; position: relative;">
+                    <i class="fas fa-magic"></i> Import Wizard
+                    <span style="position: absolute; top: -5px; right: -5px; background: #ff4757; color: white; border-radius: 50%; width: 12px; height: 12px; font-size: 8px; display: flex; align-items: center; justify-content: center;">!</span>
                 </button>
             </nav>
         </div>
@@ -1014,81 +1233,6 @@
             </div>
         </div>
 
-        <!-- Horse Search Tab -->
-        <div id="search" class="tab-content">
-            <!-- Search & Import Section -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-search"></i>
-                        Search & Import Horses
-                    </h2>
-                    <div class="feature-highlight">NEW</div>
-                </div>
-                
-                <div class="search-section">
-                    <input type="text" id="horse-search-input" class="search-input" 
-                           placeholder="Enter horse name to search..." maxlength="50"
-                           onkeypress="if(event.key==='Enter') searchHorses()">
-                    <button id="search-btn" class="btn" onclick="searchHorses()">
-                        <i class="fas fa-search"></i> Search
-                    </button>
-                </div>
-
-                <div class="info-banner">
-                    <i class="fas fa-info-circle"></i>
-                    <p><strong>New Import System:</strong> Search for your horses by name, select them visually, and import all data to your local stable. No Bearer tokens required!</p>
-                </div>
-
-                <!-- Search Results -->
-                <div id="search-results" style="display: none;">
-                    <div class="section-header">
-                        <h3><i class="fas fa-list"></i> Search Results</h3>
-                        <span id="results-count" class="badge">0 horses found</span>
-                    </div>
-                    
-                    <div id="horses-grid" class="horses-grid">
-                        <!-- Search results will appear here -->
-                    </div>
-                    
-                    <div class="import-controls" id="import-controls" style="display: none;">
-                        <div class="selection-summary">
-                            <span id="selected-count">0</span> horses selected
-                        </div>
-                        <button id="import-btn" class="btn btn-success" onclick="importSelectedHorses()">
-                            <i class="fas fa-download"></i> Import Selected Horses
-                        </button>
-                        <button class="btn btn-secondary" onclick="selectAllHorses()">
-                            <i class="fas fa-check-square"></i> Select All
-                        </button>
-                        <button class="btn btn-secondary" onclick="clearSelection()">
-                            <i class="fas fa-times"></i> Clear Selection
-                        </button>
-                    </div>
-                    
-                    <!-- Import Progress -->
-                    <div id="import-progress" class="progress-container" style="display: none;">
-                        <div class="progress-bar">
-                            <div id="progress-fill" class="progress-fill"></div>
-                        </div>
-                        <p class="progress-text">Importing horses to your stable...</p>
-                    </div>
-                    
-                    <!-- Import Complete -->
-                    <div id="import-complete" class="success-message" style="display: none;">
-                        <i class="fas fa-check-circle"></i>
-                        <h3>Import Complete!</h3>
-                        <p>Successfully imported <span id="imported-count">0</span> horses to your stable.</p>
-                        <button class="btn" onclick="switchTab('stable')">
-                            <i class="fas fa-home"></i> View My Stable
-                        </button>
-                    </div>
-                </div>
-
-                <div id="search-status" class="status-message" style="display: none;"></div>
-            </div>
-        </div>
-
         <!-- My Stable Tab -->
         <div id="stable" class="tab-content">
             <div class="card">
@@ -1098,8 +1242,8 @@
                         My Stable (<span id="stable-count">0</span> horses)
                     </h2>
                     <div class="header-actions">
-                        <button class="btn btn-secondary" onclick="switchTab('search')">
-                            <i class="fas fa-search"></i> Import More Horses
+                        <button class="btn" onclick="window.location.href='/search-import.html'" style="background: var(--gradient);">
+                            <i class="fas fa-magic"></i> Import Wizard
                         </button>
                         <button class="btn btn-secondary" onclick="exportStableData()">
                             <i class="fas fa-download"></i> Export Data
@@ -1314,70 +1458,191 @@
 
         <!-- Breeding Tab -->
         <div id="breeding" class="tab-content">
+            <!-- Breeding Overview -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">
                         <i class="fas fa-heart"></i>
-                        Breeding Management
+                        Breeding Analytics & Predictions
                     </h2>
+                    <div class="feature-highlight">AI-POWERED</div>
                 </div>
                 
-                <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
-                    Breeding management features coming soon...
-                </p>
-            </div>
-        </div>
+                <div class="info-banner">
+                    <i class="fas fa-dna"></i>
+                    <p><strong>Advanced Breeding Calculator:</strong> Find the perfect sire and dam combinations to maximize your chances of producing a 5-star foal!</p>
+                </div>
 
-        <!-- Settings Tab -->
-        <div id="settings" class="tab-content">
+                <!-- Breeding Stats Overview -->
+                <div class="stats-grid" style="margin-bottom: 2rem;">
+                    <div class="stat-card">
+                        <span class="stat-value" id="breeding-candidates">0</span>
+                        <div class="stat-label">Breeding Candidates</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="optimal-pairs">0</span>
+                        <div class="stat-label">Optimal Pairs</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="five-star-potential">0%</span>
+                        <div class="stat-label">5-Star Potential</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="avg-rating-potential">0</span>
+                        <div class="stat-label">Avg Rating Potential</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breeding Pair Calculator -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-cog"></i>
-                        Settings
-                    </h2>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">ZED Champions API Token</label>
-                    <input type="password" id="api-token" class="form-input" 
-                           placeholder="Enter your API token for direct import">
-                    <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
-                        Get your API token from ZED Champions dashboard to import horses directly.
-                    </small>
+                    <h3 class="card-title">
+                        <i class="fas fa-calculator"></i>
+                        Breeding Pair Calculator
+                    </h3>
+                    <button class="btn" onclick="analyzeAllPairs()">
+                        <i class="fas fa-magic"></i> Analyze All Combinations
+                    </button>
                 </div>
 
-                <div class="form-group">
-                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Import Options</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <button class="btn" onclick="importRacingHorses()">
-                            <i class="fas fa-horse"></i> Import Racing Horses
-                        </button>
-                        <button class="btn" onclick="importBreedingHorses()">
-                            <i class="fas fa-heart"></i> Import Breeding Horses
-                        </button>
-                        <button class="btn" onclick="importAllHorses()">
-                            <i class="fas fa-download"></i> Import All Horses
+                <!-- Manual Selection -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; margin-bottom: 2rem;">
+                    <div>
+                        <label class="form-label">Select Sire (Male)</label>
+                        <select id="sire-select" class="form-input" onchange="calculateBreedingPotential()">
+                            <option value="">Choose a sire...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Select Dam (Female)</label>
+                        <select id="dam-select" class="form-input" onchange="calculateBreedingPotential()">
+                            <option value="">Choose a dam...</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: end;">
+                        <button class="btn" onclick="calculateBreedingPotential()">
+                            <i class="fas fa-heart"></i> Calculate
                         </button>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Settings</h4>
-                    <button class="btn" onclick="saveSettings()">
-                        <i class="fas fa-save"></i> Save Settings
-                    </button>
-                    <button class="btn btn-secondary" onclick="testConnection()">
-                        <i class="fas fa-plug"></i> Test Connection
-                    </button>
-                    <button class="btn btn-danger" onclick="clearAllData()">
-                        <i class="fas fa-trash"></i> Clear All Data
-                    </button>
+                <!-- Breeding Result -->
+                <div id="breeding-result" style="display: none;">
+                    <div class="breeding-prediction">
+                        <div class="prediction-header">
+                            <h4>🧬 Breeding Prediction</h4>
+                            <div id="prediction-score" class="prediction-score">0%</div>
+                        </div>
+                        
+                        <div class="prediction-details">
+                            <div class="prediction-stats">
+                                <div class="stat">
+                                    <span class="stat-label">5-Star Chance:</span>
+                                    <span id="five-star-chance" class="stat-value">0%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Expected Rating:</span>
+                                    <span id="expected-rating" class="stat-value">0</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Bloodline Match:</span>
+                                    <span id="bloodline-compatibility" class="stat-value">Good</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Generation Factor:</span>
+                                    <span id="generation-factor" class="stat-value">1.0x</span>
+                                </div>
+                            </div>
+                            
+                            <div class="genetic-breakdown">
+                                <h5>🧬 Genetic Analysis</h5>
+                                <div id="genetic-details"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div id="settings-status" class="status-message" style="display: none;"></div>
+            <!-- Top Breeding Recommendations -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-trophy"></i>
+                        Top Breeding Recommendations
+                    </h3>
+                    <div class="feature-highlight">SMART AI</div>
+                </div>
+                
+                <div id="breeding-recommendations">
+                    <div class="empty-state">
+                        <i class="fas fa-search" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                        <p>Click "Analyze All Combinations" to see your best breeding opportunities!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bloodline Compatibility Matrix -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-table"></i>
+                        Bloodline Compatibility Matrix
+                    </h3>
+                </div>
+                
+                <div class="bloodline-matrix">
+                    <table class="compatibility-table">
+                        <thead>
+                            <tr>
+                                <th>Sire \ Dam</th>
+                                <th class="bloodline-header nakamoto">NAKAMOTO</th>
+                                <th class="bloodline-header finney">FINNEY</th>
+                                <th class="bloodline-header buterin">BUTERIN</th>
+                                <th class="bloodline-header szabo">SZABO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="bloodline-header nakamoto">NAKAMOTO</th>
+                                <td class="compatibility excellent">95%</td>
+                                <td class="compatibility good">88%</td>
+                                <td class="compatibility good">85%</td>
+                                <td class="compatibility average">75%</td>
+                            </tr>
+                            <tr>
+                                <th class="bloodline-header finney">FINNEY</th>
+                                <td class="compatibility good">88%</td>
+                                <td class="compatibility excellent">96%</td>
+                                <td class="compatibility good">90%</td>
+                                <td class="compatibility good">82%</td>
+                            </tr>
+                            <tr>
+                                <th class="bloodline-header buterin">BUTERIN</th>
+                                <td class="compatibility good">85%</td>
+                                <td class="compatibility good">90%</td>
+                                <td class="compatibility excellent">94%</td>
+                                <td class="compatibility good">87%</td>
+                            </tr>
+                            <tr>
+                                <th class="bloodline-header szabo">SZABO</th>
+                                <td class="compatibility average">75%</td>
+                                <td class="compatibility good">82%</td>
+                                <td class="compatibility good">87%</td>
+                                <td class="compatibility excellent">93%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 1rem; display: flex; gap: 1rem; align-items: center; font-size: 0.9rem;">
+                    <span><span class="compatibility excellent" style="padding: 0.25rem 0.5rem; border-radius: 4px;">Excellent (90%+)</span></span>
+                    <span><span class="compatibility good" style="padding: 0.25rem 0.5rem; border-radius: 4px;">Good (80-89%)</span></span>
+                    <span><span class="compatibility average" style="padding: 0.25rem 0.5rem; border-radius: 4px;">Average (70-79%)</span></span>
+                </div>
             </div>
         </div>
+
     </main>
 
     <!-- Horse Details Modal -->
@@ -1497,6 +1762,7 @@
             if (tabId === 'dashboard') loadDashboard();
             if (tabId === 'stable') loadStable();
             if (tabId === 'analysis') initializeAnalysisTab();
+            if (tabId === 'breeding') initializeBreedingTab();
         }
 
         // Search & Import Functions
@@ -2829,7 +3095,580 @@
             if (error.message) {
                 return error.message;
             }
-            return 'Network error or invalid response';
+        }
+        
+        // BREEDING ANALYTICS FUNCTIONS 🧬
+        function initializeBreedingTab() {
+            const stableHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+            populateBreedingSelectors(stableHorses);
+            updateBreedingStats(stableHorses);
+        }
+        
+        function populateBreedingSelectors(horses) {
+            const sireSelect = document.getElementById('sire-select');
+            const damSelect = document.getElementById('dam-select');
+            
+            // Clear existing options
+            sireSelect.innerHTML = '<option value="">Choose a sire...</option>';
+            damSelect.innerHTML = '<option value="">Choose a dam...</option>';
+            
+            horses.forEach((horse, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${horse.name} (${horse.bloodline}, Gen ${horse.generation})`;
+                
+                if (horse.gender === 'M') {
+                    sireSelect.appendChild(option.cloneNode(true));
+                } else if (horse.gender === 'F') {
+                    damSelect.appendChild(option.cloneNode(true));
+                }
+            });
+        }
+        
+        function updateBreedingStats(horses) {
+            const males = horses.filter(h => h.gender === 'M');
+            const females = horses.filter(h => h.gender === 'F');
+            const breedingCandidates = males.length + females.length;
+            const optimalPairs = Math.min(males.length, females.length);
+            
+            document.getElementById('breeding-candidates').textContent = breedingCandidates;
+            document.getElementById('optimal-pairs').textContent = optimalPairs;
+            
+            // Calculate potential ratings
+            if (males.length > 0 && females.length > 0) {
+                const avgMaleRating = males.reduce((sum, h) => sum + (h.complete_rating || 0), 0) / males.length;
+                const avgFemaleRating = females.reduce((sum, h) => sum + (h.complete_rating || 0), 0) / females.length;
+                const avgPotential = Math.round((avgMaleRating + avgFemaleRating) / 2);
+                
+                document.getElementById('avg-rating-potential').textContent = avgPotential;
+                document.getElementById('five-star-potential').textContent = 
+                    avgPotential >= 95 ? '85%' : avgPotential >= 90 ? '65%' : avgPotential >= 85 ? '45%' : '25%';
+            }
+        }
+        
+        function calculateBreedingPotential() {
+            const stableHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const sireIndex = document.getElementById('sire-select').value;
+            const damIndex = document.getElementById('dam-select').value;
+            
+            if (!sireIndex || !damIndex) {
+                document.getElementById('breeding-result').style.display = 'none';
+                return;
+            }
+            
+            const sire = stableHorses[sireIndex];
+            const dam = stableHorses[damIndex];
+            
+            const prediction = calculateBreedingScore(sire, dam);
+            displayBreedingPrediction(sire, dam, prediction);
+        }
+        
+        function calculateBreedingScore(sire, dam) {
+            // Advanced breeding algorithm
+            const sireRating = sire.complete_rating || 0;
+            const damRating = dam.complete_rating || 0;
+            
+            // Base score from parent ratings
+            let baseScore = (sireRating + damRating) / 2;
+            
+            // Bloodline compatibility bonus
+            const bloodlineBonus = getBloodlineCompatibility(sire.bloodline, dam.bloodline);
+            
+            // Generation factor (lower generations are better)
+            const avgGeneration = (sire.generation + dam.generation) / 2;
+            const generationFactor = Math.max(0.5, 1 - (avgGeneration - 1) * 0.05);
+            
+            // Racing performance bonus
+            const sirePerformance = (sire.win_percentage || 0) / 100;
+            const damPerformance = (dam.win_percentage || 0) / 100;
+            const performanceBonus = (sirePerformance + damPerformance) * 5;
+            
+            // Calculate final score
+            const finalScore = (baseScore + bloodlineBonus + performanceBonus) * generationFactor;
+            
+            // Calculate 5-star probability
+            const fiveStarChance = Math.min(95, Math.max(5, (finalScore - 80) * 4));
+            
+            return {
+                score: Math.round(finalScore),
+                fiveStarChance: Math.round(fiveStarChance),
+                bloodlineBonus,
+                generationFactor,
+                performanceBonus: Math.round(performanceBonus),
+                compatibility: getBloodlineCompatibilityText(sire.bloodline, dam.bloodline)
+            };
+        }
+        
+        function getBloodlineCompatibility(sireBloodline, damBloodline) {
+            const compatibilityMatrix = {
+                'NAKAMOTO': { 'NAKAMOTO': 8, 'FINNEY': 6, 'BUTERIN': 5, 'SZABO': 3 },
+                'FINNEY': { 'NAKAMOTO': 6, 'FINNEY': 9, 'BUTERIN': 7, 'SZABO': 4 },
+                'BUTERIN': { 'NAKAMOTO': 5, 'FINNEY': 7, 'BUTERIN': 8, 'SZABO': 6 },
+                'SZABO': { 'NAKAMOTO': 3, 'FINNEY': 4, 'BUTERIN': 6, 'SZABO': 7 }
+            };
+            
+            return compatibilityMatrix[sireBloodline]?.[damBloodline] || 5;
+        }
+        
+        function getBloodlineCompatibilityText(sireBloodline, damBloodline) {
+            const score = getBloodlineCompatibility(sireBloodline, damBloodline);
+            if (score >= 8) return 'Excellent';
+            if (score >= 6) return 'Good';
+            if (score >= 4) return 'Average';
+            return 'Poor';
+        }
+        
+        function displayBreedingPrediction(sire, dam, prediction) {
+            document.getElementById('breeding-result').style.display = 'block';
+            
+            document.getElementById('prediction-score').textContent = prediction.score + '%';
+            document.getElementById('five-star-chance').textContent = prediction.fiveStarChance + '%';
+            document.getElementById('expected-rating').textContent = Math.round((sire.complete_rating + dam.complete_rating) / 2);
+            document.getElementById('bloodline-compatibility').textContent = prediction.compatibility;
+            document.getElementById('generation-factor').textContent = prediction.generationFactor.toFixed(2) + 'x';
+            
+            // Genetic details
+            const geneticDetails = document.getElementById('genetic-details');
+            geneticDetails.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div>
+                        <strong>Sire Contribution:</strong><br>
+                        ${sire.name} (${sire.bloodline})<br>
+                        Rating: ${sire.complete_rating || 'N/A'}<br>
+                        Win Rate: ${Math.round(sire.win_percentage || 0)}%
+                    </div>
+                    <div>
+                        <strong>Dam Contribution:</strong><br>
+                        ${dam.name} (${dam.bloodline})<br>
+                        Rating: ${dam.complete_rating || 'N/A'}<br>
+                        Win Rate: ${Math.round(dam.win_percentage || 0)}%
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 212, 170, 0.1); border-radius: 6px;">
+                    <strong>💡 Breeding Tip:</strong> 
+                    ${prediction.fiveStarChance > 70 ? 'Excellent pairing! High chance of exceptional foal.' :
+                      prediction.fiveStarChance > 50 ? 'Good pairing with solid potential.' :
+                      prediction.fiveStarChance > 30 ? 'Average pairing - consider other options.' :
+                      'Low potential pairing - look for better matches.'}
+                </div>
+            `;
+        }
+        
+        function analyzeAllPairs() {
+            const stableHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const males = stableHorses.filter(h => h.gender === 'M');
+            const females = stableHorses.filter(h => h.gender === 'F');
+            
+            if (males.length === 0 || females.length === 0) {
+                showError('You need both male and female horses to analyze breeding pairs.');
+                return;
+            }
+            
+            const recommendations = [];
+            
+            males.forEach(sire => {
+                females.forEach(dam => {
+                    const prediction = calculateBreedingScore(sire, dam);
+                    recommendations.push({
+                        sire,
+                        dam,
+                        prediction,
+                        score: prediction.score
+                    });
+                });
+            });
+            
+            // Sort by score (best first)
+            recommendations.sort((a, b) => b.score - a.score);
+            
+            displayBreedingRecommendations(recommendations.slice(0, 10)); // Top 10
+        }
+        
+        function displayBreedingRecommendations(recommendations) {
+            const container = document.getElementById('breeding-recommendations');
+            
+            if (recommendations.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No breeding recommendations available.</p></div>';
+                return;
+            }
+            
+            container.innerHTML = recommendations.map((rec, index) => `
+                <div class="breeding-recommendation">
+                    <div class="recommendation-header">
+                        <h4>#${index + 1} Best Pairing</h4>
+                        <div class="recommendation-score">${rec.score}% Potential</div>
+                    </div>
+                    
+                    <div class="horse-pair">
+                        <div class="horse-info">
+                            <div class="horse-name">${rec.sire.name}</div>
+                            <div style="color: var(--text-secondary);">♂ ${rec.sire.bloodline} (Gen ${rec.sire.generation})</div>
+                            <div style="color: var(--primary);">Rating: ${rec.sire.complete_rating || 'N/A'}</div>
+                        </div>
+                        
+                        <div class="plus-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        
+                        <div class="horse-info">
+                            <div class="horse-name">${rec.dam.name}</div>
+                            <div style="color: var(--text-secondary);">♀ ${rec.dam.bloodline} (Gen ${rec.dam.generation})</div>
+                            <div style="color: var(--primary);">Rating: ${rec.dam.complete_rating || 'N/A'}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <div style="text-align: center;">
+                            <div style="color: var(--success); font-weight: 600;">${rec.prediction.fiveStarChance}%</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">5-Star Chance</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: var(--primary); font-weight: 600;">${rec.prediction.compatibility}</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Compatibility</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: var(--accent); font-weight: 600;">${rec.prediction.generationFactor.toFixed(2)}x</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Gen Factor</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // NEW ZEDSIGHT SEARCH & IMPORT FUNCTIONALITY 🚀
+        
+        // Enhanced search horses function
+        async function searchHorses() {
+            const searchTerm = document.getElementById('horse-search-input').value.trim();
+            
+            if (!searchTerm) {
+                showError('Please enter a horse name to search for.');
+                return;
+            }
+
+            const searchBtn = document.querySelector('button[onclick="searchHorse()"]');
+            const originalText = searchBtn.innerHTML;
+            
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+            
+            const resultsDiv = document.getElementById('horse-results');
+            resultsDiv.innerHTML = '<div class="spinner"></div>';
+
+            try {
+                console.log(`🔍 Searching for horses: ${searchTerm}`);
+                
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(searchTerm)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Search failed with status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success && data.horses && data.horses.length > 0) {
+                    console.log(`✅ Found ${data.horses.length} horses`);
+                    await displaySearchResults(data.horses, searchTerm);
+                } else {
+                    resultsDiv.innerHTML = `<div class="status-message status-warning">No horses found with the name "${searchTerm}". Try a different name.</div>`;
+                }
+
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsDiv.innerHTML = `<div class="status-message status-error">Search failed: ${error.message}</div>`;
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = originalText;
+            }
+        }
+        
+        async function displaySearchResults(horses, searchTerm) {
+            const resultsDiv = document.getElementById('horse-results');
+            
+            resultsDiv.innerHTML = `
+                <div class="card-header" style="margin-bottom: 1rem;">
+                    <h3 style="color: var(--primary);">🔍 Found ${horses.length} horses matching "${searchTerm}"</h3>
+                    <button class="btn" onclick="importAllFoundHorses()" id="import-all-btn">
+                        <i class="fas fa-download"></i> Import All to Stable
+                    </button>
+                </div>
+                <div class="horse-grid" id="search-horse-grid"></div>
+            `;
+            
+            const horseGrid = document.getElementById('search-horse-grid');
+            
+            for (let i = 0; i < horses.length; i++) {
+                const horse = horses[i];
+                
+                // Get detailed data
+                try {
+                    const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
+                    if (detailResponse.ok) {
+                        const detailData = await detailResponse.json();
+                        horse.details = detailData;
+                    }
+                } catch (error) {
+                    console.warn(`Could not get details for ${horse.name}`);
+                }
+                
+                const horseCard = createSearchHorseCard(horse, i);
+                horseGrid.appendChild(horseCard);
+            }
+            
+            // Store for import
+            window.searchResults = horses;
+        }
+        
+        function createSearchHorseCard(horse, index) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.cursor = 'pointer';
+            card.style.transition = 'all 0.3s ease';
+            
+            const details = horse.details;
+            const hasDetails = details && details.success;
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <h4 style="color: var(--primary); margin: 0;">${horse.name}</h4>
+                    <button class="btn btn-secondary" onclick="event.stopPropagation(); importSingleHorse(${index})">
+                        <i class="fas fa-plus"></i> Import
+                    </button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <strong>Bloodline:</strong> <span class="bloodline-badge bloodline-${horse.bloodline}">${horse.bloodline}</span>
+                    </div>
+                    <div><strong>Generation:</strong> ${horse.generation}</div>
+                    <div><strong>Gender:</strong> ${horse.gender}</div>
+                    <div><strong>Rating:</strong> ${horse.complete_rating || 'N/A'}</div>
+                </div>
+                
+                ${hasDetails ? `
+                    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                        <div class="stat-card">
+                            <span class="stat-value">${details.total_races || 0}</span>
+                            <div class="stat-label">Total Races</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value">${Math.round(details.win_percentage || 0)}%</span>
+                            <div class="stat-label">Win Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value">${details.best_finish_time ? details.best_finish_time.toFixed(2) + 's' : 'N/A'}</span>
+                            <div class="stat-label">Best Time</div>
+                        </div>
+                    </div>
+                ` : `<div style="color: var(--text-secondary); font-style: italic; text-align: center; padding: 1rem;">Click to view details</div>`}
+            `;
+            
+            card.onclick = () => showHorseDetails(horse);
+            
+            return card;
+        }
+        
+        async function importSingleHorse(index) {
+            const horse = window.searchResults[index];
+            await importHorseToStable(horse);
+            showSuccess(`${horse.name} imported to your stable!`);
+            loadStable(); // Refresh stable view
+        }
+        
+        async function importAllFoundHorses() {
+            if (!window.searchResults || window.searchResults.length === 0) return;
+            
+            const importBtn = document.getElementById('import-all-btn');
+            const originalText = importBtn.innerHTML;
+            importBtn.disabled = true;
+            importBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Importing...';
+            
+            let importedCount = 0;
+            
+            for (const horse of window.searchResults) {
+                await importHorseToStable(horse);
+                importedCount++;
+            }
+            
+            importBtn.disabled = false;
+            importBtn.innerHTML = originalText;
+            
+            showSuccess(`Successfully imported ${importedCount} horses to your stable!`);
+            loadStable(); // Refresh stable view
+        }
+        
+        async function importHorseToStable(horse) {
+            let stableHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+            
+            // Check if horse already exists
+            const existsIndex = stableHorses.findIndex(h => h.id === horse.id);
+            
+            const stableHorse = {
+                id: horse.id,
+                name: horse.name,
+                bloodline: horse.bloodline,
+                gender: horse.gender,
+                generation: horse.generation,
+                speed_rating: horse.speed_rating,
+                sprint_rating: horse.sprint_rating,
+                endurance_rating: horse.endurance_rating,
+                complete_rating: horse.complete_rating,
+                type: 'racing',
+                imported_at: new Date().toISOString(),
+                source: 'zedsight_search',
+                
+                // Include detailed data if available
+                ...(horse.details && horse.details.success ? {
+                    total_races: horse.details.total_races,
+                    win_percentage: horse.details.win_percentage,
+                    avg_finish_time: horse.details.avg_finish_time,
+                    best_finish_time: horse.details.best_finish_time,
+                    avg_position: horse.details.avg_position,
+                    races: horse.details.races,
+                    augment_combinations: horse.details.augment_combinations,
+                    total_earnings: horse.details.total_earnings || 0
+                } : {})
+            };
+            
+            if (existsIndex >= 0) {
+                stableHorses[existsIndex] = { ...stableHorses[existsIndex], ...stableHorse };
+            } else {
+                stableHorses.push(stableHorse);
+            }
+            
+            localStorage.setItem('horses', JSON.stringify(stableHorses));
+            localStorage.setItem('stableHorses', JSON.stringify(stableHorses));
+        }
+        
+        // Enhanced stable loading
+        function loadStable() {
+            console.log('Loading stable from localStorage...');
+            const stableHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const tbody = document.getElementById('stable-tbody');
+            
+            if (stableHorses.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                            <div style="font-size: 1.2rem; margin-bottom: 1rem;">🐎 No horses in your stable yet!</div>
+                            <div style="margin-bottom: 1rem;">Use the Import Wizard to find and import your horses.</div>
+                            <button class="btn" onclick="window.location.href='/search-import.html'" style="margin-top: 1rem;">
+                                <i class="fas fa-magic"></i> Open Import Wizard
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            stableHorses.forEach((horse, index) => {
+                const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                row.onclick = () => showHorseDetails(horse);
+                
+                row.innerHTML = `
+                    <td>
+                        <div style="font-weight: 600; color: var(--primary);">${horse.name}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Gen ${horse.generation}</div>
+                    </td>
+                    <td>
+                        <span class="bloodline-badge bloodline-${horse.bloodline}">${horse.bloodline}</span>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600;">${horse.complete_rating || 'N/A'}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Complete</div>
+                    </td>
+                    <td>${horse.total_races || 0}</td>
+                    <td>
+                        <div>${Math.round((horse.win_percentage || 0))}%</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Win Rate</div>
+                    </td>
+                    <td>
+                        <div style="color: var(--success);">$${(horse.total_earnings || 0).toLocaleString()}</div>
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); removeHorse('${horse.id}')" style="padding: 0.5rem;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            updateDashboardStats(stableHorses);
+        }
+        
+        function removeHorse(horseId) {
+            if (confirm('Are you sure you want to remove this horse from your stable?')) {
+                let stableHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+                stableHorses = stableHorses.filter(h => h.id !== horseId);
+                localStorage.setItem('horses', JSON.stringify(stableHorses));
+                loadStable();
+                showSuccess('Horse removed from stable successfully!');
+            }
+        }
+        
+        function updateDashboardStats(horses) {
+            document.getElementById('total-horses').textContent = horses.length;
+            document.getElementById('total-races').textContent = horses.reduce((sum, h) => sum + (h.total_races || 0), 0);
+            
+            const avgRatingElement = document.getElementById('avg-rating');
+            if (avgRatingElement) {
+                avgRatingElement.textContent = horses.length > 0 ? 
+                    Math.round(horses.reduce((sum, h) => sum + (h.complete_rating || 0), 0) / horses.length) : 0;
+            }
+            
+            const winRateElement = document.getElementById('win-rate');
+            if (winRateElement) {
+                winRateElement.textContent = horses.length > 0 ? 
+                    Math.round(horses.reduce((sum, h) => sum + (h.win_percentage || 0), 0) / horses.length) + '%' : '0%';
+            }
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'status-message status-success';
+            successDiv.textContent = message;
+            successDiv.style.position = 'fixed';
+            successDiv.style.top = '20px';
+            successDiv.style.right = '20px';
+            successDiv.style.zIndex = '10000';
+            successDiv.style.padding = '1rem 2rem';
+            successDiv.style.borderRadius = '8px';
+            successDiv.style.background = 'var(--success)';
+            successDiv.style.color = 'white';
+            successDiv.style.fontWeight = '600';
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+        
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'status-message status-error';
+            errorDiv.textContent = message;
+            errorDiv.style.position = 'fixed';
+            errorDiv.style.top = '20px';
+            errorDiv.style.right = '20px';
+            errorDiv.style.zIndex = '10000';
+            errorDiv.style.padding = '1rem 2rem';
+            errorDiv.style.borderRadius = '8px';
+            errorDiv.style.background = 'var(--danger)';
+            errorDiv.style.color = 'white';
+            errorDiv.style.fontWeight = '600';
+            document.body.appendChild(errorDiv);
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 4000);
+        }
+        
+        // Make sure searchHorse calls the new function
+        function searchHorse() {
+            searchHorses();
         }
         
         console.log('🚀 StableFields ZED Champions Tracker Pro ready!');
