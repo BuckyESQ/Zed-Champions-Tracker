@@ -1,6 +1,12 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
