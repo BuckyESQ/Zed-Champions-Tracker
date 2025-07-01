@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   // Extract path from request
   const path = req.query.path || [];
-  const apiPath = Array.isArray(path) ? path.join('/') : path;
+  let apiPath = Array.isArray(path) ? path.join('/') : path;
   
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -15,23 +15,24 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Clean up horse IDs from URLs
-    let cleanApiPath = apiPath;
-    
-    // Handle different horse ID formats
-    if (cleanApiPath.includes('horse/')) {
-      const parts = cleanApiPath.split('horse/');
-      const horseId = parts[parts.length - 1].split('/')[0].trim();
-      cleanApiPath = `horses/${horseId}`;
-    } else if (cleanApiPath.includes('horses/http')) {
-      const match = cleanApiPath.match(/horses\/.*\/horse\/([^\/]+)/i);
-      if (match && match[1]) {
-        cleanApiPath = `horses/${match[1]}`;
+    // Only clean up horse URLs if they have the specific malformed patterns
+    // Otherwise, pass through all other paths as-is
+    if (apiPath.includes('horses/http') || (apiPath.includes('horse/') && !apiPath.startsWith('horses/'))) {
+      // Handle malformed horse URLs
+      if (apiPath.includes('horse/')) {
+        const parts = apiPath.split('horse/');
+        const horseId = parts[parts.length - 1].split('/')[0].trim();
+        apiPath = `horses/${horseId}`;
+      } else if (apiPath.includes('horses/http')) {
+        const match = apiPath.match(/horses\/.*\/horse\/([^\/]+)/i);
+        if (match && match[1]) {
+          apiPath = `horses/${match[1]}`;
+        }
       }
     }
 
-    console.log(`Proxying to ZED API: ${cleanApiPath}`);
-    const apiUrl = `https://api.zedchampions.com/v1/${cleanApiPath}`;
+    console.log(`Proxying to ZED API: ${apiPath} (original: ${Array.isArray(path) ? path.join('/') : path})`);
+    const apiUrl = `https://api.zedchampions.com/v1/${apiPath}`;
     
     // Headers for the ZED API request
     const headers = {
