@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Function Test - StableFields</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+            margin: 5px;
+        }
+        #results {
+            white-space: pre-wrap;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Import Function Standalone Test</h1>
+        <p>This page tests the import functionality in isolation to identify any issues.</p>
+        
+        <div class="test-section">
+            <h3>API Token (for testing with auth)</h3>
+            <input type="password" id="test-token" placeholder="Enter ZED Champions API token (optional)">
+        </div>
+        
+        <div class="test-section">
+            <h3>Tests</h3>
+            <button onclick="testEndpointReachability()">Test Endpoint Reachability</button>
+            <button onclick="testWithAuth()">Test With Authentication</button>
+            <button onclick="testCallZedAPI()">Test callZedAPI Function</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Copy the exact callZedAPI function from the main app
+        const PROXY_API = '/api/zed';
+        const ZED_API = 'https://api.zedchampions.com/v1';
+        
+        // Check if we should use proxy (same logic as main app)
+        let useProxy = window.location.hostname.includes('stablefields.com') || 
+                      window.location.hostname.includes('vercel.app'); 
+                      
+        function log(message) {
+            const results = document.getElementById('results');
+            results.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            console.log(message);
+        }
+        
+        function clearResults() {
+            document.getElementById('results').textContent = '';
+        }
+        
+        async function callZedAPI(endpoint, options = {}) {
+            const baseUrl = useProxy ? PROXY_API : ZED_API;
+            const url = `${baseUrl}/${endpoint}`;
+            
+            try {
+                log(`🌐 API Call: ${useProxy ? 'proxy' : 'direct'} → ${endpoint}`);
+                log(`📍 Full URL: ${url}`);
+                
+                const protectedEndpoints = ['me', 'racing', 'breeding', 'horses'];
+                const requiresAuth = protectedEndpoints.some(protected => endpoint.startsWith(protected));
+                
+                if (requiresAuth && (!options.headers || !options.headers.Authorization)) {
+                    throw new Error('Authentication required: Please set your API token first');
+                }
+                
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                
+                log(`📊 Response Status: ${response.status} ${response.statusText}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+                throw error;
+            }
+        }
+        
+        async function testEndpointReachability() {
+            log('=== Testing Endpoint Reachability ===');
+            
+            const endpoints = ['racing', 'breeding', 'me'];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    log(`Testing ${endpoint} endpoint...`);
+                    
+                    const response = await fetch(`/api/zed/${endpoint}`);
+                    const data = await response.json();
+                    
+                    if (response.status === 401 || (data.error && data.error.includes('fetch failed'))) {
+                        log(`✅ ${endpoint}: Reachable (expected auth error)`);
+                    } else if (response.status === 404) {
+                        log(`❌ ${endpoint}: Returns 404 - PROBLEM!`);
+                    } else {
+                        log(`⚠️ ${endpoint}: Unexpected response ${response.status}`);
+                    }
+                } catch (error) {
+                    log(`❌ ${endpoint}: Network error - ${error.message}`);
+                }
+            }
+        }
+        
+        async function testWithAuth() {
+            const token = document.getElementById('test-token').value.trim();
+            
+            if (!token) {
+                log('❌ No token provided - cannot test authentication');
+                return;
+            }
+            
+            log('=== Testing With Authentication ===');
+            
+            try {
+                const data = await callZedAPI('racing', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                log('✅ Racing endpoint with auth: SUCCESS');
+                log(`📊 Response: ${JSON.stringify(data, null, 2)}`);
+                
+            } catch (error) {
+                log(`❌ Racing endpoint with auth failed: ${error.message}`);
+            }
+        }
+        
+        async function testCallZedAPI() {
+            log('=== Testing callZedAPI Function ===');
+            
+            try {
+                // Test without auth (should get auth error)
+                log('Testing racing endpoint without auth...');
+                await callZedAPI('racing');
+                log('❌ Expected auth error but got success - PROBLEM!');
+            } catch (error) {
+                if (error.message.includes('Authentication required')) {
+                    log('✅ Correctly rejected request without auth');
+                } else {
+                    log(`❌ Unexpected error: ${error.message}`);
+                }
+            }
+            
+            // Test proxy vs direct
+            log(`📍 Using proxy: ${useProxy}`);
+            log(`📍 Hostname: ${window.location.hostname}`);
+        }
+        
+        // Auto-run basic tests on load
+        window.onload = function() {
+            log('🚀 Import Function Standalone Test Started');
+            log(`📍 Current URL: ${window.location.href}`);
+            log(`📍 Using proxy: ${useProxy}`);
+            setTimeout(testEndpointReachability, 1000);
+        };
+    </script>
+</body>
+</html>
