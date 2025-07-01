@@ -727,6 +727,9 @@
                 // Also save to other storage keys for compatibility
                 localStorage.setItem('stableHorses', JSON.stringify(stableHorses));
                 
+                console.log(`💾 Saved ${stableHorses.length} horses to localStorage`);
+                console.log('Current localStorage horses:', JSON.parse(localStorage.getItem('horses') || '[]').map(h => h.name));
+                
                 // Show completion
                 showImportComplete(importedCount);
                 

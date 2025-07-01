@@ -1714,7 +1714,7 @@
         
         // Global State
         let currentHorseData = null;
-        let myStable = JSON.parse(localStorage.getItem('stablefields_horses') || '[]');
+        let myStable = JSON.parse(localStorage.getItem('horses') || '[]');
         let appSettings = JSON.parse(localStorage.getItem('stablefields_settings') || '{}');
 
         // Initialize Application
@@ -1733,6 +1733,11 @@
                 document.getElementById('horse-id-input').value = horseId;
                 searchHorse();
             }
+        });
+
+        // Refresh stable data when window gets focus (in case horses were imported in another tab)
+        window.addEventListener('focus', function() {
+            refreshStable();
         });
 
         // Tab Management
@@ -1760,7 +1765,9 @@
 
             // Load tab-specific data
             if (tabId === 'dashboard') loadDashboard();
-            if (tabId === 'stable') loadStable();
+            if (tabId === 'stable') {
+                refreshStable(); // Refresh data in case horses were imported externally
+            }
             if (tabId === 'analysis') initializeAnalysisTab();
             if (tabId === 'breeding') initializeBreedingTab();
         }
@@ -2060,6 +2067,7 @@
         // My Stable Functions
         function loadStable() {
             const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            console.log(`🏇 Loading stable with ${horses.length} horses:`, horses.map(h => h.name));
             const stableCount = document.getElementById('stable-count');
             const emptyState = document.getElementById('empty-stable');
             const stableStats = document.getElementById('stable-stats');
@@ -2465,7 +2473,7 @@
             });
             
             // Save to localStorage
-            localStorage.setItem('stablefields_horses', JSON.stringify(myStable));
+            localStorage.setItem('horses', JSON.stringify(myStable));
             
             showStatus(`${horse.name} has been added to your stable!`, 'success', 'search-status');
             
@@ -2729,7 +2737,8 @@
 
         function clearAllData() {
             if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-                localStorage.removeItem('stablefields_horses');
+                localStorage.removeItem('horses');
+                localStorage.removeItem('stableHorses');
                 localStorage.removeItem('stablefields_settings');
                 location.reload();
             }
@@ -2745,17 +2754,16 @@
         }
 
         // Stable Functions
-        function loadStable() {
-            // Implementation for loading stable data
-        }
-
-        function showAddHorseForm() {
-            // Implementation for showing add horse form
-        }
-
         // Save stable data to local storage
         function saveStable() {
-            localStorage.setItem('stablefields_horses', JSON.stringify(myStable));
+            localStorage.setItem('horses', JSON.stringify(myStable));
+        }
+
+        // Refresh stable data from local storage (for external imports)
+        function refreshStable() {
+            myStable = JSON.parse(localStorage.getItem('horses') || '[]');
+            console.log(`🔄 Refreshed stable with ${myStable.length} horses:`, myStable.map(h => h.name));
+            loadStable(); // Refresh the display
         }
 
         // Update dashboard statistics
