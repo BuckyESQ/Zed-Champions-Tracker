@@ -11,25 +11,5 @@
         { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
       ]
     }
-  ],
-  "functions": {
-    "pages/api/health.js": {
-      "memory": 128
-    },
-    "pages/api/public/dns-test.js": {
-      "memory": 128
-    },
-    "pages/api/zed/[...path].js": {
-      "memory": 256
-    },
-    "pages/api/test.js": {
-      "memory": 128
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/zed/:path*",
-      "destination": "/api/zed/:path*"
-    }
   ]
 }
