@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StableFields ZED Champions Tracker Pro</title>
+    <meta name="description" content="Advanced ZED Champions horse tracking and analysis tool for serious racers and breeders">
+    <link rel="icon" href="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2303dac6' stroke-width='2'%3E%3Cpolyline points='2,14 6,8 10,10 14,4'/%3E%3C/svg%3E">
+    
+    <!-- External Dependencies -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #00d4aa;
+            --primary-dark: #00b894;
+            --secondary: #6c5ce7;
+            --accent: #fd79a8;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #e84393;
+            --dark: #2d3436;
+            --light: #ddd;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #262626;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border: #404040;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            padding: 1rem 2rem;
+            border-bottom: 2px solid var(--border);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: var(--gradient);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 16px rgba(0, 212, 170, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Search Section */
+        .search-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #d63031);
+        }
+
+        /* Horse Results */
+        .horse-results {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .horse-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .horse-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .horse-info h4 {
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .horse-info p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 1rem 0;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .status-error {
+            background: rgba(232, 67, 147, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .status-warning {
+            background: rgba(253, 203, 110, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-left: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .search-section {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Horse Details Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        /* Enhanced Features */
+        .feature-highlight {
+            background: var(--gradient);
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        /* Analysis Tab Styles */
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-range {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 212, 170, 0.3);
+        }
+
+        .form-range::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 212, 170, 0.3);
+        }
+
+        .range-display {
+            display: inline-block;
+            margin-left: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--bg-card);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(0, 212, 170, 0.05);
+        }
+
+        .augment-combo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .augment-combo span {
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .augment-fire { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+        .augment-water { background: rgba(74, 144, 226, 0.2); color: #4a90e2; }
+        .augment-earth { background: rgba(139, 195, 74, 0.2); color: #8bc34a; }
+        .augment-wind { background: rgba(186, 104, 200, 0.2); color: #ba68c8; }
+        .augment-lightning { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            padding: 1rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .analytics-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .analytics-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .analytics-content {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .card-header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-horse-head"></i>
+                StableFields Pro
+                <span class="feature-highlight">BETA</span>
+            </div>
+            <nav class="nav-tabs">
+                <button class="tab-btn active" data-tab="dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </button>
+                <button class="tab-btn" data-tab="search">
+                    <i class="fas fa-search"></i> Horse Search
+                </button>
+                <button class="tab-btn" data-tab="stable">
+                    <i class="fas fa-home"></i> My Stable
+                </button>
+                <button class="tab-btn" data-tab="analysis">
+                    <i class="fas fa-chart-bar"></i> Analysis
+                </button>
+                <button class="tab-btn" data-tab="breeding">
+                    <i class="fas fa-heart"></i> Breeding
+                </button>
+                <button class="tab-btn" data-tab="settings">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Performance Dashboard
+                    </h2>
+                    <button class="btn btn-secondary" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value" id="total-horses">0</span>
+                        <div class="stat-label">Total Horses</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="total-races">0</span>
+                        <div class="stat-label">Total Races</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="win-rate">0%</span>
+                        <div class="stat-label">Win Rate</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="total-earnings">$0</span>
+                        <div class="stat-label">Total Earnings</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="performance-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Horse Search Tab -->
+        <div id="search" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-search"></i>
+                        Horse Search & Analysis
+                    </h2>
+                </div>
+                
+                <div class="search-section">
+                    <input type="text" id="horse-search-input" class="search-input" 
+                           placeholder="Search by horse name..." maxlength="50">
+                    <input type="text" id="horse-id-input" class="search-input" 
+                           placeholder="Or enter Horse ID..." maxlength="50">
+                    <button class="btn" onclick="searchHorse()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+
+                <div id="horse-results" class="horse-results"></div>
+
+                <div id="search-status" class="status-message" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- My Stable Tab -->
+        <div id="stable" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-home"></i>
+                        My Stable
+                    </h2>
+                    <button class="btn" onclick="showAddHorseForm()">
+                        <i class="fas fa-plus"></i> Add Horse
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table id="stable-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Bloodline</th>
+                                <th>Rating</th>
+                                <th>Races</th>
+                                <th>Wins</th>
+                                <th>Earnings</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stable-tbody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: var(--text-secondary);">
+                                    No horses in your stable yet. Add some horses to get started!
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Tab -->
+        <div id="analysis" class="tab-content">
+            <!-- Global Statistics Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-globe"></i>
+                        Global ZedSight Statistics
+                    </h2>
+                </div>
+                
+                <div id="global-stats-container">
+                    <!-- Global stats will be populated here -->
+                </div>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-filter"></i>
+                        Analysis Filters
+                    </h2>
+                </div>
+                
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label class="form-label">Bloodline</label>
+                        <select id="bloodline-filter" class="form-input">
+                            <option value="all">All Bloodlines</option>
+                            <option value="nakamoto">Nakamoto</option>
+                            <option value="szabo">Szabo</option>
+                            <option value="finney">Finney</option>
+                            <option value="buterin">Buterin</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Minimum Races</label>
+                        <input type="number" id="min-races-filter" class="form-input" 
+                               value="10" min="1" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Max Win Rate %</label>
+                        <input type="range" id="winrate-range" class="form-range" 
+                               min="0" max="100" value="100" 
+                               oninput="document.getElementById('winrate-display').textContent = this.value + '%'">
+                        <span id="winrate-display" class="range-display">100%</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="applyAugmentFilters()">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Results -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Augment Combination Analysis
+                    </h2>
+                    <div class="card-header-actions">
+                        <button class="btn btn-sm" onclick="loadGlobalAugmentAnalysis()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="analysis-results">
+                    <!-- Analysis results will be populated here -->
+                </div>
+                
+                <!-- Global Augment Combinations Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Augment Combination</th>
+                                <th>Races</th>
+                                <th>Win Rate</th>
+                                <th>Avg Finish</th>
+                                <th>Avg Odds</th>
+                                <th>Avg Field</th>
+                                <th>MM Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="global-augment-tbody">
+                            <!-- Table data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Field Size Analysis</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="field-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Time Trends</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="time-trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Analytics -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-analytics"></i>
+                        Performance Analytics
+                    </h2>
+                </div>
+                
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-title">Top Performing Combinations</div>
+                        <div id="top-combinations" class="analytics-content">
+                            <!-- Top combinations will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-title">Field Performance</div>
+                        <div id="field-performance" class="analytics-content">
+                            <!-- Field performance data will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-title">Recent Trends</div>
+                        <div id="recent-trends" class="analytics-content">
+                            <!-- Recent trends will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breeding Tab -->
+        <div id="breeding" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-heart"></i>
+                        Breeding Management
+                    </h2>
+                </div>
+                
+                <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                    Breeding management features coming soon...
+                </p>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </h2>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">ZED Champions API Token</label>
+                    <input type="password" id="api-token" class="form-input" 
+                           placeholder="Enter your API token for direct import">
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
+                        Get your API token from ZED Champions dashboard to import horses directly.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Import Options</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="btn" onclick="importRacingHorses()">
+                            <i class="fas fa-horse"></i> Import Racing Horses
+                        </button>
+                        <button class="btn" onclick="importBreedingHorses()">
+                            <i class="fas fa-heart"></i> Import Breeding Horses
+                        </button>
+                        <button class="btn" onclick="importAllHorses()">
+                            <i class="fas fa-download"></i> Import All Horses
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Settings</h4>
+                    <button class="btn" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                    <button class="btn btn-secondary" onclick="testConnection()">
+                        <i class="fas fa-plug"></i> Test Connection
+                    </button>
+                    <button class="btn btn-danger" onclick="clearAllData()">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
+                </div>
+
+                <div id="settings-status" class="status-message" style="display: none;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Horse Details Modal -->
+    <div id="horse-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-horse-name">Horse Details</h3>
+                <button class="close-btn" onclick="closeHorseModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="modal-horse-content">
+                <!-- Horse details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
+        const ZED_API = 'https://api.zedchampions.com/v1';
+        
+        // Global State
+        let currentHorseData = null;
+        let myStable = JSON.parse(localStorage.getItem('stablefields_horses') || '[]');
+        let appSettings = JSON.parse(localStorage.getItem('stablefields_settings') || '{}');
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏇 StableFields ZED Champions Tracker Pro loaded');
+            initializeTabs();
+            loadDashboard();
+            loadStable();
+            loadSettings();
+            
+            // Auto-load from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const horseId = urlParams.get('horse');
+            if (horseId) {
+                switchTab('search');
+                document.getElementById('horse-id-input').value = horseId;
+                searchHorse();
+            }
+        });
+
+        // Tab Management
+        function initializeTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+        }
+
+        function switchTab(tabId) {
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+
+            // Load tab-specific data
+            if (tabId === 'dashboard') loadDashboard();
+            if (tabId === 'stable') loadStable();
+            if (tabId === 'analysis') initializeAnalysisTab();
+        }
+
+        // Initialize Analysis Tab
+        function initializeAnalysisTab() {
+            showAnalysisLoading();
+            loadGlobalAugmentAnalysis();
+            loadGlobalStats();
+            loadFieldAverages();
+        }
+
+        // Horse Search Functions
+        async function searchHorse() {
+            const nameInput = document.getElementById('horse-search-input');
+            const idInput = document.getElementById('horse-id-input');
+            const resultsDiv = document.getElementById('horse-results');
+            const statusDiv = document.getElementById('search-status');
+            
+            const horseName = nameInput.value.trim();
+            const horseId = idInput.value.trim();
+            
+            if (!horseName && !horseId) {
+                showStatus('Please enter a horse name or ID', 'error', 'search-status');
+                return;
+            }
+
+            // Show loading
+            resultsDiv.innerHTML = '<div class="spinner"></div>';
+            resultsDiv.style.display = 'block';
+            statusDiv.style.display = 'none';
+
+            try {
+                // Use ZedSight API pattern
+                let searchUrl = `${ZEDSIGHT_API}/api/search-horse?`;
+                if (horseId) {
+                    searchUrl += `id=${encodeURIComponent(horseId)}`;
+                } else {
+                    searchUrl += `name=${encodeURIComponent(horseName)}`;
+                }
+
+                const response = await fetch(searchUrl);
+                const data = await response.json();
+
+                if (!data.success) {
+                    showStatus(data.message || 'Search failed', 'error', 'search-status');
+                    resultsDiv.style.display = 'none';
+                    return;
+                }
+
+                if (data.horses.length === 0) {
+                    showStatus('No horses found', 'warning', 'search-status');
+                    resultsDiv.style.display = 'none';
+                    return;
+                }
+
+                displaySearchResults(data.horses);
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                const errorMsg = handleApiError(error, 'searching for horses');
+                showStatus(errorMsg, 'error', 'search-status');
+                resultsDiv.style.display = 'none';
+            }
+        }
+
+        function displaySearchResults(horses) {
+            const resultsDiv = document.getElementById('horse-results');
+            
+            resultsDiv.innerHTML = horses.map(horse => `
+                <div class="horse-item" onclick="selectHorse('${horse.id}')">
+                    <div class="horse-info">
+                        <h4>${horse.name}</h4>
+                        <p>${horse.bloodline} • Gen ${horse.generation} • ${horse.gender}</p>
+                        <p>Rating: ${horse.rating || 'N/A'} • Races: ${horse.races || 0}</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-chevron-right" style="color: var(--primary);"></i>
+                    </div>
+                </div>
+            `).join('');
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        // Horse Selection and Details
+        async function selectHorse(horseId) {
+            try {
+                showStatus('Loading horse details...', 'warning', 'search-status');
+                
+                const response = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${encodeURIComponent(horseId)}`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    showStatus('Failed to load horse details', 'error', 'search-status');
+                    return;
+                }
+                
+                currentHorseData = data;
+                showHorseModal(data);
+                showStatus('Horse details loaded successfully', 'success', 'search-status');
+                
+            } catch (error) {
+                console.error('Error loading horse details:', error);
+                const errorMsg = handleApiError(error, 'loading horse details');
+                showStatus(errorMsg, 'error', 'search-status');
+            }
+        }
+
+        function showHorseModal(horseData) {
+            const modal = document.getElementById('horse-modal');
+            const nameEl = document.getElementById('modal-horse-name');
+            const contentEl = document.getElementById('modal-horse-content');
+            
+            nameEl.textContent = horseData.horse.name;
+            
+            // Build detailed horse information
+            const horse = horseData.horse;
+            const races = horseData.races || [];
+            
+            contentEl.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-value">${horse.rating || 'N/A'}</span>
+                        <div class="stat-label">Rating</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${races.length}</span>
+                        <div class="stat-label">Total Races</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${races.filter(r => r.position === 1).length}</span>
+                        <div class="stat-label">Wins</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${horse.generation}</span>
+                        <div class="stat-label">Generation</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h4>Horse Information</h4>
+                    <p><strong>Bloodline:</strong> ${horse.bloodline}</p>
+                    <p><strong>Gender:</strong> ${horse.gender}</p>
+                    <p><strong>Breeding Counter:</strong> ${horse.breeding_counter || 0}</p>
+                    <p><strong>Speed Rating:</strong> ${horse.speed_rating || 'N/A'}</p>
+                    <p><strong>Sprint Rating:</strong> ${horse.sprint_rating || 'N/A'}</p>
+                    <p><strong>Endurance Rating:</strong> ${horse.endurance_rating || 'N/A'}</p>
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    <button class="btn" onclick="addToStable()">
+                        <i class="fas fa-plus"></i> Add to My Stable
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportHorseData()">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                </div>
+                
+                ${races.length > 0 ? `
+                <div class="card" style="margin-top: 1rem;">
+                    <h4>Recent Races</h4>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Distance</th>
+                                    <th>Position</th>
+                                    <th>Prize</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${races.slice(0, 10).map(race => `
+                                    <tr>
+                                        <td>${new Date(race.date).toLocaleDateString()}</td>
+                                        <td>${race.distance}m</td>
+                                        <td>${race.position}</td>
+                                        <td>$${race.prize || 0}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeHorseModal() {
+            document.getElementById('horse-modal').style.display = 'none';
+        }
+
+        // Utility Functions
+        function showStatus(message, type, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.warn(`Status container ${containerId} not found`);
+                return;
+            }
+            
+            container.textContent = message;
+            container.className = `status-message status-${type}`;
+            container.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 5000);
+        }
+
+        function exportHorseData() {
+            if (!currentHorseData) return;
+            
+            const dataStr = JSON.stringify(currentHorseData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `${currentHorseData.horse.name}_data.json`;
+            link.click();
+        }
+
+        // Import Functions
+        async function importRacingHorses() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (!token) {
+                showStatus('Please enter your API token first', 'error', 'settings-status');
+                return;
+            }
+            
+            try {
+                showStatus('Importing racing horses...', 'warning', 'settings-status');
+                
+                const response = await fetch(`${ZED_API}/horses?type=racing`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API responded with ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.horses && data.horses.length > 0) {
+                    const importedCount = await importHorsesToStable(data.horses);
+                    showStatus(`Successfully imported ${importedCount} racing horses!`, 'success', 'settings-status');
+                    loadStable();
+                    updateDashboardStats();
+                } else {
+                    showStatus('No racing horses found in your ZED account', 'warning', 'settings-status');
+                }
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                const errorMsg = handleApiError(error, 'importing racing horses');
+                showStatus(errorMsg, 'error', 'settings-status');
+            }
+        }
+
+        async function importBreedingHorses() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (!token) {
+                showStatus('Please enter your API token first', 'error', 'settings-status');
+                return;
+            }
+            
+            try {
+                showStatus('Importing breeding horses...', 'warning', 'settings-status');
+                
+                const response = await fetch(`${ZED_API}/horses?type=breeding`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API responded with ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.horses && data.horses.length > 0) {
+                    const importedCount = await importHorsesToStable(data.horses);
+                    showStatus(`Successfully imported ${importedCount} breeding horses!`, 'success', 'settings-status');
+                    loadStable();
+                    updateDashboardStats();
+                } else {
+                    showStatus('No breeding horses found in your ZED account', 'warning', 'settings-status');
+                }
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                const errorMsg = handleApiError(error, 'importing breeding horses');
+                showStatus(errorMsg, 'error', 'settings-status');
+            }
+        }
+
+        async function importAllHorses() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (!token) {
+                showStatus('Please enter your API token first', 'error', 'settings-status');
+                return;
+            }
+            
+            try {
+                showStatus('Importing all horses...', 'warning', 'settings-status');
+                
+                // Import both racing and breeding horses
+                const [racingResponse, breedingResponse] = await Promise.all([
+                    fetch(`${ZED_API}/horses?type=racing`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json'
+                        }
+                    }),
+                    fetch(`${ZED_API}/horses?type=breeding`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json'
+                        }
+                    })
+                ]);
+                
+                const racingData = racingResponse.ok ? await racingResponse.json() : { horses: [] };
+                const breedingData = breedingResponse.ok ? await breedingResponse.json() : { horses: [] };
+                
+                const allHorses = [
+                    ...(racingData.horses || []),
+                    ...(breedingData.horses || [])
+                ];
+                
+                if (allHorses.length > 0) {
+                    const importedCount = await importHorsesToStable(allHorses);
+                    showStatus(`Successfully imported ${importedCount} horses total!`, 'success', 'settings-status');
+                    loadStable();
+                    updateDashboardStats();
+                } else {
+                    showStatus('No horses found in your ZED account', 'warning', 'settings-status');
+                }
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                const errorMsg = handleApiError(error, 'importing horses');
+                showStatus(errorMsg, 'error', 'settings-status');
+            }
+        }
+
+        async function importHorsesToStable(horses) {
+            let importedCount = 0;
+            
+            for (const horse of horses) {
+                // Check if already in stable
+                if (!myStable.find(h => h.id === horse.id)) {
+                    // Get additional horse details if needed
+                    try {
+                        const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${encodeURIComponent(horse.id)}`);
+                        if (detailResponse.ok) {
+                            const detailData = await detailResponse.json();
+                            if (detailData.success) {
+                                const races = detailData.races || [];
+                                const stableHorse = {
+                                    ...horse,
+                                    dateAdded: new Date().toISOString(),
+                                    totalRaces: races.length,
+                                    wins: races.filter(r => r.position === 1).length,
+                                    earnings: races.reduce((sum, race) => sum + (parseFloat(race.prize) || 0), 0)
+                                };
+                                myStable.push(stableHorse);
+                                importedCount++;
+                            }
+                        } else {
+                            // Add basic horse data without race details
+                            const stableHorse = {
+                                ...horse,
+                                dateAdded: new Date().toISOString(),
+                                totalRaces: 0,
+                                wins: 0,
+                                earnings: 0
+                            };
+                            myStable.push(stableHorse);
+                            importedCount++;
+                        }
+                    } catch (error) {
+                        console.warn(`Could not get details for horse ${horse.id}:`, error);
+                        // Add basic horse data
+                        const stableHorse = {
+                            ...horse,
+                            dateAdded: new Date().toISOString(),
+                            totalRaces: 0,
+                            wins: 0,
+                            earnings: 0
+                        };
+                        myStable.push(stableHorse);
+                        importedCount++;
+                    }
+                }
+            }
+            
+            saveStable();
+            return importedCount;
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            const apiTokenInput = document.getElementById('api-token');
+            if (apiTokenInput && appSettings.apiToken) {
+                apiTokenInput.value = appSettings.apiToken;
+            }
+        }
+
+        function saveSettings() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (token) {
+                appSettings.apiToken = token;
+                localStorage.setItem('stablefields_settings', JSON.stringify(appSettings));
+                showStatus('Settings saved successfully', 'success', 'settings-status');
+            } else {
+                showStatus('API token is required', 'error', 'settings-status');
+            }
+        }
+
+        function testConnection() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (!token) {
+                showStatus('Please enter your API token', 'error', 'settings-status');
+                return;
+            }
+            
+            fetch('https://api.zedchampions.com/v1/me', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    showStatus('API connection successful', 'success', 'settings-status');
+                } else {
+                    throw new Error('Invalid API token or connection issue');
+                }
+            })
+            .catch(error => {
+                console.error('Connection test error:', error);
+                showStatus('API connection failed: ' + error.message, 'error', 'settings-status');
+            });
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                localStorage.removeItem('stablefields_horses');
+                localStorage.removeItem('stablefields_settings');
+                location.reload();
+            }
+        }
+
+        // Dashboard Functions
+        function loadDashboard() {
+            // Implementation for loading dashboard data
+        }
+
+        function refreshDashboard() {
+            loadDashboard();
+        }
+
+        // Stable Functions
+        function loadStable() {
+            // Implementation for loading stable data
+        }
+
+        function showAddHorseForm() {
+            // Implementation for showing add horse form
+        }
+
+        // Save stable data to local storage
+        function saveStable() {
+            localStorage.setItem('stablefields_horses', JSON.stringify(myStable));
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            const totalHorses = myStable.length;
+            const totalRaces = myStable.reduce((sum, horse) => sum + (horse.totalRaces || 0), 0);
+            const totalWins = myStable.reduce((sum, horse) => sum + (horse.wins || 0), 0);
+            const totalEarnings = myStable.reduce((sum, horse) => sum + (horse.earnings || 0), 0);
+            const winRate = totalRaces > 0 ? ((totalWins / totalRaces) * 100).toFixed(1) : 0;
+            
+            document.getElementById('total-horses').textContent = totalHorses;
+            document.getElementById('total-races').textContent = totalRaces;
+            document.getElementById('total-earnings').textContent = `$${totalEarnings.toLocaleString()}`;
+            document.getElementById('win-rate').textContent = `${winRate}%`;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeHorseModal();
+            }
+            if (e.key === 'Enter' && (e.target.id === 'horse-search-input' || e.target.id === 'horse-id-input')) {
+                searchHorse();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('horse-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeHorseModal();
+            }
+        });
+
+        // ========== ZEDSIGHT API INTEGRATION ==========
+        
+        // ZedSight API Endpoints (discovered from zedsightexample.html)
+        const ZEDSIGHT_ENDPOINTS = {
+            searchHorse: '/api/search-horse',
+            horseHistory: '/api/horse-history', 
+            augmentCombinations: '/api/augment-combinations',
+            fieldAverages: '/api/field-averages',
+            globalAverages: '/api/global-averages',
+            scheduledRace: '/api/scheduled-race'
+        };
+
+        // Global Augment Analysis (main ZedSight feature)
+        async function loadGlobalAugmentAnalysis(filters = {}) {
+            try {
+                showAnalysisLoading();
+                
+                const params = new URLSearchParams(filters);
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.augmentCombinations}?${params}`);
+                const data = await response.json();
+                
+                if (data.success && data.combinations) {
+                    displayGlobalAugmentTable(data.combinations);
+                    updateAnalysisStats(data.globalStats);
+                    updateAnalyticsCards(data);
+                } else {
+                    showAnalysisError('Failed to load augment analysis');
+                }
+            } catch (error) {
+                console.error('Error loading global augment analysis:', error);
+                showAnalysisError('Connection error while loading analysis');
+            }
+        }
+
+        // Display Global Augment Combinations Table
+        function displayGlobalAugmentTable(combinations) {
+            const tableBody = document.getElementById('global-augment-tbody');
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = combinations.map(combo => `
+                <tr>
+                    <td>
+                        <div class="augment-combo">
+                            ${combo.augments.map(aug => `
+                                <span class="augment-${aug.type}">${aug.name}</span>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td>${combo.races}</td>
+                    <td>${combo.winRate}%</td>
+                    <td>${combo.avgFinish}</td>
+                    <td>${combo.avgOdds}</td>
+                    <td>${combo.avgField}</td>
+                    <td>${combo.mmRating || 'N/A'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Field Averages and Performance Analysis
+        async function loadFieldAverages(filters = {}) {
+            try {
+                const params = new URLSearchParams(filters);
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.fieldAverages}?${params}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayFieldAveragesChart(data.fieldData);
+                    displayFinishTimeChart(data.timeData);
+                }
+            } catch (error) {
+                console.error('Error loading field averages:', error);
+            }
+        }
+
+        // Global Statistics
+        async function loadGlobalStats() {
+            try {
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.globalAverages}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateGlobalStatsDisplay(data.stats);
+                }
+            } catch (error) {
+                console.error('Error loading global stats:', error);
+            }
+        }
+
+        // Horse-Specific Augment Analysis
+        async function loadHorseAugmentAnalysis(horseId) {
+            try {
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.horseHistory}?id=${horseId}&augments=true`);
+                const data = await response.json();
+                
+                if (data.success && data.augmentAnalysis) {
+                    displayHorseAugmentAnalysis(data.augmentAnalysis);
+                }
+            } catch (error) {
+                console.error('Error loading horse augment analysis:', error);
+            }
+        }
+
+        // Scheduled Races
+        async function loadScheduledRaces(horseId) {
+            try {
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.scheduledRace}?horse=${horseId}`);
+                const data = await response.json();
+                
+                if (data.success && data.race) {
+                    displayScheduledRace(data.race);
+                }
+            } catch (error) {
+                console.error('Error loading scheduled race:', error);
+            }
+        }
+
+        // Enhanced applyAugmentFilters function
+        function applyAugmentFilters() {
+            const bloodline = document.getElementById('bloodline-filter').value;
+            const minRaces = document.getElementById('min-races-filter').value;
+            const winRateRange = document.getElementById('winrate-range').value;
+            
+            const filters = {
+                bloodline: bloodline !== 'all' ? bloodline : '',
+                minRaces: parseInt(minRaces) || 10,
+                winRateMin: 0,
+                winRateMax: parseInt(winRateRange) || 100
+            };
+            
+            showAnalysisLoading();
+            loadGlobalAugmentAnalysis(filters);
+        }
+
+        // Missing utility functions for Analysis tab
+        function showAnalysisLoading() {
+            const container = document.getElementById('analysis-results');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div class="spinner"></div>
+                        <p style="color: var(--text-secondary); margin-top: 1rem;">
+                            Loading ZedSight analysis data...
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        function showAnalysisError(message) {
+            const container = document.getElementById('analysis-results');
+            if (container) {
+                container.innerHTML = `
+                    <div class="status-message status-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        ${message}
+                    </div>
+                `;
+            }
+        }
+
+        function updateAnalysisStats(stats) {
+            if (!stats) return;
+            
+            const elements = {
+                'total-combinations': stats.totalCombinations || 0,
+                'total-races-analyzed': stats.totalRaces || 0,
+                'avg-global-winrate': `${stats.avgWinRate || 0}%`,
+                'top-combination': stats.topCombination || 'N/A'
+            };
+            
+            Object.entries(elements).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
+            });
+
+            // Also show a success message in the results container
+            const container = document.getElementById('analysis-results');
+            if (container && stats.totalCombinations) {
+                container.innerHTML = `
+                    <div class="status-message status-success">
+                        <i class="fas fa-check-circle"></i>
+                        Successfully loaded ${stats.totalCombinations} augment combinations from ${stats.totalRaces} races
+                    </div>
+                `;
+            }
+        }
+
+        // Add missing chart cleanup and error handling
+        let fieldChart = null;
+        let timeTrendChart = null;
+
+        function displayFieldAveragesChart(fieldData) {
+            const ctx = document.getElementById('field-chart');
+            if (!ctx) {
+                console.warn('Field chart canvas not found');
+                return;
+            }
+            
+            // Destroy existing chart
+            if (fieldChart) {
+                fieldChart.destroy();
+            }
+            
+            fieldChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: fieldData.map(d => d.fieldSize),
+                    datasets: [{
+                        label: 'Average Finish Time',
+                        data: fieldData.map(d => d.avgTime),
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Field Size vs Average Finish Time'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Finish Time (seconds)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Field Size'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayFinishTimeChart(timeData) {
+            const ctx = document.getElementById('time-trend-chart');
+            if (!ctx) {
+                console.warn('Time trend chart canvas not found');
+                return;
+            }
+            
+            // Destroy existing chart
+            if (timeTrendChart) {
+                timeTrendChart.destroy();
+            }
+            
+            timeTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeData.map(d => d.date),
+                    datasets: [{
+                        label: 'Average Finish Time Trend',
+                        data: timeData.map(d => d.avgTime),
+                        borderColor: 'var(--secondary)',
+                        backgroundColor: 'rgba(108, 92, 231, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Finish Time Trends Over Time'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Finish Time (seconds)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Enhanced error handling for API calls
+        function handleApiError(error, context) {
+            console.error(`API Error (${context}):`, error);
+            if (error.response && error.response.data) {
+                return error.response.data.message || 'Unknown error occurred';
+            }
+            if (error.message) {
+                return error.message;
+            }
+            return 'Network error or invalid response';
+        }
+        
+        console.log('🚀 StableFields ZED Champions Tracker Pro ready!');
+    </script>
+</body>
+</html>
