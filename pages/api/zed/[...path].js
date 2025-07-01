@@ -32,6 +32,10 @@ export default async function handler(req, res) {
     }
 
     console.log(`Proxying to ZED API: ${apiPath} (original: ${Array.isArray(path) ? path.join('/') : path})`);
+    console.log(`Full URL: https://api.zedchampions.com/v1/${apiPath}`);
+    console.log(`Method: ${req.method}`);
+    console.log(`Has Authorization: ${!!req.headers.authorization}`);
+    
     const apiUrl = `https://api.zedchampions.com/v1/${apiPath}`;
     
     // Headers for the ZED API request
