@@ -361,6 +361,9 @@
             <button class="button" onclick="testAPI()" style="background: #ff6b6b;">
                 🧪 Test API
             </button>
+            <button class="button" onclick="testVisibility()" style="background: #f39c12;">
+                👁️ Test Visibility
+            </button>
             
             <div id="search-results" class="horse-results">
                 <div class="section-title">
@@ -492,8 +495,16 @@
         }
 
         async function displaySearchResults(horses, searchTerm) {
+            console.log(`📊 displaySearchResults called with ${horses.length} horses`);
             const resultsDiv = document.getElementById('search-results');
             const horsesGrid = document.getElementById('horses-grid');
+            
+            if (!resultsDiv || !horsesGrid) {
+                console.error('❌ Could not find search results elements!');
+                return;
+            }
+            
+            console.log('📊 Found search results elements, proceeding...');
             
             // Show loading while getting detailed data
             horsesGrid.innerHTML = '<div class="loading">Loading detailed horse data...</div>';
@@ -504,6 +515,7 @@
             
             for (let i = 0; i < horses.length; i++) {
                 const horse = horses[i];
+                console.log(`📊 Processing horse ${i+1}/${horses.length}: ${horse.name}`);
                 
                 try {
                     const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
@@ -532,9 +544,11 @@
             allSearchResults = horsesWithDetails;
 
             // Display the horses
+            console.log(`📊 Displaying ${horsesWithDetails.length} horses in grid`);
             horsesGrid.innerHTML = '';
             
             horsesWithDetails.forEach((horse, index) => {
+                console.log(`📊 Creating card for horse ${index+1}: ${horse.name}`);
                 const horseCard = createHorseCard(horse, index);
                 horsesGrid.appendChild(horseCard);
             });
@@ -545,9 +559,17 @@
             searchInfo.style.color = '#03dac6';
             searchInfo.innerHTML = `🔍 Found ${horsesWithDetails.length} horses matching "${searchTerm}"`;
             resultsDiv.insertBefore(searchInfo, horsesGrid);
+            
+            // Debug the visibility
+            console.log(`✅ Search results display completed! Should show ${horsesWithDetails.length} horse cards.`);
+            console.log(`📊 resultsDiv display style: ${resultsDiv.style.display}`);
+            console.log(`📊 resultsDiv computed style: ${window.getComputedStyle(resultsDiv).display}`);
+            console.log(`📊 horsesGrid children count: ${horsesGrid.children.length}`);
+            console.log(`📊 horsesGrid innerHTML length: ${horsesGrid.innerHTML.length}`);
         }
 
         function createHorseCard(horse, index) {
+            console.log(`🎨 Creating card for ${horse.name} (index: ${index})`);
             const card = document.createElement('div');
             card.className = 'horse-card';
             card.dataset.index = index;
@@ -848,6 +870,27 @@ API Endpoint: ${ZEDSIGHT_API}
                 console.error('❌ API test error:', error);
                 alert('❌ API connection failed. Check console for details.');
             }
+        }
+
+        // Test visibility function
+        function testVisibility() {
+            console.log('🔍 Testing visibility...');
+            const resultsDiv = document.getElementById('search-results');
+            const horsesGrid = document.getElementById('horses-grid');
+            
+            // Add a test element
+            const testDiv = document.createElement('div');
+            testDiv.style.background = 'red';
+            testDiv.style.color = 'white';
+            testDiv.style.padding = '20px';
+            testDiv.style.margin = '10px';
+            testDiv.innerHTML = '🧪 TEST ELEMENT - If you see this, CSS is working!';
+            
+            horsesGrid.innerHTML = '';
+            horsesGrid.appendChild(testDiv);
+            resultsDiv.style.display = 'block';
+            
+            console.log('📊 Test element added to horsesGrid');
         }
     </script>
 </body>
