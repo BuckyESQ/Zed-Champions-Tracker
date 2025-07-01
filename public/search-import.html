@@ -658,6 +658,12 @@
             const selectedHorsesDiv = document.getElementById('selected-horses');
             const importCount = document.getElementById('import-count');
             
+            // Check if elements exist to prevent errors
+            if (!summary || !selectedHorsesDiv || !importCount) {
+                console.warn('⚠️ Import summary elements not found, skipping update');
+                return;
+            }
+            
             if (selectedHorses.length > 0) {
                 summary.style.display = 'block';
                 importCount.textContent = selectedHorses.length;
