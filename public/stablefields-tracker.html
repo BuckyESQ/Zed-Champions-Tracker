@@ -1033,6 +1033,14 @@
             try {
                 console.log(`🌐 API Call: ${useProxy ? 'proxy' : 'direct'} → ${endpoint}`);
                 
+                // Check if this endpoint requires authentication
+                const protectedEndpoints = ['me', 'stable/racing', 'stable/breeding', 'horses'];
+                const requiresAuth = protectedEndpoints.some(protected => endpoint.startsWith(protected));
+                
+                if (requiresAuth && (!options.headers || !options.headers.Authorization)) {
+                    throw new Error('This endpoint requires authentication. Please set your API token in Settings first.');
+                }
+                
                 const response = await fetch(url, {
                     ...options,
                     headers: {
@@ -1042,7 +1050,8 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
                 }
                 
                 return await response.json();
