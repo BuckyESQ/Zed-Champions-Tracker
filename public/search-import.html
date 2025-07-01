@@ -358,6 +358,9 @@
             <button class="button" onclick="clearResults()">
                 🗑️ Clear Results
             </button>
+            <button class="button" onclick="testAPI()" style="background: #ff6b6b;">
+                🧪 Test API
+            </button>
             
             <div id="search-results" class="horse-results">
                 <div class="section-title">
@@ -442,7 +445,10 @@
         async function searchHorses() {
             const searchTerm = document.getElementById('horse-search').value.trim();
             
+            console.log('🔍 searchHorses() called with term:', searchTerm);
+            
             if (!searchTerm) {
+                console.log('❌ No search term provided');
                 showError('Please enter a horse name to search for.');
                 return;
             }
@@ -455,24 +461,29 @@
 
             try {
                 console.log(`🔍 Searching for horses with name: ${searchTerm}`);
+                console.log(`📡 API URL: ${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(searchTerm)}`);
                 
                 const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(searchTerm)}`);
+                
+                console.log(`📡 Response status: ${response.status}, ok: ${response.ok}`);
                 
                 if (!response.ok) {
                     throw new Error(`Search failed with status: ${response.status}`);
                 }
 
                 const data = await response.json();
+                console.log('📡 Response data:', data);
                 
                 if (data.success && data.horses && data.horses.length > 0) {
                     console.log(`✅ Found ${data.horses.length} horses`);
                     await displaySearchResults(data.horses, searchTerm);
                 } else {
+                    console.log(`⚠️ No horses found for "${searchTerm}"`);
                     showError(`No horses found with the name "${searchTerm}". Try a different name or check the spelling.`);
                 }
 
             } catch (error) {
-                console.error('Search error:', error);
+                console.error('❌ Search error:', error);
                 showError(`Search failed: ${error.message}. Please try again.`);
             } finally {
                 searchBtn.disabled = false;
