@@ -639,9 +639,28 @@
                     <label class="form-label">ZED Champions API Token</label>
                     <input type="password" id="api-token" class="form-input" 
                            placeholder="Enter your API token for direct import">
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
+                        Get your API token from ZED Champions dashboard to import horses directly.
+                    </small>
                 </div>
 
                 <div class="form-group">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Import Options</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="btn" onclick="importRacingHorses()">
+                            <i class="fas fa-horse"></i> Import Racing Horses
+                        </button>
+                        <button class="btn" onclick="importBreedingHorses()">
+                            <i class="fas fa-heart"></i> Import Breeding Horses
+                        </button>
+                        <button class="btn" onclick="importAllHorses()">
+                            <i class="fas fa-download"></i> Import All Horses
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Settings</h4>
                     <button class="btn" onclick="saveSettings()">
                         <i class="fas fa-save"></i> Save Settings
                     </button>
@@ -689,6 +708,7 @@
             initializeTabs();
             loadDashboard();
             loadStable();
+            loadSettings();
             
             // Auto-load from URL parameters
             const urlParams = new URLSearchParams(window.location.search);
@@ -911,147 +931,303 @@
             document.getElementById('horse-modal').style.display = 'none';
         }
 
-        // Stable Management
-        function addToStable() {
+        // Utility Functions
+        function showStatus(message, type, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.warn(`Status container ${containerId} not found`);
+                return;
+            }
+            
+            container.textContent = message;
+            container.className = `status-message status-${type}`;
+            container.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 5000);
+        }
+
+        function exportHorseData() {
             if (!currentHorseData) return;
             
-            const horse = currentHorseData.horse;
-            const races = currentHorseData.races || [];
+            const dataStr = JSON.stringify(currentHorseData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
             
-            // Check if already in stable
-            if (myStable.find(h => h.id === horse.id)) {
-                showStatus('Horse already in stable', 'warning', 'search-status');
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `${currentHorseData.horse.name}_data.json`;
+            link.click();
+        }
+
+        // Import Functions
+        async function importRacingHorses() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (!token) {
+                showStatus('Please enter your API token first', 'error', 'settings-status');
                 return;
             }
             
-            // Add to stable
-            const stableHorse = {
-                ...horse,
-                dateAdded: new Date().toISOString(),
-                totalRaces: races.length,
-                wins: races.filter(r => r.position === 1).length,
-                earnings: races.reduce((sum, race) => sum + (parseFloat(race.prize) || 0), 0)
-            };
-            
-            myStable.push(stableHorse);
-            saveStable();
-            loadStable();
-            
-            showStatus('Horse added to stable!', 'success', 'search-status');
-            closeHorseModal();
-        }
-
-        // Stable Management
-        function showAddHorseForm() {
-            const horseId = prompt('Enter Horse ID to add to your stable:');
-            if (!horseId) return;
-            
-            // Validate horse ID format (basic check)
-            if (!/^\d+$/.test(horseId.trim())) {
-                alert('Please enter a valid numeric Horse ID');
-                return;
-            }
-            
-            addHorseById(horseId.trim());
-        }
-
-        async function addHorseById(horseId) {
             try {
-                showStatus('Loading horse details...', 'warning', 'search-status');
+                showStatus('Importing racing horses...', 'warning', 'settings-status');
                 
-                // Check if already in stable
-                if (myStable.find(h => h.id === horseId)) {
-                    showStatus('Horse already in stable', 'warning', 'search-status');
-                    return;
+                const response = await fetch(`${ZED_API}/horses?type=racing`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API responded with ${response.status}: ${response.statusText}`);
                 }
                 
-                const response = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${encodeURIComponent(horseId)}`);
                 const data = await response.json();
                 
-                if (!data.success) {
-                    showStatus('Failed to load horse details. Check the Horse ID.', 'error', 'search-status');
-                    return;
+                if (data.horses && data.horses.length > 0) {
+                    const importedCount = await importHorsesToStable(data.horses);
+                    showStatus(`Successfully imported ${importedCount} racing horses!`, 'success', 'settings-status');
+                    loadStable();
+                    updateDashboardStats();
+                } else {
+                    showStatus('No racing horses found in your ZED account', 'warning', 'settings-status');
                 }
                 
-                const horse = data.horse;
-                const races = data.races || [];
-                
-                // Add to stable
-                const stableHorse = {
-                    ...horse,
-                    dateAdded: new Date().toISOString(),
-                    totalRaces: races.length,
-                    wins: races.filter(r => r.position === 1).length,
-                    earnings: races.reduce((sum, race) => sum + (parseFloat(race.prize) || 0), 0)
-                };
-                
-                myStable.push(stableHorse);
-                saveStable();
-                loadStable();
-                updateDashboardStats();
-                
-                showStatus(`Horse "${horse.name}" added to stable!`, 'success', 'search-status');
-                
-                // Switch to stable tab to show the added horse
-                switchTab('stable');
-                
             } catch (error) {
-                console.error('Error adding horse:', error);
-                showStatus('Error adding horse. Please check the Horse ID and try again.', 'error', 'search-status');
+                console.error('Import error:', error);
+                const errorMsg = handleApiError(error, 'importing racing horses');
+                showStatus(errorMsg, 'error', 'settings-status');
             }
         }
 
-        function loadStable() {
-            const tbody = document.getElementById('stable-tbody');
+        async function importBreedingHorses() {
+            const token = document.getElementById('api-token').value.trim();
             
-            if (myStable.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: var(--text-secondary);">
-                            No horses in your stable yet. Search and add some horses!
-                        </td>
-                    </tr>
-                `;
+            if (!token) {
+                showStatus('Please enter your API token first', 'error', 'settings-status');
                 return;
             }
             
-            tbody.innerHTML = myStable.map(horse => `
-                <tr>
-                    <td>${horse.name}</td>
-                    <td>${horse.bloodline}</td>
-                    <td>${horse.rating || 'N/A'}</td>
-                    <td>${horse.totalRaces || 0}</td>
-                    <td>${horse.wins || 0}</td>
-                    <td>$${(horse.earnings || 0).toLocaleString()}</td>
-                    <td>
-                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" 
-                                onclick="removeFromStable('${horse.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function removeFromStable(horseId) {
-            if (confirm('Remove this horse from your stable?')) {
-                myStable = myStable.filter(h => h.id !== horseId);
-                saveStable();
-                loadStable();
-                updateDashboardStats();
+            try {
+                showStatus('Importing breeding horses...', 'warning', 'settings-status');
+                
+                const response = await fetch(`${ZED_API}/horses?type=breeding`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API responded with ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.horses && data.horses.length > 0) {
+                    const importedCount = await importHorsesToStable(data.horses);
+                    showStatus(`Successfully imported ${importedCount} breeding horses!`, 'success', 'settings-status');
+                    loadStable();
+                    updateDashboardStats();
+                } else {
+                    showStatus('No breeding horses found in your ZED account', 'warning', 'settings-status');
+                }
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                const errorMsg = handleApiError(error, 'importing breeding horses');
+                showStatus(errorMsg, 'error', 'settings-status');
             }
         }
 
-        function saveStable() {
-            localStorage.setItem('stablefields_horses', JSON.stringify(myStable));
+        async function importAllHorses() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (!token) {
+                showStatus('Please enter your API token first', 'error', 'settings-status');
+                return;
+            }
+            
+            try {
+                showStatus('Importing all horses...', 'warning', 'settings-status');
+                
+                // Import both racing and breeding horses
+                const [racingResponse, breedingResponse] = await Promise.all([
+                    fetch(`${ZED_API}/horses?type=racing`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json'
+                        }
+                    }),
+                    fetch(`${ZED_API}/horses?type=breeding`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json'
+                        }
+                    })
+                ]);
+                
+                const racingData = racingResponse.ok ? await racingResponse.json() : { horses: [] };
+                const breedingData = breedingResponse.ok ? await breedingResponse.json() : { horses: [] };
+                
+                const allHorses = [
+                    ...(racingData.horses || []),
+                    ...(breedingData.horses || [])
+                ];
+                
+                if (allHorses.length > 0) {
+                    const importedCount = await importHorsesToStable(allHorses);
+                    showStatus(`Successfully imported ${importedCount} horses total!`, 'success', 'settings-status');
+                    loadStable();
+                    updateDashboardStats();
+                } else {
+                    showStatus('No horses found in your ZED account', 'warning', 'settings-status');
+                }
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                const errorMsg = handleApiError(error, 'importing horses');
+                showStatus(errorMsg, 'error', 'settings-status');
+            }
+        }
+
+        async function importHorsesToStable(horses) {
+            let importedCount = 0;
+            
+            for (const horse of horses) {
+                // Check if already in stable
+                if (!myStable.find(h => h.id === horse.id)) {
+                    // Get additional horse details if needed
+                    try {
+                        const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${encodeURIComponent(horse.id)}`);
+                        if (detailResponse.ok) {
+                            const detailData = await detailResponse.json();
+                            if (detailData.success) {
+                                const races = detailData.races || [];
+                                const stableHorse = {
+                                    ...horse,
+                                    dateAdded: new Date().toISOString(),
+                                    totalRaces: races.length,
+                                    wins: races.filter(r => r.position === 1).length,
+                                    earnings: races.reduce((sum, race) => sum + (parseFloat(race.prize) || 0), 0)
+                                };
+                                myStable.push(stableHorse);
+                                importedCount++;
+                            }
+                        } else {
+                            // Add basic horse data without race details
+                            const stableHorse = {
+                                ...horse,
+                                dateAdded: new Date().toISOString(),
+                                totalRaces: 0,
+                                wins: 0,
+                                earnings: 0
+                            };
+                            myStable.push(stableHorse);
+                            importedCount++;
+                        }
+                    } catch (error) {
+                        console.warn(`Could not get details for horse ${horse.id}:`, error);
+                        // Add basic horse data
+                        const stableHorse = {
+                            ...horse,
+                            dateAdded: new Date().toISOString(),
+                            totalRaces: 0,
+                            wins: 0,
+                            earnings: 0
+                        };
+                        myStable.push(stableHorse);
+                        importedCount++;
+                    }
+                }
+            }
+            
+            saveStable();
+            return importedCount;
+        }
+
+        // Settings Functions
+        function loadSettings() {
+            const apiTokenInput = document.getElementById('api-token');
+            if (apiTokenInput && appSettings.apiToken) {
+                apiTokenInput.value = appSettings.apiToken;
+            }
+        }
+
+        function saveSettings() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (token) {
+                appSettings.apiToken = token;
+                localStorage.setItem('stablefields_settings', JSON.stringify(appSettings));
+                showStatus('Settings saved successfully', 'success', 'settings-status');
+            } else {
+                showStatus('API token is required', 'error', 'settings-status');
+            }
+        }
+
+        function testConnection() {
+            const token = document.getElementById('api-token').value.trim();
+            
+            if (!token) {
+                showStatus('Please enter your API token', 'error', 'settings-status');
+                return;
+            }
+            
+            fetch('https://api.zedchampions.com/v1/me', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    showStatus('API connection successful', 'success', 'settings-status');
+                } else {
+                    throw new Error('Invalid API token or connection issue');
+                }
+            })
+            .catch(error => {
+                console.error('Connection test error:', error);
+                showStatus('API connection failed: ' + error.message, 'error', 'settings-status');
+            });
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                localStorage.removeItem('stablefields_horses');
+                localStorage.removeItem('stablefields_settings');
+                location.reload();
+            }
         }
 
         // Dashboard Functions
         function loadDashboard() {
-            updateDashboardStats();
-            // TODO: Load performance charts
+            // Implementation for loading dashboard data
         }
 
+        function refreshDashboard() {
+            loadDashboard();
+        }
+
+        // Stable Functions
+        function loadStable() {
+            // Implementation for loading stable data
+        }
+
+        function showAddHorseForm() {
+            // Implementation for showing add horse form
+        }
+
+        // Save stable data to local storage
+        function saveStable() {
+            localStorage.setItem('stablefields_horses', JSON.stringify(myStable));
+        }
+
+        // Update dashboard statistics
         function updateDashboardStats() {
             const totalHorses = myStable.length;
             const totalRaces = myStable.reduce((sum, horse) => sum + (horse.totalRaces || 0), 0);
@@ -1064,175 +1240,6 @@
             document.getElementById('total-earnings').textContent = `$${totalEarnings.toLocaleString()}`;
             document.getElementById('win-rate').textContent = `${winRate}%`;
         }
-
-        function refreshDashboard() {
-            updateDashboardStats();
-            showStatus('Dashboard refreshed', 'success', 'search-status');
-        }
-
-        // Stable Management Functions
-        function showAddHorseForm() {
-            const horseId = prompt('Enter Horse ID to add to your stable:');
-            if (!horseId) return;
-            
-            // Validate horse ID format (basic check)
-            if (!/^\d+$/.test(horseId.trim())) {
-                alert('Please enter a valid numeric Horse ID');
-                return;
-            }
-            
-            addHorseById(horseId.trim());
-        }
-
-        async function addHorseById(horseId) {
-            try {
-                showStatus('Loading horse details...', 'warning', 'search-status');
-                
-                // Check if already in stable
-                if (myStable.find(h => h.id === horseId)) {
-                    showStatus('Horse already in stable', 'warning', 'search-status');
-                    return;
-                }
-                
-                const response = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${encodeURIComponent(horseId)}`);
-                const data = await response.json();
-                
-                if (!data.success) {
-                    showStatus('Failed to load horse details. Check the Horse ID.', 'error', 'search-status');
-                    return;
-                }
-                
-                const horse = data.horse;
-                const races = data.races || [];
-                
-                // Add to stable
-                const stableHorse = {
-                    ...horse,
-                    dateAdded: new Date().toISOString(),
-                    totalRaces: races.length,
-                    wins: races.filter(r => r.position === 1).length,
-                    earnings: races.reduce((sum, race) => sum + (parseFloat(race.prize) || 0), 0)
-                };
-                
-                myStable.push(stableHorse);
-                saveStable();
-                loadStable();
-                updateDashboardStats();
-                
-                showStatus(`Horse "${horse.name}" added to stable!`, 'success', 'search-status');
-                
-                // Switch to stable tab to show the added horse
-                switchTab('stable');
-                
-            } catch (error) {
-                console.error('Error adding horse:', error);
-                showStatus('Error adding horse. Please check the Horse ID and try again.', 'error', 'search-status');
-            }
-        }
-
-        // Settings Functions
-        function saveSettings() {
-            const token = document.getElementById('api-token').value.trim();
-            
-            appSettings.apiToken = token;
-            localStorage.setItem('stablefields_settings', JSON.stringify(appSettings));
-            
-            showStatus('Settings saved successfully', 'success', 'settings-status');
-        }
-
-        async function testConnection() {
-            const token = document.getElementById('api-token').value.trim();
-            
-            if (!token) {
-                showStatus('Please enter an API token first', 'warning', 'settings-status');
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${ZED_API}/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (response.ok) {
-                    showStatus('API connection successful!', 'success', 'settings-status');
-                } else {
-                    showStatus('API connection failed. Check your token.', 'error', 'settings-status');
-                }
-            } catch (error) {
-                showStatus('Connection error. Please try again.', 'error', 'settings-status');
-            }
-        }
-
-        function clearAllData() {
-            if (confirm('This will delete ALL your data. Are you sure?')) {
-                localStorage.clear();
-                myStable = [];
-                appSettings = {};
-                loadStable();
-                updateDashboardStats();
-                showStatus('All data cleared', 'success', 'settings-status');
-            }
-        }
-
-        // Enhanced error handling for API calls
-        function handleApiError(error, context = '') {
-            console.error(`API Error ${context}:`, error);
-            
-            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                return 'Network connection error. Please check your internet connection and try again.';
-            } else if (error.message.includes('404')) {
-                return 'Resource not found. The requested data may not exist.';
-            } else if (error.message.includes('500')) {
-                return 'Server error. Please try again later.';
-            } else if (error.message.includes('CORS')) {
-                return 'Cross-origin request blocked. This may be a browser security restriction.';
-            } else {
-                return `An error occurred${context ? ` while ${context}` : ''}. Please try again.`;
-            }
-        }
-
-        // Enhanced checkUserStatus with better error handling
-        async function checkUserStatus() {
-            try {
-                const response = await fetch('https://api.zedchampions.com/v1/me', {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('User status:', data);
-                    showStatus('Connected to ZED API', 'success', 'search-status');
-                } else {
-                    console.warn('API connection failed:', response.status);
-                    showStatus('ZED API connection limited (using cached data)', 'warning', 'search-status');
-                }
-            } catch (error) {
-                console.warn('ZED API not accessible:', error.message);
-                // Don't show error to user as this is expected if not logged in or API is down
-                // The tracker will still work with ZedSight API
-            }
-        }
-
-        // Initialize Application
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏇 StableFields ZED Champions Tracker Pro loaded');
-            initializeTabs();
-            loadDashboard();
-            loadStable();
-            checkUserStatus();
-            
-            // Auto-load from URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const horseId = urlParams.get('horse');
-            if (horseId) {
-                switchTab('search');
-                document.getElementById('horse-id-input').value = horseId;
-                searchHorse();
-            }
-        });
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
