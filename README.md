@@ -106,19 +106,26 @@ NEXT_PUBLIC_VERSION="1.0.0"
 
 ```
 zed-champions-tracker/
-├── pages/                 # Next.js pages and API routes
+├── pages/                    # Next.js pages and API routes
 │   ├── api/
-│   │   └── zed/          # ZED API proxy endpoints
-│   └── index.js          # Main application redirect
-├── public/               # Static assets and main application
-│   ├── app.js           # Core application logic
-│   ├── index.html       # Main application interface
-│   └── debug.html       # Debug and testing tools
-├── largeindex.html      # Comprehensive standalone version
-├── next.config.js       # Next.js configuration
-├── package.json         # Dependencies and scripts
-├── vercel.json         # Deployment configuration
-└── README.md           # This file
+│   │   └── zed/             # ZED API proxy endpoints
+│   ├── index.js             # Main application redirect
+│   └── app.js               # Alternative entry point
+├── public/                  # Static assets and legacy versions
+│   ├── app.js              # Legacy application logic
+│   ├── index.html          # Legacy interface
+│   └── debug.html          # Debug and testing tools
+├── archive/                 # Legacy files (for reference only)
+│   ├── legacy-tracker.html # Original comprehensive tracker
+│   └── README.md           # Archive documentation
+├── reference/               # External examples and references
+│   ├── zedsight-reference.html # ZedSight implementation example
+│   └── README.md           # Reference documentation
+├── stablefields-tracker.html # 🎯 MAIN PRODUCTION TRACKER
+├── next.config.js          # Next.js configuration
+├── package.json            # Dependencies and scripts
+├── vercel.json            # Deployment configuration
+└── README.md              # This file
 ```
 
 ## 🎯 Usage Guide

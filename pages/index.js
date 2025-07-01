@@ -5,8 +5,8 @@ export default function Home() {
   const router = useRouter();
   
   useEffect(() => {
-    // Redirect to the static HTML page
-    window.location.href = '/index.html';
+    // Redirect to the main tracker
+    window.location.href = '/stablefields-tracker.html';
   }, []);
   
   return (

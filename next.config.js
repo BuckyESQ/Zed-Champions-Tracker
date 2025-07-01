@@ -31,7 +31,15 @@ const nextConfig = {
     return [
       {
         source: '/app',
-        destination: '/largeindex.html',
+        destination: '/stablefields-tracker.html',
+      },
+      {
+        source: '/tracker',
+        destination: '/stablefields-tracker.html',
+      },
+      {
+        source: '/legacy',
+        destination: '/archive/legacy-tracker.html',
       },
     ];
   },

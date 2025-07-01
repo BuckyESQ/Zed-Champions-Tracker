@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 export default function App() {
   useEffect(() => {
-    // Redirect to the comprehensive application
-    window.location.href = '/largeindex.html';
+    // Redirect to the main tracker
+    window.location.href = '/stablefields-tracker.html';
   }, []);
   
   return (
