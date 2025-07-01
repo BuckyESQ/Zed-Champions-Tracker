@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ZED Champions API Token Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: white; 
+            line-height: 1.6;
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 20px; 
+            background: #2a2a2a; 
+            border-radius: 8px; 
+            border-left: 4px solid #00d4aa;
+        }
+        .success { color: #4CAF50; font-weight: bold; }
+        .error { color: #f44336; font-weight: bold; }
+        .warning { color: #ff9800; font-weight: bold; }
+        .info { color: #2196F3; font-weight: bold; }
+        button { 
+            padding: 12px 20px; 
+            margin: 8px; 
+            background: #00d4aa; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover { background: #00b894; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        input[type="password"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            background: #333; 
+            color: white; 
+            border: 2px solid #555; 
+            border-radius: 6px; 
+            font-family: monospace;
+        }
+        input[type="password"]:focus { border-color: #00d4aa; outline: none; }
+        pre { 
+            background: #000; 
+            padding: 15px; 
+            border-radius: 6px; 
+            overflow-x: auto; 
+            border: 1px solid #333;
+            font-size: 13px;
+        }
+        .token-info {
+            background: #1e3a8a;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .result-box {
+            min-height: 60px;
+            padding: 15px;
+            background: #333;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .horse-card {
+            background: #444;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 3px solid #00d4aa;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .stat {
+            background: #333;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00d4aa;
+        }
+        .step {
+            counter-increment: step;
+            margin: 20px 0;
+        }
+        .step::before {
+            content: "Step " counter(step) ": ";
+            font-weight: bold;
+            color: #00d4aa;
+        }
+        body { counter-reset: step; }
+    </style>
+</head>
+<body>
+    <h1>🏇 ZED Champions API Token Import Test</h1>
+    <p>This will test your Bearer token and import functionality with the official ZED Champions API.</p>
+    
+    <div class="test-section">
+        <div class="step">Enter Your ZED Champions Bearer Token</div>
+        <div class="token-info">
+            <strong>🔐 Your API Token:</strong> Get this from your ZED Champions account settings.
+            <br><small>Example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</small>
+        </div>
+        <input type="password" id="api-token" placeholder="Paste your Bearer token here (will be hidden)">
+        <button onclick="validateToken()">Validate Token</button>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="token-results" class="result-box"></div>
+    </div>
+
+    <div class="test-section">
+        <div class="step">Test API Endpoints</div>
+        <button onclick="testUserInfo()" id="test-user-btn" disabled>Test User Info (/me)</button>
+        <button onclick="testRacingHorses()" id="test-racing-btn" disabled>Test Racing Horses</button>
+        <button onclick="testBreedingHorses()" id="test-breeding-btn" disabled>Test Breeding Horses</button>
+        <div id="api-results" class="result-box"></div>
+    </div>
+
+    <div class="test-section">
+        <div class="step">Import Horses to Stable</div>
+        <div class="stats" id="import-stats" style="display: none;">
+            <div class="stat">
+                <div class="stat-value" id="racing-count">0</div>
+                <div>Racing Horses</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="breeding-count">0</div>
+                <div>Breeding Horses</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="total-count">0</div>
+                <div>Total Horses</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="imported-count">0</div>
+                <div>Imported to Stable</div>
+            </div>
+        </div>
+        <button onclick="importAllHorses()" id="import-all-btn" disabled>Import All Horses to Stable</button>
+        <button onclick="importRacingOnly()" id="import-racing-btn" disabled>Import Racing Horses Only</button>
+        <button onclick="importBreedingOnly()" id="import-breeding-btn" disabled>Import Breeding Horses Only</button>
+        <div id="import-results" class="result-box"></div>
+    </div>
+
+    <div class="test-section">
+        <div class="step">View Imported Data</div>
+        <button onclick="showStableData()">Show My Stable</button>
+        <button onclick="exportStableData()">Export Stable Data</button>
+        <button onclick="clearStableData()">Clear Stable</button>
+        <div id="stable-results" class="result-box"></div>
+    </div>
+
+    <script>
+        const ZED_API = 'https://api.zedchampions.com/v1';
+        let userToken = '';
+        let racingHorses = [];
+        let breedingHorses = [];
+        let myStable = JSON.parse(localStorage.getItem('stablefields_horses') || '[]');
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+            element.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        function validateToken() {
+            const token = document.getElementById('api-token').value.trim();
+            const resultsDiv = document.getElementById('token-results');
+            clearLog('token-results');
+
+            if (!token) {
+                log('token-results', '❌ Please enter your Bearer token', 'error');
+                return;
+            }
+
+            // Basic validation
+            if (!token.startsWith('Bearer ') && !token.startsWith('eyJ')) {
+                log('token-results', '⚠️ Token should start with "Bearer " or be a JWT token', 'warning');
+            }
+
+            // Store token
+            userToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+            
+            log('token-results', '✅ Token format validated', 'success');
+            log('token-results', `📏 Token length: ${userToken.length} characters`, 'info');
+            log('token-results', `🔍 Format: ${userToken.includes('.') ? 'JWT format detected' : 'Non-JWT format'}`, 'info');
+
+            // Enable test buttons
+            document.getElementById('test-user-btn').disabled = false;
+            document.getElementById('test-racing-btn').disabled = false;
+            document.getElementById('test-breeding-btn').disabled = false;
+        }
+
+        async function testConnection() {
+            if (!userToken) {
+                log('token-results', '❌ Please validate your token first', 'error');
+                return;
+            }
+
+            clearLog('token-results');
+            log('token-results', '🔄 Testing connection to ZED Champions API...', 'info');
+
+            try {
+                const response = await fetch(`${ZED_API}/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': userToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    log('token-results', '✅ API Connection Successful!', 'success');
+                    log('token-results', `👤 User: ${data.username || data.email || 'Unknown'}`, 'success');
+                    
+                    // Enable import buttons
+                    document.getElementById('import-all-btn').disabled = false;
+                    document.getElementById('import-racing-btn').disabled = false;
+                    document.getElementById('import-breeding-btn').disabled = false;
+                } else {
+                    const errorText = await response.text();
+                    log('token-results', `❌ API Error ${response.status}: ${response.statusText}`, 'error');
+                    log('token-results', `📄 Response: ${errorText}`, 'error');
+                }
+            } catch (error) {
+                log('token-results', `❌ Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testUserInfo() {
+            clearLog('api-results');
+            log('api-results', '🔄 Fetching user information...', 'info');
+
+            try {
+                const response = await fetch(`${ZED_API}/me`, {
+                    headers: {
+                        'Authorization': userToken,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    log('api-results', '✅ User Info Retrieved:', 'success');
+                    log('api-results', `<pre>${JSON.stringify(data, null, 2)}</pre>`, 'info');
+                } else {
+                    const errorText = await response.text();
+                    log('api-results', `❌ User Info Error: ${response.status} ${response.statusText}`, 'error');
+                    log('api-results', `Response: ${errorText}`, 'error');
+                }
+            } catch (error) {
+                log('api-results', `❌ Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testRacingHorses() {
+            clearLog('api-results');
+            log('api-results', '🔄 Fetching racing horses...', 'info');
+
+            try {
+                const response = await fetch(`${ZED_API}/horses?type=racing`, {
+                    headers: {
+                        'Authorization': userToken,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    racingHorses = data.horses || [];
+                    
+                    log('api-results', `✅ Found ${racingHorses.length} racing horses`, 'success');
+                    document.getElementById('racing-count').textContent = racingHorses.length;
+                    
+                    if (racingHorses.length > 0) {
+                        log('api-results', 'First 3 racing horses:', 'info');
+                        racingHorses.slice(0, 3).forEach(horse => {
+                            log('api-results', `<div class="horse-card">🏇 ${horse.name} - ${horse.bloodline} (Gen ${horse.generation})</div>`, 'info');
+                        });
+                    }
+                    
+                    document.getElementById('import-stats').style.display = 'grid';
+                    updateTotalCount();
+                } else {
+                    const errorText = await response.text();
+                    log('api-results', `❌ Racing Horses Error: ${response.status} ${response.statusText}`, 'error');
+                    log('api-results', `Response: ${errorText}`, 'error');
+                }
+            } catch (error) {
+                log('api-results', `❌ Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBreedingHorses() {
+            clearLog('api-results');
+            log('api-results', '🔄 Fetching breeding horses...', 'info');
+
+            try {
+                const response = await fetch(`${ZED_API}/horses?type=breeding`, {
+                    headers: {
+                        'Authorization': userToken,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    breedingHorses = data.horses || [];
+                    
+                    log('api-results', `✅ Found ${breedingHorses.length} breeding horses`, 'success');
+                    document.getElementById('breeding-count').textContent = breedingHorses.length;
+                    
+                    if (breedingHorses.length > 0) {
+                        log('api-results', 'First 3 breeding horses:', 'info');
+                        breedingHorses.slice(0, 3).forEach(horse => {
+                            log('api-results', `<div class="horse-card">🧬 ${horse.name} - ${horse.bloodline} (Gen ${horse.generation})</div>`, 'info');
+                        });
+                    }
+                    
+                    document.getElementById('import-stats').style.display = 'grid';
+                    updateTotalCount();
+                } else {
+                    const errorText = await response.text();
+                    log('api-results', `❌ Breeding Horses Error: ${response.status} ${response.statusText}`, 'error');
+                    log('api-results', `Response: ${errorText}`, 'error');
+                }
+            } catch (error) {
+                log('api-results', `❌ Network Error: ${error.message}`, 'error');
+            }
+        }
+
+        function updateTotalCount() {
+            const total = racingHorses.length + breedingHorses.length;
+            document.getElementById('total-count').textContent = total;
+        }
+
+        async function importAllHorses() {
+            const allHorses = [...racingHorses, ...breedingHorses];
+            await importHorses(allHorses, 'all horses');
+        }
+
+        async function importRacingOnly() {
+            await importHorses(racingHorses, 'racing horses');
+        }
+
+        async function importBreedingOnly() {
+            await importHorses(breedingHorses, 'breeding horses');
+        }
+
+        async function importHorses(horses, type) {
+            clearLog('import-results');
+            log('import-results', `🔄 Importing ${horses.length} ${type}...`, 'info');
+
+            let importedCount = 0;
+            let skippedCount = 0;
+
+            for (const horse of horses) {
+                // Check if already in stable
+                if (myStable.find(h => h.id === horse.id)) {
+                    skippedCount++;
+                    continue;
+                }
+
+                // Add basic horse data to stable
+                const stableHorse = {
+                    ...horse,
+                    dateAdded: new Date().toISOString(),
+                    source: 'ZED Champions API',
+                    importType: type
+                };
+
+                myStable.push(stableHorse);
+                importedCount++;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('stablefields_horses', JSON.stringify(myStable));
+            
+            log('import-results', `✅ Import Complete!`, 'success');
+            log('import-results', `📥 Imported: ${importedCount} horses`, 'success');
+            log('import-results', `⏭️ Skipped: ${skippedCount} horses (already in stable)`, 'info');
+            log('import-results', `🏠 Total in stable: ${myStable.length} horses`, 'success');
+
+            document.getElementById('imported-count').textContent = myStable.length;
+        }
+
+        function showStableData() {
+            clearLog('stable-results');
+            
+            if (myStable.length === 0) {
+                log('stable-results', '📭 Your stable is empty', 'warning');
+                return;
+            }
+
+            log('stable-results', `🏠 Stable contains ${myStable.length} horses:`, 'success');
+            
+            // Group by bloodline
+            const bloodlineGroups = {};
+            myStable.forEach(horse => {
+                if (!bloodlineGroups[horse.bloodline]) {
+                    bloodlineGroups[horse.bloodline] = [];
+                }
+                bloodlineGroups[horse.bloodline].push(horse);
+            });
+
+            Object.entries(bloodlineGroups).forEach(([bloodline, horses]) => {
+                log('stable-results', `<div class="horse-card"><strong>${bloodline}</strong>: ${horses.length} horses</div>`, 'info');
+            });
+
+            // Show recent additions
+            const recent = myStable.slice(-5);
+            log('stable-results', 'Recent additions:', 'info');
+            recent.forEach(horse => {
+                const addedDate = new Date(horse.dateAdded).toLocaleDateString();
+                log('stable-results', `<div class="horse-card">🐎 ${horse.name} - Added ${addedDate}</div>`, 'info');
+            });
+        }
+
+        function exportStableData() {
+            if (myStable.length === 0) {
+                log('stable-results', '📭 No data to export', 'warning');
+                return;
+            }
+
+            const dataStr = JSON.stringify(myStable, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `stablefields-export-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            log('stable-results', `✅ Exported ${myStable.length} horses to JSON file`, 'success');
+        }
+
+        function clearStableData() {
+            if (confirm('Are you sure you want to clear all stable data? This cannot be undone.')) {
+                localStorage.removeItem('stablefields_horses');
+                myStable = [];
+                document.getElementById('imported-count').textContent = '0';
+                log('stable-results', '🗑️ Stable data cleared', 'warning');
+            }
+        }
+
+        // Auto-focus token input
+        window.addEventListener('load', () => {
+            document.getElementById('api-token').focus();
+        });
+    </script>
+</body>
+</html>
