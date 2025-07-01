@@ -77,6 +77,11 @@
         <h1>🧪 ZED Champions API - Vercel Bearer Token Test</h1>
         <p>This page tests Bearer token functionality through your Vercel API proxy.</p>
         
+        <div class="status warning" style="display: block; margin-bottom: 1rem;">
+            <i class="fas fa-info-circle"></i>
+            <strong>Note:</strong> Browser extension errors (utils.js, extensionState.js) are normal and don't affect the app functionality.
+        </div>
+        
         <div class="form-group">
             <label for="bearerToken">ZED Champions Bearer Token:</label>
             <input type="password" id="bearerToken" placeholder="Paste your Bearer token here..." />
@@ -86,10 +91,9 @@
         <div class="form-group">
             <label for="testEndpoint">Test Endpoint:</label>
             <select id="testEndpoint">
-                <option value="me">User Profile (/me)</option>
-                <option value="racing">Racing Horses (/racing)</option>
-                <option value="breeding">Breeding Horses (/breeding)</option>
-                <option value="test">API Test (/test)</option>
+                <option value="me">User Profile (/api/zed/me)</option>
+                <option value="racing">Racing Horses (/api/zed/racing)</option>
+                <option value="breeding">Breeding Horses (/api/zed/breeding)</option>
             </select>
         </div>
         
