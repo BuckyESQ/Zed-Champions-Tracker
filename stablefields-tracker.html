@@ -968,7 +968,7 @@
                 </div>
 
                 <div class="form-group">
-                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Import Options</h4>
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">API Import (requires proxy or server)</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                         <button class="btn" onclick="importRacingHorses()">
                             <i class="fas fa-horse"></i> Import Racing Horses
@@ -978,6 +978,29 @@
                         </button>
                         <button class="btn" onclick="importAllHorses()">
                             <i class="fas fa-download"></i> Import All Horses
+                        </button>
+                    </div>
+                    <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
+                        Note: Direct API import may not work in all browsers due to CORS restrictions.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <h4 style="color: var(--primary); margin-bottom: 1rem;">Manual Import</h4>
+                    <div style="margin-bottom: 1rem;">
+                        <label class="form-label">Import from JSON file</label>
+                        <input type="file" id="import-file" accept=".json" class="form-input" 
+                               onchange="handleFileImport(event)">
+                        <small style="color: var(--text-secondary); display: block; margin-top: 0.5rem;">
+                            Upload a JSON file exported from ZED Champions or this app.
+                        </small>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button class="btn btn-secondary" onclick="exportStableData()">
+                            <i class="fas fa-upload"></i> Export My Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="showImportInstructions()">
+                            <i class="fas fa-question-circle"></i> Import Instructions
                         </button>
                     </div>
                 </div>
@@ -1019,6 +1042,21 @@
         // Configuration
         const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
         const ZED_API = 'https://api.zedchampions.com/v1';
+        const ZED_API_PROXY = '/api/zed'; // Proxy for Next.js deployment
+        
+        // Detect if we're in a Next.js environment or standalone
+        const isNextJSEnvironment = window.location.pathname.startsWith('/api/') || 
+                                   document.querySelector('script[src*="next"]') !== null;
+        
+        // Choose API endpoint based on environment
+        const getZedApiUrl = (endpoint) => {
+            // Try proxy first (for Next.js deployment)
+            if (isNextJSEnvironment || window.location.hostname === 'localhost') {
+                return `${ZED_API_PROXY}/${endpoint}`;
+            }
+            // Fallback to direct API (will likely fail due to CORS)
+            return `${ZED_API}/${endpoint}`;
+        };
         
         // Global State
         let currentHorseData = null;
@@ -1305,14 +1343,19 @@
             try {
                 showStatus('Importing racing horses...', 'warning', 'settings-status');
                 
-                const response = await fetch(`${ZED_API}/horses?type=racing`, {
+                const apiUrl = getZedApiUrl('horses?type=racing');
+                const response = await fetch(apiUrl, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     }
                 });
                 
                 if (!response.ok) {
+                    if (response.status === 0 || response.status === 404) {
+                        throw new Error('CORS_ERROR');
+                    }
                     throw new Error(`API responded with ${response.status}: ${response.statusText}`);
                 }
                 
@@ -1329,8 +1372,12 @@
                 
             } catch (error) {
                 console.error('Import error:', error);
-                const errorMsg = handleApiError(error, 'importing racing horses');
-                showStatus(errorMsg, 'error', 'settings-status');
+                if (error.message === 'CORS_ERROR') {
+                    showCorsErrorMessage();
+                } else {
+                    const errorMsg = handleApiError(error, 'importing racing horses');
+                    showStatus(errorMsg, 'error', 'settings-status');
+                }
             }
         }
 
@@ -1345,14 +1392,19 @@
             try {
                 showStatus('Importing breeding horses...', 'warning', 'settings-status');
                 
-                const response = await fetch(`${ZED_API}/horses?type=breeding`, {
+                const apiUrl = getZedApiUrl('horses?type=breeding');
+                const response = await fetch(apiUrl, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     }
                 });
                 
                 if (!response.ok) {
+                    if (response.status === 0 || response.status === 404) {
+                        throw new Error('CORS_ERROR');
+                    }
                     throw new Error(`API responded with ${response.status}: ${response.statusText}`);
                 }
                 
@@ -1369,8 +1421,12 @@
                 
             } catch (error) {
                 console.error('Import error:', error);
-                const errorMsg = handleApiError(error, 'importing breeding horses');
-                showStatus(errorMsg, 'error', 'settings-status');
+                if (error.message === 'CORS_ERROR') {
+                    showCorsErrorMessage();
+                } else {
+                    const errorMsg = handleApiError(error, 'importing breeding horses');
+                    showStatus(errorMsg, 'error', 'settings-status');
+                }
             }
         }
 
@@ -1387,19 +1443,26 @@
                 
                 // Import both racing and breeding horses
                 const [racingResponse, breedingResponse] = await Promise.all([
-                    fetch(`${ZED_API}/horses?type=racing`, {
+                    fetch(getZedApiUrl('horses?type=racing'), {
                         headers: {
                             'Authorization': `Bearer ${token}`,
-                            'Accept': 'application/json'
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
                         }
                     }),
-                    fetch(`${ZED_API}/horses?type=breeding`, {
+                    fetch(getZedApiUrl('horses?type=breeding'), {
                         headers: {
                             'Authorization': `Bearer ${token}`,
-                            'Accept': 'application/json'
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
                         }
                     })
                 ]);
+                
+                // Check for CORS errors
+                if (racingResponse.status === 0 || breedingResponse.status === 0) {
+                    throw new Error('CORS_ERROR');
+                }
                 
                 const racingData = racingResponse.ok ? await racingResponse.json() : { horses: [] };
                 const breedingData = breedingResponse.ok ? await breedingResponse.json() : { horses: [] };
@@ -1420,8 +1483,33 @@
                 
             } catch (error) {
                 console.error('Import error:', error);
-                const errorMsg = handleApiError(error, 'importing horses');
-                showStatus(errorMsg, 'error', 'settings-status');
+                if (error.message === 'CORS_ERROR') {
+                    showCorsErrorMessage();
+                } else {
+                    const errorMsg = handleApiError(error, 'importing horses');
+                    showStatus(errorMsg, 'error', 'settings-status');
+                }
+            }
+        }
+
+        // Show CORS error message with alternative solutions
+        function showCorsErrorMessage() {
+            const statusElement = document.getElementById('settings-status');
+            if (statusElement) {
+                statusElement.innerHTML = `
+                    <div class="status-message status-error">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Import Not Available (CORS Restriction)</h4>
+                        <p>Direct import from ZED Champions API is blocked by browser security policies.</p>
+                        <h5>Alternative Import Methods:</h5>
+                        <ol>
+                            <li><strong>Manual Import:</strong> Search for horses by ID in the Horse Search tab</li>
+                            <li><strong>Data Export:</strong> Export your data from ZED Champions and import the JSON file</li>
+                            <li><strong>Next.js Deployment:</strong> Deploy this app to Vercel/Netlify for proxy support</li>
+                        </ol>
+                        <p><small>For developers: This app needs to run through a server proxy to access the ZED API.</small></p>
+                    </div>
+                `;
+                statusElement.style.display = 'block';
             }
         }
 
@@ -1508,23 +1596,33 @@
                 return;
             }
             
-            fetch('https://api.zedchampions.com/v1/me', {
+            const apiUrl = getZedApiUrl('me');
+            
+            fetch(apiUrl, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 }
             })
             .then(response => {
+                if (response.status === 0) {
+                    throw new Error('CORS_ERROR');
+                }
                 if (response.ok) {
-                    showStatus('API connection successful', 'success', 'settings-status');
+                    showStatus('API connection successful! ✅', 'success', 'settings-status');
                 } else {
-                    throw new Error('Invalid API token or connection issue');
+                    throw new Error(`Invalid API token or connection issue (${response.status})`);
                 }
             })
             .catch(error => {
                 console.error('Connection test error:', error);
-                showStatus('API connection failed: ' + error.message, 'error', 'settings-status');
+                if (error.message === 'CORS_ERROR') {
+                    showCorsErrorMessage();
+                } else {
+                    showStatus('API connection failed: ' + error.message, 'error', 'settings-status');
+                }
             });
         }
 
