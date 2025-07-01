@@ -1,4 +1,6 @@
-export default function handler(req, res) {
+export default async function handler(req, res) {
+  console.log('Test API endpoint called:', req.method, req.url);
+  
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,12 +12,26 @@ export default function handler(req, res) {
     return res.status(200).end();
   }
 
-  // Simple test endpoint
-  res.status(200).json({ 
-    status: 'success',
-    message: 'API is working!',
-    timestamp: new Date().toISOString(),
-    method: req.method,
-    url: req.url
-  });
+  try {
+    // Simple test endpoint
+    const response = {
+      status: 'success',
+      message: 'StableFields API is working perfectly!',
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      url: req.url,
+      userAgent: req.headers['user-agent'],
+      environment: process.env.NODE_ENV || 'unknown'
+    };
+    
+    console.log('Sending response:', response);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error('Test API error:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
 }
