@@ -455,6 +455,192 @@
             display: inline-block;
             margin-left: 0.5rem;
         }
+
+        /* Analysis Tab Styles */
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-range {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 212, 170, 0.3);
+        }
+
+        .form-range::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 212, 170, 0.3);
+        }
+
+        .range-display {
+            display: inline-block;
+            margin-left: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--bg-card);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(0, 212, 170, 0.05);
+        }
+
+        .augment-combo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .augment-combo span {
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .augment-fire { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+        .augment-water { background: rgba(74, 144, 226, 0.2); color: #4a90e2; }
+        .augment-earth { background: rgba(139, 195, 74, 0.2); color: #8bc34a; }
+        .augment-wind { background: rgba(186, 104, 200, 0.2); color: #ba68c8; }
+        .augment-lightning { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            padding: 1rem;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .analytics-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .analytics-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .analytics-content {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .card-header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -595,16 +781,153 @@
 
         <!-- Analysis Tab -->
         <div id="analysis" class="tab-content">
+            <!-- Global Statistics Overview -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-globe"></i>
+                        Global ZedSight Statistics
+                    </h2>
+                </div>
+                
+                <div id="global-stats-container">
+                    <!-- Global stats will be populated here -->
+                </div>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-filter"></i>
+                        Analysis Filters
+                    </h2>
+                </div>
+                
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label class="form-label">Bloodline</label>
+                        <select id="bloodline-filter" class="form-input">
+                            <option value="all">All Bloodlines</option>
+                            <option value="nakamoto">Nakamoto</option>
+                            <option value="szabo">Szabo</option>
+                            <option value="finney">Finney</option>
+                            <option value="buterin">Buterin</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Minimum Races</label>
+                        <input type="number" id="min-races-filter" class="form-input" 
+                               value="10" min="1" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Max Win Rate %</label>
+                        <input type="range" id="winrate-range" class="form-range" 
+                               min="0" max="100" value="100" 
+                               oninput="document.getElementById('winrate-display').textContent = this.value + '%'">
+                        <span id="winrate-display" class="range-display">100%</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="applyAugmentFilters()">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Results -->
             <div class="card">
                 <div class="card-header">
                     <h2 class="card-title">
                         <i class="fas fa-chart-bar"></i>
-                        Advanced Analysis
+                        Augment Combination Analysis
+                    </h2>
+                    <div class="card-header-actions">
+                        <button class="btn btn-sm" onclick="loadGlobalAugmentAnalysis()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="analysis-results">
+                    <!-- Analysis results will be populated here -->
+                </div>
+                
+                <!-- Global Augment Combinations Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Augment Combination</th>
+                                <th>Races</th>
+                                <th>Win Rate</th>
+                                <th>Avg Finish</th>
+                                <th>Avg Odds</th>
+                                <th>Avg Field</th>
+                                <th>MM Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody id="global-augment-tbody">
+                            <!-- Table data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Field Size Analysis</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="field-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Time Trends</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="time-trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Analytics -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-analytics"></i>
+                        Performance Analytics
                     </h2>
                 </div>
                 
-                <div class="chart-container">
-                    <canvas id="analysis-chart"></canvas>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-title">Top Performing Combinations</div>
+                        <div id="top-combinations" class="analytics-content">
+                            <!-- Top combinations will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-title">Field Performance</div>
+                        <div id="field-performance" class="analytics-content">
+                            <!-- Field performance data will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-title">Recent Trends</div>
+                        <div id="recent-trends" class="analytics-content">
+                            <!-- Recent trends will be populated here -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -746,6 +1069,7 @@
             // Load tab-specific data
             if (tabId === 'dashboard') loadDashboard();
             if (tabId === 'stable') loadStable();
+            if (tabId === 'analysis') initializeAnalysisTab();
         }
 
         // Horse Search Functions
@@ -1271,16 +1595,18 @@
         };
 
         // Global Augment Analysis (main ZedSight feature)
-        async function loadGlobalAugmentAnalysis() {
+        async function loadGlobalAugmentAnalysis(filters = {}) {
             try {
                 showAnalysisLoading();
                 
-                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.augmentCombinations}`);
+                const params = new URLSearchParams(filters);
+                const response = await fetch(`${ZEDSIGHT_API}${ZEDSIGHT_ENDPOINTS.augmentCombinations}?${params}`);
                 const data = await response.json();
                 
                 if (data.success && data.combinations) {
                     displayGlobalAugmentTable(data.combinations);
                     updateAnalysisStats(data.globalStats);
+                    updateAnalyticsCards(data);
                 } else {
                     showAnalysisError('Failed to load augment analysis');
                 }
