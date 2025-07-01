@@ -134,7 +134,7 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    showStatus(`✅ API Connectivity OK! (${response.status})`, 'success');
+                    showStatus(`✅ API Connectivity SUCCESS! StableFields API is working perfectly (${response.status})`, 'success');
                     showResults(data);
                 } else {
                     showStatus(`❌ API Error: ${response.status}`, 'error');
