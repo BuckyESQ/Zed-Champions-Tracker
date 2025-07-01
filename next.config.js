@@ -25,36 +25,6 @@ const nextConfig = {
       },
     ];
   },
-
-  // Rewrites for serving static files
-  async rewrites() {
-    return [
-      {
-        source: '/',
-        destination: '/stablefields-tracker.html',
-      },
-      {
-        source: '/app',
-        destination: '/stablefields-tracker.html',
-      },
-      {
-        source: '/tracker',
-        destination: '/stablefields-tracker.html',
-      },
-      {
-        source: '/test',
-        destination: '/zed-api-test-enhanced.html',
-      },
-      {
-        source: '/status',
-        destination: '/api-status.html',
-      },
-      {
-        source: '/legacy',
-        destination: '/archive/legacy-tracker.html',
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;
