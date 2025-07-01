@@ -87,13 +87,13 @@
             <label for="testEndpoint">Test Endpoint:</label>
             <select id="testEndpoint">
                 <option value="me">User Profile (/me)</option>
-                <option value="horses?type=racing">Racing Horses</option>
-                <option value="horses?type=breeding">Breeding Horses</option>
-                <option value="stable/racing">Stable Racing (Direct)</option>
-                <option value="stable/breeding">Stable Breeding (Direct)</option>
+                <option value="racing">Racing Horses (/racing)</option>
+                <option value="breeding">Breeding Horses (/breeding)</option>
+                <option value="test">API Test (/test)</option>
             </select>
         </div>
         
+        <button onclick="testAPIConnectivity()">🔌 Test API Connectivity</button>
         <button onclick="testBearerToken()">🔑 Test Bearer Token</button>
         <button onclick="testDirectAPI()">🌐 Test Direct ZED API (Will Fail)</button>
         <button onclick="clearResults()">🗑️ Clear Results</button>
@@ -117,6 +117,33 @@
         function clearResults() {
             document.getElementById('results').style.display = 'none';
             document.getElementById('status').innerHTML = '';
+        }
+        
+        async function testAPIConnectivity() {
+            showStatus('🔄 Testing basic API connectivity...', 'warning');
+            
+            try {
+                const response = await fetch('/api/test', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus(`✅ API Connectivity OK! (${response.status})`, 'success');
+                    showResults(data);
+                } else {
+                    showStatus(`❌ API Error: ${response.status}`, 'error');
+                    showResults(data);
+                }
+            } catch (error) {
+                showStatus(`❌ API Connectivity Failed: ${error.message}`, 'error');
+                showResults({error: error.message, stack: error.stack});
+            }
         }
         
         async function testBearerToken() {
