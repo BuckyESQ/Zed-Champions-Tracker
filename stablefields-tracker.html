@@ -1072,6 +1072,14 @@
             if (tabId === 'analysis') initializeAnalysisTab();
         }
 
+        // Initialize Analysis Tab
+        function initializeAnalysisTab() {
+            showAnalysisLoading();
+            loadGlobalAugmentAnalysis();
+            loadGlobalStats();
+            loadFieldAverages();
+        }
+
         // Horse Search Functions
         async function searchHorse() {
             const nameInput = document.getElementById('horse-search-input');
@@ -1698,7 +1706,7 @@
             }
         }
 
-        // Advanced Filtering Functions
+        // Enhanced applyAugmentFilters function
         function applyAugmentFilters() {
             const bloodline = document.getElementById('bloodline-filter').value;
             const minRaces = document.getElementById('min-races-filter').value;
@@ -1706,20 +1714,86 @@
             
             const filters = {
                 bloodline: bloodline !== 'all' ? bloodline : '',
-                minRaces: minRaces || 10,
+                minRaces: parseInt(minRaces) || 10,
                 winRateMin: 0,
-                winRateMax: winRateRange || 100
+                winRateMax: parseInt(winRateRange) || 100
             };
             
+            showAnalysisLoading();
             loadGlobalAugmentAnalysis(filters);
         }
 
-        // Chart Display Functions
+        // Missing utility functions for Analysis tab
+        function showAnalysisLoading() {
+            const container = document.getElementById('analysis-results');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <div class="spinner"></div>
+                        <p style="color: var(--text-secondary); margin-top: 1rem;">
+                            Loading ZedSight analysis data...
+                        </p>
+                    </div>
+                `;
+            }
+        }
+
+        function showAnalysisError(message) {
+            const container = document.getElementById('analysis-results');
+            if (container) {
+                container.innerHTML = `
+                    <div class="status-message status-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        ${message}
+                    </div>
+                `;
+            }
+        }
+
+        function updateAnalysisStats(stats) {
+            if (!stats) return;
+            
+            const elements = {
+                'total-combinations': stats.totalCombinations || 0,
+                'total-races-analyzed': stats.totalRaces || 0,
+                'avg-global-winrate': `${stats.avgWinRate || 0}%`,
+                'top-combination': stats.topCombination || 'N/A'
+            };
+            
+            Object.entries(elements).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) element.textContent = value;
+            });
+
+            // Also show a success message in the results container
+            const container = document.getElementById('analysis-results');
+            if (container && stats.totalCombinations) {
+                container.innerHTML = `
+                    <div class="status-message status-success">
+                        <i class="fas fa-check-circle"></i>
+                        Successfully loaded ${stats.totalCombinations} augment combinations from ${stats.totalRaces} races
+                    </div>
+                `;
+            }
+        }
+
+        // Add missing chart cleanup and error handling
+        let fieldChart = null;
+        let timeTrendChart = null;
+
         function displayFieldAveragesChart(fieldData) {
             const ctx = document.getElementById('field-chart');
-            if (!ctx) return;
+            if (!ctx) {
+                console.warn('Field chart canvas not found');
+                return;
+            }
             
-            new Chart(ctx, {
+            // Destroy existing chart
+            if (fieldChart) {
+                fieldChart.destroy();
+            }
+            
+            fieldChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: fieldData.map(d => d.fieldSize),
@@ -1727,11 +1801,13 @@
                         label: 'Average Finish Time',
                         data: fieldData.map(d => d.avgTime),
                         borderColor: 'var(--primary)',
-                        backgroundColor: 'rgba(0, 212, 170, 0.1)'
+                        backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         title: {
                             display: true,
@@ -1758,9 +1834,17 @@
 
         function displayFinishTimeChart(timeData) {
             const ctx = document.getElementById('time-trend-chart');
-            if (!ctx) return;
+            if (!ctx) {
+                console.warn('Time trend chart canvas not found');
+                return;
+            }
             
-            new Chart(ctx, {
+            // Destroy existing chart
+            if (timeTrendChart) {
+                timeTrendChart.destroy();
+            }
+            
+            timeTrendChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: timeData.map(d => d.date),
@@ -1768,11 +1852,13 @@
                         label: 'Average Finish Time Trend',
                         data: timeData.map(d => d.avgTime),
                         borderColor: 'var(--secondary)',
-                        backgroundColor: 'rgba(108, 92, 231, 0.1)'
+                        backgroundColor: 'rgba(108, 92, 231, 0.1)',
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         title: {
                             display: true,
@@ -1784,6 +1870,16 @@
                             type: 'time',
                             time: {
                                 unit: 'day'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Finish Time (seconds)'
                             }
                         }
                     }
@@ -1791,75 +1887,14 @@
             });
         }
 
-        // Utility Functions for Analysis
-        function showAnalysisLoading() {
-            const container = document.getElementById('analysis-results');
-            if (container) {
-                container.innerHTML = '<div class="spinner"></div><p>Loading ZedSight analysis data...</p>';
-            }
-        }
-
-        function showAnalysisError(message) {
-            const container = document.getElementById('analysis-results');
-            if (container) {
-                container.innerHTML = `<div class="status-message status-error">${message}</div>`;
-            }
-        }
-
-        function updateAnalysisStats(stats) {
-            if (!stats) return;
-            
-            const elements = {
-                'total-combinations': stats.totalCombinations || 0,
-                'total-races-analyzed': stats.totalRaces || 0,
-                'avg-global-winrate': `${stats.avgWinRate || 0}%`,
-                'top-combination': stats.topCombination || 'N/A'
-            };
-            
-            Object.entries(elements).forEach(([id, value]) => {
-                const element = document.getElementById(id);
-                if (element) element.textContent = value;
-            });
-        }
-
-        function updateGlobalStatsDisplay(stats) {
-            const container = document.getElementById('global-stats-container');
-            if (!container) return;
-            
-            container.innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <span class="stat-value">${stats.totalHorses || 0}</span>
-                        <div class="stat-label">Total Horses Tracked</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-value">${stats.totalRaces || 0}</span>
-                        <div class="stat-label">Total Races Analyzed</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-value">${stats.avgWinRate || 0}%</span>
-                        <div class="stat-label">Global Win Rate</div>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-value">${stats.avgFinishTime || 0}s</span>
-                        <div class="stat-label">Average Finish Time</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Initialize Analysis Tab
-        function initializeAnalysisTab() {
-            loadGlobalAugmentAnalysis();
-            loadGlobalStats();
-            loadFieldAverages();
-        }
-
         // Enhanced error handling for API calls
         function handleApiError(error, context) {
             console.error(`API Error (${context}):`, error);
             if (error.response && error.response.data) {
                 return error.response.data.message || 'Unknown error occurred';
+            }
+            if (error.message) {
+                return error.message;
             }
             return 'Network error or invalid response';
         }
