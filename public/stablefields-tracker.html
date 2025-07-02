@@ -2066,13 +2066,37 @@
 
         // My Stable Functions
         function loadStable() {
+            console.log('Loading stable from localStorage...');
             const horses = JSON.parse(localStorage.getItem('horses') || '[]');
-            console.log(`🏇 Loading stable with ${horses.length} horses:`, horses.map(h => h.name));
+            console.log(`🏇 Loading stable with ${horses.length} horses:`, horses.map(h => h.name || 'Unnamed'));
+            
             const stableCount = document.getElementById('stable-count');
             const emptyState = document.getElementById('empty-stable');
             const stableStats = document.getElementById('stable-stats');
             const stableFilters = document.getElementById('stable-filters');
             const horsesGrid = document.getElementById('stable-horses-grid');
+            
+            // Add null checks to prevent errors
+            if (!stableCount) {
+                console.error('❌ Element stable-count not found');
+                return;
+            }
+            if (!emptyState) {
+                console.error('❌ Element empty-stable not found');
+                return;
+            }
+            if (!stableStats) {
+                console.error('❌ Element stable-stats not found');
+                return;
+            }
+            if (!stableFilters) {
+                console.error('❌ Element stable-filters not found');
+                return;
+            }
+            if (!horsesGrid) {
+                console.error('❌ Element stable-horses-grid not found');
+                return;
+            }
             
             stableCount.textContent = horses.length;
             
@@ -2081,12 +2105,14 @@
                 stableStats.style.display = 'none';
                 stableFilters.style.display = 'none';
                 horsesGrid.style.display = 'none';
+                console.log('📭 Stable is empty, showing empty state');
             } else {
                 emptyState.style.display = 'none';
                 stableStats.style.display = 'grid';
                 stableFilters.style.display = 'grid';
                 horsesGrid.style.display = 'grid';
                 
+                console.log('📊 Updating stable stats and displaying horses');
                 updateStableStats(horses);
                 populateFilters(horses);
                 displayStableHorses(horses);
