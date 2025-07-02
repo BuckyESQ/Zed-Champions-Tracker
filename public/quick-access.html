@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏇 StableFields - Quick Access Menu</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+            color: white;
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #00d4aa, #6c5ce7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 1.2rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .tool-card {
+            background: rgba(38, 38, 38, 0.8);
+            border: 2px solid #404040;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            border-color: #00d4aa;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 212, 170, 0.2);
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .tool-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00d4aa;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-description {
+            color: #a0a0a0;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .tool-button {
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .tool-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 170, 0.3);
+        }
+
+        .status-section {
+            background: rgba(38, 38, 38, 0.8);
+            border: 2px solid #404040;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .status-item {
+            background: rgba(0, 212, 170, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00d4aa;
+        }
+
+        .status-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏇 StableFields</h1>
+            <p class="subtitle">ZED Champions Tracker Pro - Quick Access Menu</p>
+        </div>
+
+        <div class="status-section">
+            <h2>📊 Current Status</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-value" id="horse-count">0</div>
+                    <div class="status-label">Horses in Stable</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value">✅</div>
+                    <div class="status-label">Import System</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value">✅</div>
+                    <div class="status-label">Enhanced Cards</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value">✅</div>
+                    <div class="status-label">Race History</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tools-grid">
+            <div class="tool-card" onclick="openTool('/public/stablefields-tracker.html')">
+                <div class="tool-icon">🏇</div>
+                <div class="tool-title">Main Stable Tracker</div>
+                <div class="tool-description">
+                    Your main stable with enhanced horse cards showing race history, augment usage, and performance trends.
+                </div>
+                <button class="tool-button">Open Stable</button>
+            </div>
+
+            <div class="tool-card" onclick="openTool('/public/search-import.html')">
+                <div class="tool-icon">🔍</div>
+                <div class="tool-title">Import Wizard</div>
+                <div class="tool-description">
+                    Search and import horses from ZedSight with detailed race history and augment data.
+                </div>
+                <button class="tool-button">Import Horses</button>
+            </div>
+
+            <div class="tool-card" onclick="openTool('/public/enhanced-horse-test.html')">
+                <div class="tool-icon">🧪</div>
+                <div class="tool-title">Enhanced Test Tool</div>
+                <div class="tool-description">
+                    Test the new enhanced horse cards with sample data including race history and augments.
+                </div>
+                <button class="tool-button">Test Features</button>
+            </div>
+
+            <div class="tool-card" onclick="openTool('/public/stable-quick-test.html')">
+                <div class="tool-icon">⚡</div>
+                <div class="tool-title">Quick Test</div>
+                <div class="tool-description">
+                    Quick testing tool for basic stable functionality and data management.
+                </div>
+                <button class="tool-button">Quick Test</button>
+            </div>
+
+            <div class="tool-card" onclick="openTool('/public/horse-data-inspector.html')">
+                <div class="tool-icon">🔍</div>
+                <div class="tool-title">Data Inspector</div>
+                <div class="tool-description">
+                    Inspect and analyze your horse data structure and contents in detail.
+                </div>
+                <button class="tool-button">Inspect Data</button>
+            </div>
+
+            <div class="tool-card" onclick="openTool('/public/dom-test.html')">
+                <div class="tool-icon">🧩</div>
+                <div class="tool-title">DOM Test</div>
+                <div class="tool-description">
+                    Test DOM elements and check for any missing components or errors.
+                </div>
+                <button class="tool-button">Test DOM</button>
+            </div>
+        </div>
+
+        <div class="status-section">
+            <h2>🚀 What's New in Enhanced Horse Cards</h2>
+            <ul style="color: #a0a0a0; line-height: 1.6;">
+                <li>🏆 <strong>Race History:</strong> View last 5 races with positions, times, and tracks</li>
+                <li>✨ <strong>Augment Usage:</strong> See which augment combinations work best</li>
+                <li>📈 <strong>Performance Trends:</strong> Track if horses are improving or declining</li>
+                <li>👁️ <strong>Detailed View:</strong> Modal popup with complete horse information</li>
+                <li>🔄 <strong>Interactive UI:</strong> Collapsible sections and smooth animations</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function openTool(url) {
+            window.open(url, '_blank');
+        }
+
+        function updateStatus() {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            document.getElementById('horse-count').textContent = horses.length;
+        }
+
+        // Update status on load
+        window.addEventListener('load', updateStatus);
+    </script>
+</body>
+</html>
