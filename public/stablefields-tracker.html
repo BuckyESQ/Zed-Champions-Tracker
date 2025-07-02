@@ -1373,7 +1373,7 @@
                 <button class="tab-btn" data-tab="breeding">
                     <i class="fas fa-heart"></i> Breeding
                 </button>
-                <button class="tab-btn" onclick="window.location.href='/search-import.html'" style="background: var(--gradient); color: white; position: relative;">
+                <button class="tab-btn" onclick="window.location.href='/public/search-import.html'" style="background: var(--gradient); color: white; position: relative;">
                     <i class="fas fa-magic"></i> Import Wizard
                     <span style="position: absolute; top: -5px; right: -5px; background: #ff4757; color: white; border-radius: 50%; width: 12px; height: 12px; font-size: 8px; display: flex; align-items: center; justify-content: center;">!</span>
                 </button>
@@ -1430,7 +1430,7 @@
                         My Stable (<span id="stable-count">0</span> horses)
                     </h2>
                     <div class="header-actions">
-                        <button class="btn" onclick="window.location.href='/search-import.html'" style="background: var(--gradient);">
+                        <button class="btn" onclick="window.location.href='/public/search-import.html'" style="background: var(--gradient);">
                             <i class="fas fa-magic"></i> Import Wizard
                         </button>
                         <button class="btn btn-secondary" onclick="exportStableData()">
@@ -2067,7 +2067,9 @@
         function createHorseCard(horse) {
             const hasDetails = horse.details && horse.details.success;
             const races = hasDetails ? horse.details.total_races || 0 : 'N/A';
-            const winRate = hasDetails && horse.details.win_percentage ? `${horse.details.win_percentage.toFixed(1)}%` : 'N/A';
+            const winRate = hasDetails && horse.details.win_percentage && typeof horse.details.win_percentage === 'number' 
+                ? `${horse.details.win_percentage.toFixed(1)}%` 
+                : 'N/A';
             
             return `
                 <div class="horse-card" onclick="toggleHorseSelection('${horse.id}')">
@@ -2427,7 +2429,7 @@
                             <div class="quick-stat-label">Races</div>
                         </div>
                         <div class="quick-stat">
-                            <span class="quick-stat-value">${horse.win_percentage ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</span>
+                            <span class="quick-stat-value">${horse.win_percentage && typeof horse.win_percentage === 'number' ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</span>
                             <div class="quick-stat-label">Win Rate</div>
                         </div>
                     </div>
@@ -2507,6 +2509,17 @@
             const raceDate = race.date ? new Date(race.date).toLocaleDateString() : 'Unknown';
             const finishTime = race.finish_time || race.time;
             
+            // Safe number conversion for finish time
+            let finishTimeDisplay = '';
+            if (finishTime) {
+                const timeNum = parseFloat(finishTime);
+                if (!isNaN(timeNum)) {
+                    finishTimeDisplay = ` • Time: ${timeNum.toFixed(2)}s`;
+                } else if (typeof finishTime === 'string') {
+                    finishTimeDisplay = ` • Time: ${finishTime}`;
+                }
+            }
+            
             return `
                 <div class="race-item">
                     <div class="race-header">
@@ -2518,7 +2531,7 @@
                     <div class="race-details">
                         ${race.track ? `Track: ${race.track}` : ''}
                         ${race.distance ? ` • Distance: ${race.distance}m` : ''}
-                        ${finishTime ? ` • Time: ${finishTime.toFixed(2)}s` : ''}
+                        ${finishTimeDisplay}
                         ${race.odds ? ` • Odds: ${race.odds}` : ''}
                     </div>
                 </div>
@@ -2542,7 +2555,7 @@
                     </div>
                     <div class="augment-usage">
                         Used ${usage} times
-                        ${winRate ? ` • ${winRate.toFixed(1)}% win rate` : ''}
+                        ${winRate && typeof winRate === 'number' ? ` • ${winRate.toFixed(1)}% win rate` : ''}
                     </div>
                 </div>
             `;
@@ -3906,7 +3919,7 @@
                             <div class="stat-label">Win Rate</div>
                         </div>
                         <div class="stat-card">
-                            <span class="stat-value">${details.best_finish_time ? details.best_finish_time.toFixed(2) + 's' : 'N/A'}</span>
+                            <span class="stat-value">${details.best_finish_time && typeof details.best_finish_time === 'number' ? details.best_finish_time.toFixed(2) + 's' : 'N/A'}</span>
                             <div class="stat-label">Best Time</div>
                         </div>
                     </div>
@@ -4107,9 +4120,9 @@
                         <div>
                             <h3>Performance</h3>
                             <p><strong>Total Races:</strong> ${horse.total_races || 'N/A'}</p>
-                            <p><strong>Win Rate:</strong> ${horse.win_percentage ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</p>
-                            <p><strong>Best Time:</strong> ${horse.best_finish_time ? horse.best_finish_time.toFixed(2) + 's' : 'N/A'}</p>
-                            <p><strong>Avg Position:</strong> ${horse.avg_position ? horse.avg_position.toFixed(1) : 'N/A'}</p>
+                            <p><strong>Win Rate:</strong> ${horse.win_percentage && typeof horse.win_percentage === 'number' ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</p>
+                            <p><strong>Best Time:</strong> ${horse.best_finish_time && typeof horse.best_finish_time === 'number' ? horse.best_finish_time.toFixed(2) + 's' : 'N/A'}</p>
+                            <p><strong>Avg Position:</strong> ${horse.avg_position && typeof horse.avg_position === 'number' ? horse.avg_position.toFixed(1) : 'N/A'}</p>
                         </div>
                     </div>
                     
@@ -4128,7 +4141,7 @@
                                         </div>
                                         ${race.track ? `<div><strong>Track:</strong> ${race.track}</div>` : ''}
                                         ${race.distance ? `<div><strong>Distance:</strong> ${race.distance}m</div>` : ''}
-                                        ${race.finish_time ? `<div><strong>Time:</strong> ${race.finish_time.toFixed(2)}s</div>` : ''}
+                                        ${race.finish_time && typeof race.finish_time === 'number' ? `<div><strong>Time:</strong> ${race.finish_time.toFixed(2)}s</div>` : race.finish_time ? `<div><strong>Time:</strong> ${race.finish_time}</div>` : ''}
                                     </div>
                                 `).join('')}
                             </div>
@@ -4155,7 +4168,7 @@
                                         </div>
                                         <div style="color: var(--text-secondary); font-size: 0.9rem;">
                                             Used ${augment.usage_count || augment.races || 'N/A'} times
-                                            ${augment.win_rate ? ` • ${augment.win_rate.toFixed(1)}% win rate` : ''}
+                                            ${augment.win_rate && typeof augment.win_rate === 'number' ? ` • ${augment.win_rate.toFixed(1)}% win rate` : ''}
                                         </div>
                                     </div>
                                 `).join('')}
