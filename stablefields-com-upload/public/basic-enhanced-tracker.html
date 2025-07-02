@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StableFields - Basic Enhanced Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: #00d4aa;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .horse-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .horse-card {
+            background: #2a2a2a;
+            border: 2px solid #444;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .horse-card:hover {
+            border-color: #00d4aa;
+            transform: translateY(-2px);
+        }
+        .horse-name {
+            color: #00d4aa;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .horse-info {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .stat {
+            background: #333;
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .stat-value {
+            color: #00d4aa;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #aaa;
+        }
+        .section {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #444;
+        }
+        .section-header {
+            cursor: pointer;
+            color: #00d4aa;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .section-content {
+            display: none;
+            padding: 0.5rem;
+            background: #333;
+            border-radius: 6px;
+        }
+        .section-content.expanded {
+            display: block;
+        }
+        .race-item {
+            background: #444;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .position-badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .position-win { background: #4CAF50; color: white; }
+        .position-place { background: #FF9800; color: white; }
+        .position-show { background: #9C27B0; color: white; }
+        .position-other { background: #666; color: white; }
+        .augment-tag {
+            display: inline-block;
+            background: #00d4aa;
+            color: black;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin: 0.1rem;
+        }
+        .empty-state {
+            text-align: center;
+            color: #666;
+            padding: 3rem;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .btn {
+            background: #00d4aa;
+            color: black;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0.5rem;
+        }
+        .btn:hover {
+            background: #00b894;
+        }
+        .btn-secondary {
+            background: #6c5ce7;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏇 StableFields Enhanced</h1>
+            <p>Your horses with race history and augment tracking</p>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="loadHorses()">🔄 Refresh Horses</button>
+            <button class="btn btn-secondary" onclick="addTestHorses()">🧪 Add Test Data</button>
+            <button class="btn btn-secondary" onclick="clearHorses()">🗑️ Clear All</button>
+            <button class="btn btn-secondary" onclick="openImporter()">🔍 Import More</button>
+        </div>
+
+        <div id="horse-count" style="text-align: center; margin-bottom: 1rem; color: #aaa;"></div>
+
+        <div id="horses-container" class="horse-grid"></div>
+    </div>
+
+    <script>
+        let horses = [];
+
+        function loadHorses() {
+            try {
+                horses = JSON.parse(localStorage.getItem('horses') || '[]');
+                displayHorses();
+                updateCount();
+            } catch (error) {
+                console.error('Error loading horses:', error);
+                horses = [];
+                displayHorses();
+            }
+        }
+
+        function updateCount() {
+            document.getElementById('horse-count').textContent = `${horses.length} horses in stable`;
+        }
+
+        function displayHorses() {
+            const container = document.getElementById('horses-container');
+            
+            if (horses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No horses in stable</h3>
+                        <p>Add some test data or import horses to get started!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = horses.map(horse => createHorseCard(horse)).join('');
+        }
+
+        function createHorseCard(horse) {
+            const hasRaces = horse.races && horse.races.length > 0;
+            const hasAugments = horse.augment_combinations && horse.augment_combinations.length > 0;
+            
+            return `
+                <div class="horse-card">
+                    <div class="horse-name">${horse.name || 'Unknown Horse'}</div>
+                    <div class="horse-info">
+                        ${horse.bloodline || 'Unknown'} • Gen ${horse.generation || '?'} • ${horse.gender || 'Unknown'}
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <span class="stat-value">${horse.speed_rating || 'N/A'}</span>
+                            <div class="stat-label">Speed</div>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">${horse.endurance_rating || 'N/A'}</span>
+                            <div class="stat-label">Endurance</div>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">${horse.total_races || 'N/A'}</span>
+                            <div class="stat-label">Races</div>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">${horse.win_percentage ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</span>
+                            <div class="stat-label">Win Rate</div>
+                        </div>
+                    </div>
+                    
+                    ${hasRaces ? `
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection('races-${horse.id}')">
+                                🏆 Recent Races (${horse.races.length}) ▼
+                            </div>
+                            <div class="section-content" id="races-${horse.id}">
+                                ${horse.races.slice(0, 5).map(race => `
+                                    <div class="race-item">
+                                        <span class="position-badge position-${getPositionClass(race.position || race.finish_position)}">
+                                            ${formatPosition(race.position || race.finish_position)}
+                                        </span>
+                                        ${race.track || 'Unknown Track'} • 
+                                        ${race.date ? new Date(race.date).toLocaleDateString() : 'Unknown Date'}
+                                        ${race.finish_time ? ` • ${race.finish_time.toFixed(2)}s` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${hasAugments ? `
+                        <div class="section">
+                            <div class="section-header" onclick="toggleSection('augments-${horse.id}')">
+                                ✨ Augments (${horse.augment_combinations.length}) ▼
+                            </div>
+                            <div class="section-content" id="augments-${horse.id}">
+                                ${horse.augment_combinations.slice(0, 3).map(augment => `
+                                    <div class="race-item">
+                                        <div>
+                                            ${(augment.combination || augment.augments || []).map(aug => 
+                                                `<span class="augment-tag">${aug}</span>`
+                                            ).join('')}
+                                        </div>
+                                        <small>Used ${augment.usage_count || augment.races || 'N/A'} times</small>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="margin-top: 1rem; font-size: 0.8rem; color: #666;">
+                        ID: ${horse.id ? horse.id.substring(0, 12) + '...' : 'Unknown'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.toggle('expanded');
+            }
+        }
+
+        function getPositionClass(position) {
+            if (position === 1) return 'win';
+            if (position === 2) return 'place';
+            if (position === 3) return 'show';
+            return 'other';
+        }
+
+        function formatPosition(position) {
+            if (position === 1) return '1st';
+            if (position === 2) return '2nd';
+            if (position === 3) return '3rd';
+            return position + 'th';
+        }
+
+        function addTestHorses() {
+            const testHorses = [
+                {
+                    id: "test-enhanced-001",
+                    name: "Thunder Champion",
+                    bloodline: "Nakamoto",
+                    generation: 1,
+                    gender: "Stallion",
+                    speed_rating: 88,
+                    endurance_rating: 82,
+                    total_races: 25,
+                    win_percentage: 68.5,
+                    races: [
+                        { position: 1, track: "Thunder Valley", date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), finish_time: 42.15 },
+                        { position: 2, track: "Lightning Downs", date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), finish_time: 47.82 },
+                        { position: 1, track: "Storm Circuit", date: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(), finish_time: 38.95 }
+                    ],
+                    augment_combinations: [
+                        { combination: ["Speed Boost", "Endurance Plus"], usage_count: 8 },
+                        { combination: ["Lightning Strike"], usage_count: 6 }
+                    ]
+                },
+                {
+                    id: "test-enhanced-002",
+                    name: "Storm Breaker",
+                    bloodline: "Finney",
+                    generation: 2,
+                    gender: "Mare",
+                    speed_rating: 84,
+                    endurance_rating: 89,
+                    total_races: 18,
+                    win_percentage: 55.6,
+                    races: [
+                        { position: 2, track: "Mystical Meadows", date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), finish_time: 44.56 },
+                        { position: 1, track: "Crystal Springs", date: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(), finish_time: 41.92 }
+                    ],
+                    augment_combinations: [
+                        { combination: ["Endurance Max", "Steady Pace"], usage_count: 10 }
+                    ]
+                }
+            ];
+
+            localStorage.setItem('horses', JSON.stringify(testHorses));
+            loadHorses();
+            alert('✅ Added 2 test horses with enhanced data!');
+        }
+
+        function clearHorses() {
+            if (confirm('Clear all horses from stable?')) {
+                localStorage.removeItem('horses');
+                loadHorses();
+            }
+        }
+
+        function openImporter() {
+            window.open('/public/search-import.html', '_blank');
+        }
+
+        // Load horses on page load
+        window.addEventListener('load', loadHorses);
+    </script>
+</body>
+</html>

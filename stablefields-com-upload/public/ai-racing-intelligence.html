@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Racing Intelligence - StableFields</title>
+    <link rel="icon" href="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20stroke%3D%22%2303dac6%22%20stroke-width%3D%222%22%3E%3Cpolyline%20points%3D%222%2C14%206%2C8%2010%2C10%2014%2C4%22%2F%3E%3C%2Fsvg%3E">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2e86c1;
+            --secondary-color: #3498db;
+            --accent-color: #0EB3E3;
+            --success-color: #4CAF50;
+            --warning-color: #FFC107;
+            --error-color: #F44336;
+            --background-color: #1a1a1a;
+            --surface-color: #2d3748;
+            --card-bg: rgba(45, 52, 54, 0.9);
+            --text-color: #f0f0f0;
+            --text-muted: #8e9ea9;
+            --border-color: #444;
+            --glow-color: rgba(14, 179, 227, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px var(--glow-color);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .racing-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .racing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .horse-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .horse-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .horse-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .horse-details h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .horse-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .ai-predictions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .prediction-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .prediction-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .prediction-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .win-probability .prediction-value {
+            color: var(--success-color);
+        }
+
+        .expected-value .prediction-value {
+            color: var(--warning-color);
+        }
+
+        .readiness-score .prediction-value {
+            color: var(--accent-color);
+        }
+
+        .recommendation-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .recommendation-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .augment-recommendation {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .augment-slot {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .augment-type {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .augment-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .confidence-indicator {
+            margin-top: 8px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .confidence-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--error-color), var(--warning-color), var(--success-color));
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .race-insights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .insight-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--accent-color);
+        }
+
+        .insight-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .navigation {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .nav-link {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .horse-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .ai-predictions {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .augment-recommendation {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> AI Racing Intelligence</h1>
+            <p>Advanced predictive analytics for ZED Champions racing</p>
+        </div>
+
+        <div class="navigation">
+            <a href="/public/stablefields-tracker.html" class="nav-link">
+                <i class="fas fa-arrow-left"></i> Back to Tracker
+            </a>
+            <a href="/public/search-import.html" class="nav-link">
+                <i class="fas fa-download"></i> Import Horses
+            </a>
+            <a href="/public/quick-access.html" class="nav-link">
+                <i class="fas fa-home"></i> Quick Access
+            </a>
+        </div>
+
+        <div id="racing-cards-container">
+            <!-- Racing cards will be populated by JavaScript -->
+        </div>
+
+        <div id="no-data" class="no-data" style="display: none;">
+            <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+            <h3>No Racing Data Available</h3>
+            <p>Import some horses and record race results to see AI predictions.</p>
+            <div style="margin-top: 20px;">
+                <a href="/public/search-import.html" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Import Horses
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // AI Racing Intelligence Engine
+        class AIRacingIntelligence {
+            constructor() {
+                this.horses = [];
+                this.races = [];
+                this.augments = this.getDefaultAugments();
+            }
+
+            getDefaultAugments() {
+                return {
+                    CPU: ['Void C100', 'Matrix C200', 'Neural C300'],
+                    RAM: ['Quantum R100', 'Vector R200', 'Flux R300'], 
+                    Hydraulic: ['Titan H100', 'Storm H200', 'Lightning H300']
+                };
+            }
+
+            loadData() {
+                try {
+                    this.horses = JSON.parse(localStorage.getItem('horses') || '[]');
+                    this.races = JSON.parse(localStorage.getItem('races') || '[]');
+                    
+                    // Load custom augments if available
+                    const savedAugments = localStorage.getItem('augments');
+                    if (savedAugments) {
+                        const customAugments = JSON.parse(savedAugments);
+                        // Merge with defaults
+                        Object.keys(customAugments).forEach(type => {
+                            if (this.augments[type]) {
+                                this.augments[type] = [...new Set([...this.augments[type], ...customAugments[type]])];
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.horses = [];
+                    this.races = [];
+                }
+            }
+
+            calculateHorseStats(horseId) {
+                const horse = this.horses.find(h => h.id === horseId);
+                if (!horse) return null;
+
+                const horseRaces = this.races.filter(r => r.horseId === horseId);
+                if (horseRaces.length === 0) return null;
+
+                const wins = horseRaces.filter(r => r.position === 1).length;
+                const places = horseRaces.filter(r => r.position === 2).length;
+                const shows = horseRaces.filter(r => r.position === 3).length;
+                const totalRaces = horseRaces.length;
+                
+                const winRate = (wins / totalRaces) * 100;
+                const avgPosition = horseRaces.reduce((sum, r) => sum + r.position, 0) / totalRaces;
+                
+                const racesWithOdds = horseRaces.filter(r => r.odds && !isNaN(r.odds));
+                const avgOdds = racesWithOdds.length > 0 
+                    ? racesWithOdds.reduce((sum, r) => sum + parseFloat(r.odds), 0) / racesWithOdds.length 
+                    : null;
+
+                const zedChange = horseRaces.reduce((sum, r) => sum + (parseFloat(r.zedChange) || 0), 0);
+                const roi = totalRaces > 0 ? (zedChange / totalRaces) : 0;
+
+                return {
+                    totalRaces,
+                    wins,
+                    places, 
+                    shows,
+                    winRate,
+                    avgPosition,
+                    avgOdds,
+                    zedChange,
+                    roi,
+                    recentForm: this.getRecentForm(horseRaces)
+                };
+            }
+
+            getRecentForm(races) {
+                // Get last 5 races, sorted by date
+                const recent = races
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 5);
+                
+                return recent.map(r => r.position);
+            }
+
+            calculateWinProbability(horse, stats) {
+                if (!stats || stats.totalRaces < 3) return 15; // Default for new horses
+
+                let probability = stats.winRate;
+                
+                // Adjust based on recent form
+                const recentForm = stats.recentForm;
+                if (recentForm.length > 0) {
+                    const recentAvg = recentForm.reduce((sum, pos) => sum + pos, 0) / recentForm.length;
+                    const formFactor = Math.max(0.5, Math.min(1.5, 3 / recentAvg));
+                    probability *= formFactor;
+                }
+
+                // Adjust based on star rating
+                if (horse.stars) {
+                    const starBonus = (parseFloat(horse.stars) - 3) * 2; // +/- 2% per star above/below 3
+                    probability += starBonus;
+                }
+
+                // Bloodline adjustments (based on legacy data patterns)
+                const bloodlineModifiers = {
+                    'Nakamoto': 1.1,
+                    'Szabo': 1.05,
+                    'Finney': 0.95,
+                    'Buterin': 1.0
+                };
+                probability *= (bloodlineModifiers[horse.bloodline] || 1.0);
+
+                return Math.max(5, Math.min(85, probability));
+            }
+
+            recommendAugments(horse, stats) {
+                if (!stats || stats.totalRaces < 2) {
+                    // Default recommendations for new horses
+                    return {
+                        CPU: this.augments.CPU[0] || 'Void C100',
+                        RAM: this.augments.RAM[0] || 'Quantum R100', 
+                        Hydraulic: this.augments.Hydraulic[0] || 'Titan H100',
+                        confidence: 60
+                    };
+                }
+
+                // Analyze augment performance for this horse
+                const horseRaces = this.races.filter(r => r.horseId === horse.id);
+                const augmentStats = this.analyzeAugmentPerformance(horseRaces);
+
+                // Find best performing augments
+                const bestCPU = this.findBestAugment(augmentStats, 'CPU') || this.augments.CPU[0];
+                const bestRAM = this.findBestAugment(augmentStats, 'RAM') || this.augments.RAM[0];
+                const bestHydraulic = this.findBestAugment(augmentStats, 'Hydraulic') || this.augments.Hydraulic[0];
+
+                const confidence = Math.min(95, 50 + (stats.totalRaces * 5));
+
+                return {
+                    CPU: bestCPU,
+                    RAM: bestRAM,
+                    Hydraulic: bestHydraulic,
+                    confidence
+                };
+            }
+
+            analyzeAugmentPerformance(races) {
+                const augmentStats = {};
+
+                races.forEach(race => {
+                    ['cpuAugment', 'ramAugment', 'hydraulicAugment'].forEach(augmentType => {
+                        const augmentName = race[augmentType];
+                        if (augmentName && augmentName !== 'None') {
+                            if (!augmentStats[augmentName]) {
+                                augmentStats[augmentName] = {
+                                    races: 0,
+                                    wins: 0,
+                                    totalPosition: 0,
+                                    zedChange: 0
+                                };
+                            }
+                            
+                            augmentStats[augmentName].races++;
+                            if (race.position === 1) augmentStats[augmentName].wins++;
+                            augmentStats[augmentName].totalPosition += race.position;
+                            augmentStats[augmentName].zedChange += parseFloat(race.zedChange) || 0;
+                        }
+                    });
+                });
+
+                // Calculate win rates and average positions
+                Object.keys(augmentStats).forEach(augment => {
+                    const stats = augmentStats[augment];
+                    stats.winRate = (stats.wins / stats.races) * 100;
+                    stats.avgPosition = stats.totalPosition / stats.races;
+                    stats.avgZedPerRace = stats.zedChange / stats.races;
+                });
+
+                return augmentStats;
+            }
+
+            findBestAugment(augmentStats, type) {
+                const typeAugments = this.augments[type] || [];
+                let bestAugment = null;
+                let bestScore = -1;
+
+                typeAugments.forEach(augment => {
+                    if (augmentStats[augment] && augmentStats[augment].races >= 2) {
+                        // Score based on win rate and average ZED per race
+                        const score = augmentStats[augment].winRate + (augmentStats[augment].avgZedPerRace / 100);
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestAugment = augment;
+                        }
+                    }
+                });
+
+                return bestAugment;
+            }
+
+            calculateExpectedValue(winProbability, avgOdds) {
+                if (!avgOdds || avgOdds <= 0) return 0;
+                
+                const winProb = winProbability / 100;
+                const expectedReturn = (winProb * avgOdds) - 1; // Subtract 1 for the initial bet
+                return expectedReturn * 100; // Convert to percentage
+            }
+
+            calculateReadinessScore(horse, stats) {
+                let score = 50; // Base score
+
+                if (stats) {
+                    // Adjust based on recent performance
+                    if (stats.recentForm.length > 0) {
+                        const recentAvg = stats.recentForm.reduce((sum, pos) => sum + pos, 0) / stats.recentForm.length;
+                        score += (4 - recentAvg) * 10; // Better recent positions = higher score
+                    }
+
+                    // Adjust based on experience
+                    score += Math.min(20, stats.totalRaces * 2);
+
+                    // Adjust based on ROI
+                    if (stats.roi > 0) score += 15;
+                    else if (stats.roi < -500) score -= 15;
+                }
+
+                // Star rating adjustment
+                if (horse.stars) {
+                    score += (parseFloat(horse.stars) - 3) * 5;
+                }
+
+                return Math.max(10, Math.min(100, score));
+            }
+
+            generateRaceInsights(horse, stats, predictions) {
+                const insights = [];
+
+                if (stats) {
+                    // Recent form insight
+                    if (stats.recentForm.length >= 3) {
+                        const improving = stats.recentForm.slice(0, 3).every((pos, i, arr) => 
+                            i === 0 || pos <= arr[i-1]
+                        );
+                        if (improving) {
+                            insights.push({
+                                title: 'Improving Form',
+                                text: 'This horse has been improving in recent races. Consider increasing bet size.',
+                                type: 'positive'
+                            });
+                        }
+                    }
+
+                    // Win rate insight
+                    if (stats.winRate > 25) {
+                        insights.push({
+                            title: 'Strong Performer',
+                            text: `Excellent ${stats.winRate.toFixed(1)}% win rate over ${stats.totalRaces} races.`,
+                            type: 'positive'
+                        });
+                    } else if (stats.winRate < 10 && stats.totalRaces > 5) {
+                        insights.push({
+                            title: 'Struggling Form',
+                            text: 'Low win rate suggests this horse may need rest or different strategy.',
+                            type: 'warning'
+                        });
+                    }
+
+                    // ROI insight
+                    if (stats.roi > 200) {
+                        insights.push({
+                            title: 'Profitable Runner',
+                            text: `Strong ROI of ${stats.roi.toFixed(0)} ZED per race. This horse pays well.`,
+                            type: 'positive'
+                        });
+                    }
+                }
+
+                // Bloodline insight
+                const bloodlineInsights = {
+                    'Nakamoto': 'Nakamoto horses tend to perform well in competitive fields.',
+                    'Szabo': 'Szabo bloodline shows consistent performance across race types.',
+                    'Finney': 'Finney horses often excel in longer distance races.',
+                    'Buterin': 'Buterin bloodline demonstrates versatility in various conditions.'
+                };
+
+                if (bloodlineInsights[horse.bloodline]) {
+                    insights.push({
+                        title: 'Bloodline Advantage',
+                        text: bloodlineInsights[horse.bloodline],
+                        type: 'info'
+                    });
+                }
+
+                return insights;
+            }
+
+            generateRacingCard(horse) {
+                const stats = this.calculateHorseStats(horse.id);
+                const winProbability = this.calculateWinProbability(horse, stats);
+                const augmentRec = this.recommendAugments(horse, stats);
+                const expectedValue = this.calculateExpectedValue(winProbability, stats?.avgOdds);
+                const readinessScore = this.calculateReadinessScore(horse, stats);
+
+                const predictions = {
+                    winProbability,
+                    expectedValue,
+                    readinessScore,
+                    augmentRec
+                };
+
+                const insights = this.generateRaceInsights(horse, stats, predictions);
+
+                return {
+                    horse,
+                    stats,
+                    predictions,
+                    insights
+                };
+            }
+
+            renderRacingCard(cardData) {
+                const { horse, stats, predictions, insights } = cardData;
+
+                const getInitials = (name) => {
+                    return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
+                };
+
+                const formatNumber = (num, decimals = 1) => {
+                    if (num === null || num === undefined) return 'N/A';
+                    return Number(num).toFixed(decimals);
+                };
+
+                const getConfidenceColor = (confidence) => {
+                    if (confidence >= 80) return 'var(--success-color)';
+                    if (confidence >= 60) return 'var(--warning-color)';
+                    return 'var(--error-color)';
+                };
+
+                return `
+                    <div class="racing-card">
+                        <div class="horse-header">
+                            <div class="horse-info">
+                                <div class="horse-avatar" style="background: linear-gradient(45deg, ${horse.color || '#2e86c1'}, #3498db)">
+                                    ${getInitials(horse.name)}
+                                </div>
+                                <div class="horse-details">
+                                    <h3>${horse.name}</h3>
+                                    <div class="horse-meta">
+                                        <span><i class="fas fa-dna"></i> ${horse.bloodline}</span>
+                                        <span><i class="fas fa-star"></i> ${formatNumber(horse.stars)} stars</span>
+                                        <span><i class="fas fa-venus-mars"></i> ${horse.gender}</span>
+                                        ${stats ? `<span><i class="fas fa-flag-checkered"></i> ${stats.totalRaces} races</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-predictions">
+                            <div class="prediction-card win-probability">
+                                <div class="prediction-value">${formatNumber(predictions.winProbability)}%</div>
+                                <div class="prediction-label">Win Probability</div>
+                            </div>
+                            <div class="prediction-card expected-value">
+                                <div class="prediction-value">${predictions.expectedValue > 0 ? '+' : ''}${formatNumber(predictions.expectedValue)}%</div>
+                                <div class="prediction-label">Expected Value</div>
+                            </div>
+                            <div class="prediction-card readiness-score">
+                                <div class="prediction-value">${formatNumber(predictions.readinessScore, 0)}</div>
+                                <div class="prediction-label">Readiness Score</div>
+                            </div>
+                            ${stats ? `
+                                <div class="prediction-card">
+                                    <div class="prediction-value" style="color: var(--text-color)">${formatNumber(stats.winRate)}%</div>
+                                    <div class="prediction-label">Historical Win Rate</div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="recommendation-section">
+                            <div class="recommendation-title">
+                                <i class="fas fa-cogs"></i>
+                                Optimal Augment Configuration
+                            </div>
+                            <div class="augment-recommendation">
+                                <div class="augment-slot">
+                                    <div class="augment-type">CPU</div>
+                                    <div class="augment-name">${predictions.augmentRec.CPU}</div>
+                                </div>
+                                <div class="augment-slot">
+                                    <div class="augment-type">RAM</div>
+                                    <div class="augment-name">${predictions.augmentRec.RAM}</div>
+                                </div>
+                                <div class="augment-slot">
+                                    <div class="augment-type">Hydraulic</div>
+                                    <div class="augment-name">${predictions.augmentRec.Hydraulic}</div>
+                                </div>
+                            </div>
+                            <div class="confidence-indicator">
+                                <div class="confidence-bar" style="width: ${predictions.augmentRec.confidence}%; background: ${getConfidenceColor(predictions.augmentRec.confidence)}"></div>
+                            </div>
+                            <div style="text-align: center; margin-top: 5px; font-size: 0.8rem; color: var(--text-muted);">
+                                Confidence: ${predictions.augmentRec.confidence}%
+                            </div>
+                        </div>
+
+                        ${insights.length > 0 ? `
+                            <div class="race-insights">
+                                ${insights.map(insight => `
+                                    <div class="insight-card">
+                                        <div class="insight-title">${insight.title}</div>
+                                        <div class="insight-text">${insight.text}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="viewHorseDetails('${horse.id}')">
+                                <i class="fas fa-chart-line"></i> View Analytics
+                            </button>
+                            <button class="btn btn-secondary" onclick="recordRace('${horse.id}')">
+                                <i class="fas fa-plus"></i> Record Race
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderAllRacingCards() {
+                const container = document.getElementById('racing-cards-container');
+                const noDataDiv = document.getElementById('no-data');
+
+                if (!this.horses || this.horses.length === 0) {
+                    container.innerHTML = '';
+                    noDataDiv.style.display = 'block';
+                    return;
+                }
+
+                // Filter to racing horses only
+                const racingHorses = this.horses.filter(h => h.status === 'racing' || !h.status);
+
+                if (racingHorses.length === 0) {
+                    container.innerHTML = '<div class="no-data"><h3>No Racing Horses Found</h3><p>Add some horses with "racing" status to see AI predictions.</p></div>';
+                    noDataDiv.style.display = 'none';
+                    return;
+                }
+
+                // Generate racing cards
+                const cards = racingHorses.map(horse => {
+                    const cardData = this.generateRacingCard(horse);
+                    return this.renderRacingCard(cardData);
+                }).join('');
+
+                container.innerHTML = cards;
+                noDataDiv.style.display = 'none';
+            }
+
+            init() {
+                this.loadData();
+                this.renderAllRacingCards();
+            }
+        }
+
+        // Global functions for buttons
+        function viewHorseDetails(horseId) {
+            // Navigate to the main tracker with horse details
+            window.location.href = `/public/stablefields-tracker.html?horse=${horseId}`;
+        }
+
+        function recordRace(horseId) {
+            // Navigate to the main tracker's racing tab
+            window.location.href = `/public/stablefields-tracker.html?tab=racing&horse=${horseId}`;
+        }
+
+        // Initialize the AI Racing Intelligence system
+        document.addEventListener('DOMContentLoaded', () => {
+            const aiEngine = new AIRacingIntelligence();
+            aiEngine.init();
+
+            // Refresh data every 30 seconds if the page is visible
+            setInterval(() => {
+                if (!document.hidden) {
+                    aiEngine.loadData();
+                    aiEngine.renderAllRacingCards();
+                }
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

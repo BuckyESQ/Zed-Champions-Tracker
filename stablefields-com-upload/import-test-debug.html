@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Test Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .test-section { background: #333; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        button { padding: 10px 20px; margin: 10px; background: #03dac6; color: black; border: none; border-radius: 4px; cursor: pointer; }
+        .log { background: #000; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Import Test Debug</h1>
+    
+    <div class="test-section">
+        <h2>Step 1: Test Import Process</h2>
+        <button onclick="testImport()">🚀 Test Import 3 Sample Horses</button>
+        <button onclick="checkStorage()">📦 Check localStorage</button>
+        <button onclick="clearStorage()">🗑️ Clear Storage</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 2: Test Stable Display</h2>
+        <button onclick="openStableTracker()">🏇 Open StableFields Tracker</button>
+        <button onclick="openImportWizard()">🔍 Open Import Wizard</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Debug Output</h2>
+        <div id="debug-log" class="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('debug-log');
+            logDiv.innerHTML += '[' + new Date().toLocaleTimeString() + '] ' + message + '<br>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function testImport() {
+            log('🚀 Starting test import...');
+            
+            // Create sample horses
+            const sampleHorses = [
+                {
+                    id: 12345,
+                    name: "Test Thunder",
+                    bloodline: "Legendary",
+                    gender: "Stallion",
+                    generation: 3,
+                    speed_rating: 85,
+                    sprint_rating: 78,
+                    endurance_rating: 92,
+                    complete_rating: 88,
+                    type: 'racing',
+                    imported_at: new Date().toISOString(),
+                    source: 'test_import'
+                },
+                {
+                    id: 67890,
+                    name: "Lightning Bolt",
+                    bloodline: "Exclusive",
+                    gender: "Mare",
+                    generation: 4,
+                    speed_rating: 90,
+                    sprint_rating: 85,
+                    endurance_rating: 80,
+                    complete_rating: 85,
+                    type: 'racing',
+                    imported_at: new Date().toISOString(),
+                    source: 'test_import'
+                },
+                {
+                    id: 11111,
+                    name: "Storm Chaser",
+                    bloodline: "Elite",
+                    gender: "Stallion",
+                    generation: 2,
+                    speed_rating: 95,
+                    sprint_rating: 92,
+                    endurance_rating: 88,
+                    complete_rating: 91,
+                    type: 'racing',
+                    imported_at: new Date().toISOString(),
+                    source: 'test_import'
+                }
+            ];
+            
+            // Get existing horses
+            let existingHorses = JSON.parse(localStorage.getItem('horses') || '[]');
+            log(`📦 Found ${existingHorses.length} existing horses in storage`);
+            
+            // Add sample horses (avoid duplicates)
+            let addedCount = 0;
+            sampleHorses.forEach(horse => {
+                const existsIndex = existingHorses.findIndex(h => h.id === horse.id);
+                if (existsIndex >= 0) {
+                    existingHorses[existsIndex] = horse;
+                    log(`🔄 Updated existing horse: ${horse.name}`);
+                } else {
+                    existingHorses.push(horse);
+                    addedCount++;
+                    log(`➕ Added new horse: ${horse.name}`);
+                }
+            });
+            
+            // Save to localStorage with both keys
+            localStorage.setItem('horses', JSON.stringify(existingHorses));
+            localStorage.setItem('stableHorses', JSON.stringify(existingHorses));
+            
+            log(`✅ Successfully imported ${addedCount} new horses! Total horses: ${existingHorses.length}`);
+            log(`💾 Saved to localStorage with keys: 'horses' and 'stableHorses'`);
+        }
+
+        function checkStorage() {
+            log('📦 Checking localStorage...');
+            
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const stableHorses = JSON.parse(localStorage.getItem('stableHorses') || '[]');
+            
+            log(`🔍 'horses' key: ${horses.length} horses`);
+            horses.forEach(h => log(`  - ${h.name} (ID: ${h.id})`));
+            
+            log(`🔍 'stableHorses' key: ${stableHorses.length} horses`);
+            stableHorses.forEach(h => log(`  - ${h.name} (ID: ${h.id})`));
+            
+            if (horses.length !== stableHorses.length) {
+                log('⚠️ WARNING: Mismatch between storage keys!');
+            } else {
+                log('✅ Storage keys are consistent');
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('horses');
+            localStorage.removeItem('stableHorses');
+            localStorage.removeItem('stablefields_horses');
+            log('🗑️ Cleared all horse storage');
+        }
+
+        function openStableTracker() {
+            window.open('/public/stablefields-tracker.html', '_blank');
+            log('🏇 Opened StableFields Tracker in new tab');
+        }
+
+        function openImportWizard() {
+            window.open('/public/search-import.html', '_blank');
+            log('🔍 Opened Import Wizard in new tab');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🧪 Import Test Debug Tool Ready');
+            checkStorage();
+        });
+    </script>
+</body>
+</html>

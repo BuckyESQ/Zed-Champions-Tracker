@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Horse Owner Extraction Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #03dac6;
+        }
+        .test-button {
+            background: #03dac6;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .test-button:hover {
+            background: #02b8a3;
+        }
+        .results {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .info { color: #03dac6; }
+        h1 { color: #03dac6; }
+        h2 { color: #ffd700; }
+        input {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Horse Owner Extraction Test</h1>
+    <p>This tool specifically extracts owner information from ZedSight horse data.</p>
+    
+    <div class="section">
+        <h2>🐎 Owner Data Extraction</h2>
+        <input type="text" id="horse-name" placeholder="Enter horse name" value="Lightning">
+        <br>
+        <button class="test-button" onclick="extractOwnerData()">Extract Owner Information</button>
+        <button class="test-button" onclick="testMultipleHorses()">Test Multiple Horses</button>
+        <div id="owner-results" class="results"></div>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Import Strategy Test</h2>
+        <p>Test if we can build a complete import system using only ZedSight data:</p>
+        <button class="test-button" onclick="simulateImportProcess()">Simulate Complete Import Process</button>
+        <div id="import-results" class="results"></div>
+    </div>
+
+    <script>
+        const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
+        
+        function log(section, message, type = 'info') {
+            const element = document.getElementById(section + '-results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            console.log(`[${section}] ${message}`);
+        }
+
+        function clearResults(section) {
+            document.getElementById(section + '-results').innerHTML = '';
+        }
+
+        async function extractOwnerData() {
+            const horseName = document.getElementById('horse-name').value.trim();
+            clearResults('owner');
+            
+            log('owner', `🔍 Extracting owner data for: ${horseName}`, 'info');
+            
+            try {
+                // Step 1: Search for horses
+                log('owner', 'Step 1: Searching for horses...', 'info');
+                const searchResponse = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(horseName)}`);
+                
+                if (!searchResponse.ok) {
+                    log('owner', `❌ Search failed: ${searchResponse.status}`, 'error');
+                    return;
+                }
+                
+                const searchData = await searchResponse.json();
+                log('owner', `✅ Found ${searchData.horses?.length || 0} horses`, 'success');
+                
+                if (searchData.horses && searchData.horses.length > 0) {
+                    const horse = searchData.horses[0];
+                    log('owner', `🎯 Analyzing: ${horse.name} (ID: ${horse.id})`, 'info');
+                    
+                    // Step 2: Get detailed horse data
+                    log('owner', 'Step 2: Getting detailed horse data...', 'info');
+                    const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
+                    
+                    if (detailResponse.ok) {
+                        const detailData = await detailResponse.json();
+                        log('owner', '✅ Got detailed data!', 'success');
+                        
+                        // Step 3: Extract owner information
+                        log('owner', '\n🔍 EXTRACTING OWNER INFORMATION:', 'warning');
+                        
+                        // Check the 'horse' field specifically
+                        if (detailData.horse) {
+                            log('owner', '📊 HORSE FIELD DATA:', 'success');
+                            log('owner', JSON.stringify(detailData.horse, null, 2), 'info');
+                            
+                            // Look for owner-related fields
+                            const horseData = detailData.horse;
+                            const ownerFields = ['owner', 'owner_address', 'wallet', 'address', 'user_id', 'player', 'account'];
+                            
+                            for (const field of ownerFields) {
+                                if (horseData[field]) {
+                                    log('owner', `🎯 OWNER FOUND in horse.${field}: ${horseData[field]}`, 'success');
+                                }
+                            }
+                            
+                            // Check all fields in horse data
+                            log('owner', `\n📋 All horse fields: ${Object.keys(horseData).join(', ')}`, 'info');
+                        } else {
+                            log('owner', '❌ No horse field in response', 'error');
+                        }
+                        
+                        // Check race data for owner info
+                        if (detailData.races && detailData.races.length > 0) {
+                            log('owner', '\n🏁 CHECKING RACE DATA FOR OWNER INFO:', 'warning');
+                            const race = detailData.races[0];
+                            log('owner', `Sample race fields: ${Object.keys(race).join(', ')}`, 'info');
+                            
+                            // Look for owner info in race data
+                            const raceOwnerFields = ['owner', 'horse_owner', 'player', 'user'];
+                            for (const field of raceOwnerFields) {
+                                if (race[field]) {
+                                    log('owner', `🎯 OWNER FOUND in race.${field}: ${race[field]}`, 'success');
+                                }
+                            }
+                        }
+                        
+                        // Show the complete structure for manual inspection
+                        log('owner', '\n📋 COMPLETE DATA STRUCTURE:', 'info');
+                        log('owner', `Top-level fields: ${Object.keys(detailData).join(', ')}`, 'info');
+                        
+                        // Show a sample of the complete data
+                        log('owner', '\n📄 COMPLETE RESPONSE (first 2000 chars):', 'warning');
+                        log('owner', JSON.stringify(detailData, null, 2).substring(0, 2000) + '...', 'info');
+                        
+                    } else {
+                        log('owner', `❌ Detail request failed: ${detailResponse.status}`, 'error');
+                    }
+                } else {
+                    log('owner', '❌ No horses found', 'warning');
+                }
+                
+            } catch (error) {
+                log('owner', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testMultipleHorses() {
+            clearResults('owner');
+            log('owner', '🔍 Testing multiple horses for owner data patterns...', 'info');
+            
+            const testHorses = ['Lightning', 'Thunder', 'Storm', 'Flash', 'Bolt'];
+            
+            for (const horseName of testHorses) {
+                try {
+                    log('owner', `\n🐎 Testing: ${horseName}`, 'warning');
+                    
+                    const searchResponse = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(horseName)}`);
+                    
+                    if (searchResponse.ok) {
+                        const searchData = await searchResponse.json();
+                        
+                        if (searchData.horses && searchData.horses.length > 0) {
+                            const horse = searchData.horses[0];
+                            
+                            // Get detailed data
+                            const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
+                            
+                            if (detailResponse.ok) {
+                                const detailData = await detailResponse.json();
+                                
+                                // Quick check for owner data
+                                if (detailData.horse) {
+                                    const hasOwner = Object.keys(detailData.horse).some(key => 
+                                        key.toLowerCase().includes('owner') || 
+                                        key.toLowerCase().includes('wallet') ||
+                                        key.toLowerCase().includes('address')
+                                    );
+                                    
+                                    if (hasOwner) {
+                                        log('owner', `✅ ${horse.name}: Contains owner-related fields!`, 'success');
+                                    } else {
+                                        log('owner', `⚠️ ${horse.name}: No obvious owner fields`, 'warning');
+                                    }
+                                } else {
+                                    log('owner', `❌ ${horse.name}: No horse data`, 'error');
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Small delay to avoid rate limiting
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                } catch (error) {
+                    log('owner', `❌ ${horseName}: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        async function simulateImportProcess() {
+            clearResults('import');
+            log('import', '🚀 Simulating complete import process without Bearer tokens...', 'info');
+            
+            log('import', '\n💡 PROPOSED IMPORT STRATEGY:', 'warning');
+            log('import', '1. User enters horse names they own', 'info');
+            log('import', '2. Search ZedSight for each horse', 'info');
+            log('import', '3. Display results with owner info (if available)', 'info');
+            log('import', '4. User confirms which horses to import', 'info');
+            log('import', '5. Import complete horse data from ZedSight', 'info');
+            
+            // Test the strategy
+            log('import', '\n🧪 TESTING THE STRATEGY:', 'warning');
+            
+            try {
+                const horseName = 'Lightning';
+                log('import', `Step 1: User wants to import "${horseName}"`, 'info');
+                
+                // Search
+                const searchResponse = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(horseName)}`);
+                const searchData = await searchResponse.json();
+                
+                log('import', `Step 2: Found ${searchData.horses?.length || 0} horses named "${horseName}"`, 'success');
+                
+                if (searchData.horses && searchData.horses.length > 0) {
+                    log('import', 'Step 3: Displaying options to user:', 'info');
+                    
+                    for (let i = 0; i < Math.min(3, searchData.horses.length); i++) {
+                        const horse = searchData.horses[i];
+                        log('import', `   Option ${i+1}: ${horse.name} (Gen ${horse.generation}, ${horse.bloodline})`, 'info');
+                        
+                        // Get detailed data for each option
+                        const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
+                        if (detailResponse.ok) {
+                            const detailData = await detailResponse.json();
+                            log('import', `      📊 Races: ${detailData.total_races}, Win Rate: ${detailData.win_percentage}%`, 'success');
+                        }
+                    }
+                    
+                    log('import', 'Step 4: User selects their horse(s)', 'info');
+                    log('import', 'Step 5: Import complete data with:', 'success');
+                    log('import', '   ✅ Full race history', 'success');
+                    log('import', '   ✅ Augment combinations and performance', 'success');
+                    log('import', '   ✅ Statistics and averages', 'success');
+                    log('import', '   ✅ No authentication required!', 'success');
+                    
+                    log('import', '\n🎯 ADVANTAGES OF THIS APPROACH:', 'warning');
+                    log('import', '• No Bearer tokens needed', 'success');
+                    log('import', '• No API authentication issues', 'success');
+                    log('import', '• Works with public ZedSight data', 'success');
+                    log('import', '• More user-friendly than wallet addresses', 'success');
+                    log('import', '• Complete horse data available', 'success');
+                    
+                    log('import', '\n⚠️ CONSIDERATIONS:', 'warning');
+                    log('import', '• Users need to know their horse names', 'warning');
+                    log('import', '• Manual selection required for common names', 'warning');
+                    log('import', '• No automatic "import all my horses" feature', 'warning');
+                    
+                } else {
+                    log('import', '❌ No horses found - strategy would fail', 'error');
+                }
+                
+            } catch (error) {
+                log('import', `❌ Strategy test failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-start with first test
+        window.onload = function() {
+            log('owner', '🚀 Horse Owner Extraction Tool Started', 'info');
+            log('owner', 'Click "Extract Owner Information" to analyze horse data for owner details', 'info');
+        };
+    </script>
+</body>
+</html>

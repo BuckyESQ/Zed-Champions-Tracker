@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS & API Diagnostics - StableFields ZED Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .success { background-color: #48bb78; }
+        .warning { background-color: #ed8936; }
+        .error { background-color: #f56565; }
+        .pending { background-color: #cbd5e0; }
+        
+        .test-result {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .test-result pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .error-details {
+            background: #fed7d7;
+            border: 1px solid #feb2b2;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .success-details {
+            background: #c6f6d5;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .info-box {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            color: #234e52;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 DNS & API Diagnostics</h1>
+        
+        <div class="info-box">
+            <strong>What this tool does:</strong><br>
+            This diagnostic tool helps identify and resolve DNS resolution issues that prevent the ZED Champions API from working on Vercel. It tests multiple endpoints and provides detailed feedback about what's working and what isn't.
+        </div>
+
+        <h2>📡 DNS Resolution Tests</h2>
+        <button onclick="runDnsTests()" id="dnsTestBtn">Run DNS Tests</button>
+        <div id="dnsResults"></div>
+
+        <h2>🔐 Bearer Token Test</h2>
+        <div class="input-group">
+            <label for="bearerToken">Enter your ZED Champions Bearer Token:</label>
+            <input type="password" id="bearerToken" placeholder="Your Bearer token (starts with ey...)">
+        </div>
+        <button onclick="testBearerToken()" id="bearerTestBtn">Test Bearer Token</button>
+        <div id="bearerResults"></div>
+
+        <h2>🏇 API Endpoint Tests</h2>
+        <button onclick="testAllEndpoints()" id="endpointTestBtn">Test All Endpoints</button>
+        <div id="endpointResults"></div>
+
+        <h2>🌐 Network Information</h2>
+        <div id="networkInfo"></div>
+    </div>
+
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            displayNetworkInfo();
+            loadStoredToken();
+        });
+
+        function loadStoredToken() {
+            const token = localStorage.getItem('zedAuthToken');
+            if (token) {
+                document.getElementById('bearerToken').value = token;
+            }
+        }
+
+        function displayNetworkInfo() {
+            const info = {
+                'User Agent': navigator.userAgent,
+                'Current URL': window.location.href,
+                'Protocol': window.location.protocol,
+                'Host': window.location.host,
+                'Timestamp': new Date().toISOString(),
+                'Online Status': navigator.onLine ? 'Online' : 'Offline'
+            };
+
+            const container = document.getElementById('networkInfo');
+            container.innerHTML = Object.entries(info)
+                .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
+                .join('<br>');
+        }
+
+        async function runDnsTests() {
+            const btn = document.getElementById('dnsTestBtn');
+            const results = document.getElementById('dnsResults');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Running DNS Tests...';
+            
+            try {
+                // Use the public DNS test endpoint
+                const response = await fetch('/api/public/dns-test');
+                const data = await response.json();
+                
+                let html = '<div class="test-result">';
+                html += `<h3>DNS Test Results</h3>`;
+                html += `<p><strong>Server Region:</strong> ${data.server_location}</p>`;
+                html += `<p><strong>Environment:</strong> ${data.vercel_env}</p>`;
+                html += `<p><strong>Test Time:</strong> ${data.timestamp}</p>`;
+                html += `<p><strong>Summary:</strong> ${data.summary.successful}/${data.summary.total_tested} endpoints accessible</p>`;
+                html += `<p><strong>ZED API:</strong> ${data.summary.zed_api_accessible ? '✅ Accessible' : '❌ Not Accessible'}</p>`;
+                html += `<p><strong>ZedSight API:</strong> ${data.summary.zedsight_api_accessible ? '✅ Accessible' : '❌ Not Accessible'}</p>`;
+                
+                data.dns_test_results.forEach(result => {
+                    const status = result.success ? 'success' : 'error';
+                    html += `<div style="margin: 10px 0; padding: 10px; border-left: 4px solid ${result.success ? '#48bb78' : '#f56565'};">`;
+                    html += `<span class="status-indicator ${status}"></span>`;
+                    html += `<strong>${result.endpoint}</strong><br>`;
+                    
+                    if (result.success) {
+                        html += `✅ Status: ${result.status}<br>`;
+                        html += `Accessible: Yes<br>`;
+                    } else {
+                        html += `❌ Error: ${result.error}<br>`;
+                        html += `Type: ${result.errorType}<br>`;
+                        html += `Accessible: No<br>`;
+                    }
+                    html += '</div>';
+                });
+                
+                html += `<div style="margin-top: 15px; padding: 10px; background: #e6fffa; border: 1px solid #81e6d9; color: #234e52; border-radius: 8px;">`;
+                html += `<strong>💡 What this means:</strong><br>`;
+                if (data.summary.zed_api_accessible) {
+                    html += `• ZED Champions API is accessible - Bearer token import should work<br>`;
+                } else {
+                    html += `• ZED Champions API is not accessible - This explains the DNS errors<br>`;
+                }
+                if (data.summary.zedsight_api_accessible) {
+                    html += `• ZedSight API is working - Public horse search will work<br>`;
+                } else {
+                    html += `• ZedSight API is having issues - Public search may be limited<br>`;
+                }
+                html += '</div>';
+                
+                html += '</div>';
+                results.innerHTML = html;
+                
+            } catch (error) {
+                results.innerHTML = `<div class="error-details">❌ DNS test failed: ${error.message}<br><br>This might be due to authentication requirements on the API endpoints.</div>`;
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = 'Run DNS Tests';
+        }
+
+        async function testBearerToken() {
+            const btn = document.getElementById('bearerTestBtn');
+            const results = document.getElementById('bearerResults');
+            const token = document.getElementById('bearerToken').value.trim();
+            
+            if (!token) {
+                results.innerHTML = '<div class="error-details">❌ Please enter a Bearer token</div>';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Testing Bearer Token...';
+            
+            // Store token for future use
+            localStorage.setItem('zedAuthToken', token);
+            
+            try {
+                const response = await fetch('/api/zed/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    results.innerHTML = `
+                        <div class="success-details">
+                            ✅ Bearer token is valid!<br>
+                            <strong>User:</strong> ${data.username || 'Unknown'}<br>
+                            <strong>Email:</strong> ${data.email || 'Unknown'}<br>
+                            <strong>ID:</strong> ${data.id || 'Unknown'}
+                        </div>
+                    `;
+                } else {
+                    let errorMsg = data.error || `HTTP ${response.status}`;
+                    if (data.diagnostic) {
+                        errorMsg += `<br><strong>Diagnostic Info:</strong><br>`;
+                        errorMsg += `Path: ${data.diagnostic.path}<br>`;
+                        errorMsg += `Method: ${data.diagnostic.method}<br>`;
+                        errorMsg += `Endpoints Tried: ${data.diagnostic.endpoints_tried?.join(', ') || 'Unknown'}`;
+                    }
+                    
+                    results.innerHTML = `<div class="error-details">❌ ${errorMsg}</div>`;
+                }
+                
+            } catch (error) {
+                results.innerHTML = `<div class="error-details">❌ Network error: ${error.message}</div>`;
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = 'Test Bearer Token';
+        }
+
+        async function testAllEndpoints() {
+            const btn = document.getElementById('endpointTestBtn');
+            const results = document.getElementById('endpointResults');
+            const token = localStorage.getItem('zedAuthToken');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Testing Endpoints...';
+            
+            const endpoints = [
+                { name: 'Health Check', url: '/api/test', auth: false },
+                { name: 'User Info', url: '/api/zed/me', auth: true },
+                { name: 'Racing Horses', url: '/api/zed/stable/racing', auth: true },
+                { name: 'Breeding Horses', url: '/api/zed/stable/breeding', auth: true }
+            ];
+            
+            let html = '<div class="test-result"><h3>Endpoint Test Results</h3>';
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const options = { headers: {} };
+                    
+                    if (endpoint.auth && token) {
+                        options.headers['Authorization'] = `Bearer ${token}`;
+                    }
+                    
+                    const response = await fetch(endpoint.url, options);
+                    const data = await response.json();
+                    
+                    const status = response.ok ? 'success' : 'error';
+                    html += `<div style="margin: 10px 0; padding: 10px; border-left: 4px solid ${response.ok ? '#48bb78' : '#f56565'};">`;
+                    html += `<span class="status-indicator ${status}"></span>`;
+                    html += `<strong>${endpoint.name}</strong> (${endpoint.url})<br>`;
+                    
+                    if (response.ok) {
+                        html += `✅ Status: ${response.status}<br>`;
+                        if (data.username) html += `User: ${data.username}<br>`;
+                        if (data.horses) html += `Horses: ${data.horses.length}<br>`;
+                        if (data.message) html += `Message: ${data.message}<br>`;
+                    } else {
+                        html += `❌ Status: ${response.status}<br>`;
+                        html += `Error: ${data.error || 'Unknown error'}<br>`;
+                        if (data.diagnostic) {
+                            html += `Diagnostic: ${JSON.stringify(data.diagnostic, null, 2)}<br>`;
+                        }
+                    }
+                    
+                    html += '</div>';
+                    
+                } catch (error) {
+                    html += `<div style="margin: 10px 0; padding: 10px; border-left: 4px solid #f56565;">`;
+                    html += `<span class="status-indicator error"></span>`;
+                    html += `<strong>${endpoint.name}</strong> (${endpoint.url})<br>`;
+                    html += `❌ Network Error: ${error.message}<br>`;
+                    html += '</div>';
+                }
+            }
+            
+            html += '</div>';
+            results.innerHTML = html;
+            
+            btn.disabled = false;
+            btn.innerHTML = 'Test All Endpoints';
+        }
+    </script>
+</body>
+</html>
