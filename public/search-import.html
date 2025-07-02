@@ -364,6 +364,9 @@
             <button class="button" onclick="testVisibility()" style="background: #f39c12;">
                 👁️ Test Visibility
             </button>
+            <button class="button" onclick="testElements()" style="background: #9b59b6;">
+                🔍 Test Elements
+            </button>
             
             <div id="search-results" class="horse-results">
                 <div class="section-title">
@@ -654,37 +657,64 @@
         }
 
         function updateImportSummary() {
-            const summary = document.getElementById('import-summary');
-            const selectedHorsesDiv = document.getElementById('selected-horses');
-            const importCount = document.getElementById('import-count');
+            console.log('🔍 updateImportSummary() called');
             
-            // Check if elements exist to prevent errors
-            if (!summary || !selectedHorsesDiv || !importCount) {
-                console.warn('⚠️ Import summary elements not found, skipping update');
-                return;
-            }
-            
-            if (selectedHorses.length > 0) {
-                summary.style.display = 'block';
-                importCount.textContent = selectedHorses.length;
+            // Use a small delay to ensure DOM is ready
+            setTimeout(() => {
+                const summary = document.getElementById('import-summary');
+                const selectedHorsesDiv = document.getElementById('selected-horses');
+                let importCount = document.getElementById('import-count');
                 
-                selectedHorsesDiv.innerHTML = '';
+                console.log('📊 Element check:');
+                console.log('  - import-summary:', summary ? '✅ Found' : '❌ Not found');
+                console.log('  - selected-horses:', selectedHorsesDiv ? '✅ Found' : '❌ Not found');
+                console.log('  - import-count:', importCount ? '✅ Found' : '❌ Not found');
                 
-                selectedHorses.forEach(horse => {
-                    const horseDiv = document.createElement('div');
-                    horseDiv.className = 'selected-horse';
-                    horseDiv.innerHTML = `
-                        <div style="color: #03dac6; font-weight: 600;">${horse.name}</div>
-                        <div style="color: #888; font-size: 0.9rem;">Gen ${horse.generation} ${horse.bloodline}</div>
-                        <div style="color: #ffd700; font-size: 0.8rem; margin-top: 0.5rem;">
-                            ${horse.details ? `${horse.details.total_races || 0} races` : 'Ready to import'}
-                        </div>
-                    `;
-                    selectedHorsesDiv.appendChild(horseDiv);
-                });
-            } else {
-                summary.style.display = 'none';
-            }
+                // If import-count is not found, try to recreate it
+                if (!importCount) {
+                    const importBtn = document.getElementById('import-btn');
+                    if (importBtn) {
+                        // Restore the button structure if it was corrupted
+                        importBtn.innerHTML = '🚀 Import <span id="import-count">0</span> Horses to StableFields';
+                        importCount = document.getElementById('import-count');
+                        console.log('🔧 Recreated import-count element');
+                    }
+                }
+                
+                // Check if elements exist to prevent errors
+                if (!summary || !selectedHorsesDiv || !importCount) {
+                    console.warn('⚠️ Import summary elements not found, skipping update');
+                    return;
+                }
+                
+                console.log(`📊 Updating summary for ${selectedHorses.length} selected horses`);
+                
+                if (selectedHorses.length > 0) {
+                    summary.style.display = 'block';
+                    importCount.textContent = selectedHorses.length;
+                    
+                    selectedHorsesDiv.innerHTML = '';
+                    
+                    selectedHorses.forEach(horse => {
+                        const horseDiv = document.createElement('div');
+                        horseDiv.className = 'selected-horse';
+                        horseDiv.innerHTML = `
+                            <div style="color: #03dac6; font-weight: 600;">${horse.name}</div>
+                            <div style="color: #888; font-size: 0.9rem;">Gen ${horse.generation} ${horse.bloodline}</div>
+                            <div style="color: #ffd700; font-size: 0.8rem; margin-top: 0.5rem;">
+                                ${horse.details ? `${horse.details.total_races || 0} races` : 'Ready to import'}
+                            </div>
+                        `;
+                        selectedHorsesDiv.appendChild(horseDiv);
+                    });
+                    
+                    console.log(`✅ Import summary updated: ${selectedHorses.length} horses selected`);
+                } else {
+                    summary.style.display = 'none';
+                    importCount.textContent = '0';
+                    console.log('📭 No horses selected, hiding import summary');
+                }
+            }, 10); // Small delay to ensure DOM is ready
         }
 
         async function importSelectedHorses() {
@@ -698,7 +728,7 @@
             const progressFill = document.getElementById('progress-fill');
             
             importBtn.disabled = true;
-            importBtn.innerHTML = '🚀 Importing...';
+            importBtn.innerHTML = '🚀 Importing <span id="import-count">' + selectedHorses.length + '</span> Horses...';
             progressBar.style.display = 'block';
 
             try {
@@ -779,9 +809,13 @@
                 showError(`Import failed: ${error.message}`);
             } finally {
                 importBtn.disabled = false;
-                importBtn.innerHTML = '🚀 Import Selected Horses';
+                importBtn.innerHTML = '🚀 Import <span id="import-count">0</span> Horses to StableFields';
                 progressBar.style.display = 'none';
                 progressFill.style.width = '0%';
+                
+                // Clear selection after import
+                selectedHorses = [];
+                updateImportSummary();
             }
         }
 
@@ -897,6 +931,40 @@ API Endpoint: ${ZEDSIGHT_API}
             resultsDiv.style.display = 'block';
             
             console.log('📊 Test element added to horsesGrid');
+        }
+
+        // Test function for import summary elements
+        function testElements() {
+            console.log('🔍 Testing import summary elements...');
+            const summary = document.getElementById('import-summary');
+            const selectedHorsesDiv = document.getElementById('selected-horses');
+            const importCount = document.getElementById('import-count');
+            
+            console.log('📊 Element test results:');
+            console.log('  - import-summary:', summary ? '✅ Found' : '❌ Not found', summary);
+            console.log('  - selected-horses:', selectedHorsesDiv ? '✅ Found' : '❌ Not found', selectedHorsesDiv);
+            console.log('  - import-count:', importCount ? '✅ Found' : '❌ Not found', importCount);
+            
+            if (summary) {
+                console.log('📊 import-summary display style:', summary.style.display);
+                console.log('📊 import-summary computed style:', window.getComputedStyle(summary).display);
+            }
+            
+            // Add test horse to selection
+            if (selectedHorses.length === 0) {
+                selectedHorses.push({
+                    id: 'test-123',
+                    name: 'Test Horse',
+                    bloodline: 'Nakamoto',
+                    generation: 1,
+                    details: { total_races: 5 }
+                });
+                console.log('🧪 Added test horse to selection');
+            }
+            
+            // Try to manually trigger updateImportSummary
+            console.log('🧪 Testing updateImportSummary manually...');
+            updateImportSummary();
         }
     </script>
 </body>

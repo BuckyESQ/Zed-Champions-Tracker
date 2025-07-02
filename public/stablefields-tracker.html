@@ -1001,6 +1001,194 @@
         .horse-stat-label {
             font-size: 0.75rem;
             color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Enhanced Horse Card Sections */
+        .horse-section {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-toggle {
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .section-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .section-content.expanded {
+            max-height: 500px;
+        }
+
+        /* Race History Styles */
+        .race-history {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .race-item {
+            background: var(--bg-card);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .race-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .race-position {
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .race-position.win {
+            background: var(--success);
+            color: white;
+        }
+
+        .race-position.place {
+            background: var(--warning);
+            color: white;
+        }
+
+        .race-position.show {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .race-position.other {
+            background: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .race-details {
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* Augment Styles */
+        .augment-combinations {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .augment-item {
+            background: var(--bg-card);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .augment-combo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .augment-tag {
+            background: var(--primary);
+            color: var(--bg-primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .augment-usage {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        /* Performance Indicators */
+        .performance-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .trend-arrow {
+            font-size: 1rem;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        .trend-stable {
+            color: var(--warning);
+        }
+
+        /* Quick Stats Bar */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .quick-stat {
+            text-align: center;
+            padding: 0.25rem;
+            background: var(--bg-card);
+            border-radius: 4px;
+        }
+
+        .quick-stat-value {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.8rem;
+            display: block;
+        }
+
+        .quick-stat-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+
+        .horse-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
         }
 
         .import-controls {
@@ -1666,6 +1854,10 @@
         const ZED_API = 'https://api.zedchampions.com/v1';
         const PROXY_API = '/api/zed'; // Next.js API proxy
         
+        // Global variables
+        let myStable = [];
+        let selectedHorses = [];
+        
         // Use proxy by default on production domains (stablefields.com, vercel.app)
         let useProxy = window.location.hostname.includes('stablefields.com') || 
                       window.location.hostname.includes('vercel.app'); 
@@ -1714,7 +1906,7 @@
         
         // Global State
         let currentHorseData = null;
-        let myStable = JSON.parse(localStorage.getItem('horses') || '[]');
+        myStable = JSON.parse(localStorage.getItem('horses') || '[]');
         let appSettings = JSON.parse(localStorage.getItem('stablefields_settings') || '{}');
 
         // Initialize Application
@@ -1755,13 +1947,26 @@
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            
+            const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            } else {
+                console.error(`❌ Tab button for "${tabId}" not found`);
+            }
 
             // Update content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
-            document.getElementById(tabId).classList.add('active');
+            
+            const activeContent = document.getElementById(tabId);
+            if (activeContent) {
+                activeContent.classList.add('active');
+            } else {
+                console.error(`❌ Tab content for "${tabId}" not found`);
+                return;
+            }
 
             // Load tab-specific data
             if (tabId === 'dashboard') loadDashboard();
@@ -1773,7 +1978,7 @@
         }
 
         // Search & Import Functions
-        let selectedHorses = [];
+        selectedHorses = [];
 
         async function searchHorses() {
             const searchTerm = document.getElementById('horse-search-input').value.trim();
@@ -2127,15 +2332,27 @@
                 (horses.reduce((sum, h) => sum + (h.win_percentage || 0), 0) / horses.filter(h => h.win_percentage).length).toFixed(1) : 0;
             const uniqueBloodlines = new Set(horses.map(h => h.bloodline)).size;
             
-            document.getElementById('stable-total-races').textContent = totalRaces;
-            document.getElementById('stable-avg-rating').textContent = avgRating;
-            document.getElementById('stable-win-rate').textContent = `${avgWinRate}%`;
-            document.getElementById('stable-bloodlines').textContent = uniqueBloodlines;
+            // Add null checks for stats elements
+            const totalRacesEl = document.getElementById('stable-total-races');
+            const avgRatingEl = document.getElementById('stable-avg-rating');
+            const winRateEl = document.getElementById('stable-win-rate');
+            const bloodlinesEl = document.getElementById('stable-bloodlines');
+            
+            if (totalRacesEl) totalRacesEl.textContent = totalRaces;
+            if (avgRatingEl) avgRatingEl.textContent = avgRating;
+            if (winRateEl) winRateEl.textContent = `${avgWinRate}%`;
+            if (bloodlinesEl) bloodlinesEl.textContent = uniqueBloodlines;
         }
 
         function populateFilters(horses) {
             const bloodlineFilter = document.getElementById('bloodline-filter');
             const generationFilter = document.getElementById('generation-filter');
+            
+            // Add null checks
+            if (!bloodlineFilter || !generationFilter) {
+                console.error('❌ Filter elements not found');
+                return;
+            }
             
             // Populate bloodlines
             const bloodlines = [...new Set(horses.map(h => h.bloodline))].sort();
@@ -2155,10 +2372,23 @@
         function displayStableHorses(horses) {
             const horsesGrid = document.getElementById('stable-horses-grid');
             
+            if (!horsesGrid) {
+                console.error('❌ Element stable-horses-grid not found');
+                return;
+            }
+            
             horsesGrid.innerHTML = horses.map(horse => createStableHorseCard(horse)).join('');
         }
 
         function createStableHorseCard(horse) {
+            const hasRaceData = horse.races && horse.races.length > 0;
+            const hasAugmentData = horse.augment_combinations && horse.augment_combinations.length > 0;
+            const recentRaces = hasRaceData ? horse.races.slice(0, 5) : [];
+            const topAugments = hasAugmentData ? horse.augment_combinations.slice(0, 3) : [];
+            
+            // Calculate performance trend
+            const performanceTrend = calculatePerformanceTrend(horse.races);
+            
             return `
                 <div class="horse-card">
                     <div class="horse-header">
@@ -2169,36 +2399,203 @@
                                 ${horse.bloodline} • Gen ${horse.generation} • ${horse.gender}
                             </div>
                         </div>
-                        <button class="btn btn-secondary" onclick="removeHorseFromStable('${horse.id}')" 
-                                style="padding: 0.5rem; font-size: 0.875rem; background: var(--danger);">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="horse-stats">
-                        <div class="horse-stat">
-                            <span class="horse-stat-value">${horse.speed_rating || 'N/A'}</span>
-                            <div class="horse-stat-label">Speed</div>
-                        </div>
-                        <div class="horse-stat">
-                            <span class="horse-stat-value">${horse.endurance_rating || 'N/A'}</span>
-                            <div class="horse-stat-label">Endurance</div>
-                        </div>
-                        <div class="horse-stat">
-                            <span class="horse-stat-value">${horse.total_races || 'N/A'}</span>
-                            <div class="horse-stat-label">Races</div>
-                        </div>
-                        <div class="horse-stat">
-                            <span class="horse-stat-value">${horse.win_percentage ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</span>
-                            <div class="horse-stat-label">Win Rate</div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button class="btn btn-secondary" onclick="viewHorseDetails('${horse.id}')" 
+                                    title="View detailed information"
+                                    style="padding: 0.5rem; font-size: 0.8rem; background: var(--primary);">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-secondary" onclick="removeHorseFromStable('${horse.id}')" 
+                                    title="Remove from stable"
+                                    style="padding: 0.5rem; font-size: 0.8rem; background: var(--danger);">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                     
-                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                        ID: ${horse.id} • Imported: ${horse.imported_at ? new Date(horse.imported_at).toLocaleDateString() : 'Unknown'}
+                    <div class="quick-stats">
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.speed_rating || 'N/A'}</span>
+                            <div class="quick-stat-label">Speed</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.endurance_rating || 'N/A'}</span>
+                            <div class="quick-stat-label">Endurance</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.total_races || 'N/A'}</span>
+                            <div class="quick-stat-label">Races</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.win_percentage ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</span>
+                            <div class="quick-stat-label">Win Rate</div>
+                        </div>
+                    </div>
+                    
+                    ${performanceTrend ? `
+                        <div class="performance-trend">
+                            <span class="trend-arrow trend-${performanceTrend.direction}">
+                                ${performanceTrend.direction === 'up' ? '↗️' : performanceTrend.direction === 'down' ? '↘️' : '➡️'}
+                            </span>
+                            <span>Performance ${performanceTrend.text}</span>
+                        </div>
+                    ` : ''}
+                    
+                    ${hasRaceData ? `
+                        <div class="horse-section">
+                            <div class="section-header" onclick="toggleSection('races-${horse.id}')">
+                                <div class="section-title">
+                                    <i class="fas fa-trophy"></i>
+                                    Recent Races (${recentRaces.length})
+                                </div>
+                                <span class="section-toggle" id="toggle-races-${horse.id}">▼</span>
+                            </div>
+                            <div class="section-content" id="content-races-${horse.id}">
+                                <div class="race-history">
+                                    ${recentRaces.map(race => createRaceItem(race)).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${hasAugmentData ? `
+                        <div class="horse-section">
+                            <div class="section-header" onclick="toggleSection('augments-${horse.id}')">
+                                <div class="section-title">
+                                    <i class="fas fa-magic"></i>
+                                    Augment Usage (${topAugments.length})
+                                </div>
+                                <span class="section-toggle" id="toggle-augments-${horse.id}">▼</span>
+                            </div>
+                            <div class="section-content" id="content-augments-${horse.id}">
+                                <div class="augment-combinations">
+                                    ${topAugments.map(augment => createAugmentItem(augment)).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border);">
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                            ID: ${horse.id.substring(0, 12)}...<br>
+                            Imported: ${horse.imported_at ? new Date(horse.imported_at).toLocaleDateString() : 'Unknown'}
+                        </div>
+                        
+                        <div style="display: flex; gap: 0.5rem;">
+                            ${hasRaceData || hasAugmentData ? `
+                                <button class="btn btn-secondary" onclick="refreshStableDisplay()" 
+                                        title="Refresh data"
+                                        style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: var(--secondary);">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            ` : `
+                                <span style="font-size: 0.75rem; color: var(--text-secondary); font-style: italic;">
+                                    No detailed data available
+                                </span>
+                            `}
+                        </div>
                     </div>
                 </div>
             `;
+        }
+
+        function createRaceItem(race) {
+            if (!race) return '';
+            
+            const position = race.position || race.finish_position || 'N/A';
+            const positionClass = getPositionClass(position);
+            const raceDate = race.date ? new Date(race.date).toLocaleDateString() : 'Unknown';
+            const finishTime = race.finish_time || race.time;
+            
+            return `
+                <div class="race-item">
+                    <div class="race-header">
+                        <span class="race-position ${positionClass}">
+                            ${position === 1 ? '1st' : position === 2 ? '2nd' : position === 3 ? '3rd' : position + 'th'}
+                        </span>
+                        <span>${raceDate}</span>
+                    </div>
+                    <div class="race-details">
+                        ${race.track ? `Track: ${race.track}` : ''}
+                        ${race.distance ? ` • Distance: ${race.distance}m` : ''}
+                        ${finishTime ? ` • Time: ${finishTime.toFixed(2)}s` : ''}
+                        ${race.odds ? ` • Odds: ${race.odds}` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function createAugmentItem(augment) {
+            if (!augment) return '';
+            
+            const combinations = augment.combination || augment.augments || [];
+            const usage = augment.usage_count || augment.races || 'N/A';
+            const winRate = augment.win_rate || augment.success_rate;
+            
+            return `
+                <div class="augment-item">
+                    <div class="augment-combo">
+                        ${Array.isArray(combinations) 
+                            ? combinations.map(aug => `<span class="augment-tag">${aug}</span>`).join('')
+                            : `<span class="augment-tag">${combinations}</span>`
+                        }
+                    </div>
+                    <div class="augment-usage">
+                        Used ${usage} times
+                        ${winRate ? ` • ${winRate.toFixed(1)}% win rate` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getPositionClass(position) {
+            if (position === 1 || position === '1') return 'win';
+            if (position === 2 || position === '2') return 'place';
+            if (position === 3 || position === '3') return 'show';
+            return 'other';
+        }
+
+        function calculatePerformanceTrend(races) {
+            if (!races || races.length < 3) return null;
+            
+            const recentRaces = races.slice(0, 5);
+            const olderRaces = races.slice(5, 10);
+            
+            if (olderRaces.length === 0) return null;
+            
+            const recentAvgPosition = recentRaces.reduce((sum, race) => 
+                sum + (race.position || race.finish_position || 10), 0) / recentRaces.length;
+            const olderAvgPosition = olderRaces.reduce((sum, race) => 
+                sum + (race.position || race.finish_position || 10), 0) / olderRaces.length;
+            
+            const improvement = olderAvgPosition - recentAvgPosition;
+            
+            if (improvement > 0.5) {
+                return { direction: 'up', text: 'improving' };
+            } else if (improvement < -0.5) {
+                return { direction: 'down', text: 'declining' };
+            } else {
+                return { direction: 'stable', text: 'stable' };
+            }
+        }
+
+        function toggleSection(sectionId) {
+            const content = document.getElementById(`content-${sectionId}`);
+            const toggle = document.getElementById(`toggle-${sectionId}`);
+            
+            if (!content || !toggle) return;
+            
+            const isExpanded = content.classList.contains('expanded');
+            
+            if (isExpanded) {
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+                toggle.textContent = '▼';
+            } else {
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
+                toggle.textContent = '▲';
+            }
         }
 
         function filterStableHorses() {
@@ -3640,6 +4037,141 @@
         function searchHorse() {
             searchHorses();
         }
+        
+        // Enhanced Horse Card Functions - Global Scope
+        window.toggleSection = function(sectionId) {
+            const content = document.getElementById(`content-${sectionId}`);
+            const toggle = document.getElementById(`toggle-${sectionId}`);
+            
+            if (!content || !toggle) return;
+            
+            const isExpanded = content.classList.contains('expanded');
+            
+            if (isExpanded) {
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+                toggle.textContent = '▼';
+            } else {
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
+                toggle.textContent = '▲';
+            }
+        };
+        
+        window.refreshStableDisplay = function() {
+            console.log('🔄 Refreshing stable display...');
+            loadStable();
+        };
+        
+        window.viewHorseDetails = function(horseId) {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const horse = horses.find(h => h.id === horseId);
+            
+            if (!horse) {
+                showError('Horse not found');
+                return;
+            }
+            
+            // Create detailed view modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.8); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+                padding: 2rem;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: var(--bg-secondary); padding: 2rem; border-radius: 12px;
+                    max-width: 800px; max-height: 80vh; overflow-y: auto;
+                    border: 2px solid var(--border);
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h2 style="color: var(--primary); margin: 0;">🐎 ${horse.name}</h2>
+                        <button onclick="this.closest('.modal').remove()" style="
+                            background: var(--danger); color: white; border: none;
+                            padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;
+                        ">Close</button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div>
+                            <h3>Basic Info</h3>
+                            <p><strong>Bloodline:</strong> ${horse.bloodline}</p>
+                            <p><strong>Generation:</strong> ${horse.generation}</p>
+                            <p><strong>Gender:</strong> ${horse.gender}</p>
+                            <p><strong>Complete Rating:</strong> ${horse.complete_rating || 'N/A'}</p>
+                        </div>
+                        
+                        <div>
+                            <h3>Performance</h3>
+                            <p><strong>Total Races:</strong> ${horse.total_races || 'N/A'}</p>
+                            <p><strong>Win Rate:</strong> ${horse.win_percentage ? horse.win_percentage.toFixed(1) + '%' : 'N/A'}</p>
+                            <p><strong>Best Time:</strong> ${horse.best_finish_time ? horse.best_finish_time.toFixed(2) + 's' : 'N/A'}</p>
+                            <p><strong>Avg Position:</strong> ${horse.avg_position ? horse.avg_position.toFixed(1) : 'N/A'}</p>
+                        </div>
+                    </div>
+                    
+                    ${horse.races ? `
+                        <div style="margin-top: 2rem;">
+                            <h3>Recent Race History</h3>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                ${horse.races.slice(0, 10).map(race => `
+                                    <div style="
+                                        background: var(--bg-card); padding: 1rem; margin: 0.5rem 0;
+                                        border-radius: 6px; border-left: 4px solid var(--primary);
+                                    ">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span><strong>Position:</strong> ${race.position || race.finish_position || 'N/A'}</span>
+                                            <span>${race.date ? new Date(race.date).toLocaleDateString() : 'Unknown Date'}</span>
+                                        </div>
+                                        ${race.track ? `<div><strong>Track:</strong> ${race.track}</div>` : ''}
+                                        ${race.distance ? `<div><strong>Distance:</strong> ${race.distance}m</div>` : ''}
+                                        ${race.finish_time ? `<div><strong>Time:</strong> ${race.finish_time.toFixed(2)}s</div>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${horse.augment_combinations ? `
+                        <div style="margin-top: 2rem;">
+                            <h3>Augment Combinations</h3>
+                            <div style="max-height: 200px; overflow-y: auto;">
+                                ${horse.augment_combinations.slice(0, 5).map(augment => `
+                                    <div style="
+                                        background: var(--bg-card); padding: 1rem; margin: 0.5rem 0;
+                                        border-radius: 6px;
+                                    ">
+                                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            ${(augment.combination || augment.augments || []).map(aug => 
+                                                `<span style="
+                                                    background: var(--primary); color: var(--bg-primary);
+                                                    padding: 0.25rem 0.5rem; border-radius: 12px;
+                                                    font-size: 0.8rem; font-weight: 500;
+                                                ">${aug}</span>`
+                                            ).join('')}
+                                        </div>
+                                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                                            Used ${augment.usage_count || augment.races || 'N/A'} times
+                                            ${augment.win_rate ? ` • ${augment.win_rate.toFixed(1)}% win rate` : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            modal.className = 'modal';
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+            
+            document.body.appendChild(modal);
+        };
         
         console.log('🚀 StableFields ZED Champions Tracker Pro ready!');
     </script>
