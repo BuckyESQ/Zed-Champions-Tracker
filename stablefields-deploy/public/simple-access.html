@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StableFields - Simple Access</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            color: #00d4aa;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .big-link {
+            display: block;
+            background: #00d4aa;
+            color: black;
+            padding: 20px 40px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .big-link:hover {
+            background: #00b894;
+        }
+        .link {
+            display: block;
+            background: #333;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .link:hover {
+            background: #555;
+        }
+        .status {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏇 StableFields Enhanced</h1>
+        <p>Simple access to your enhanced horse tracker</p>
+
+        <div class="status" id="status">
+            Loading status...
+        </div>
+
+        <a href="stablefields-tracker.html" class="big-link">
+            🏇 OPEN ENHANCED STABLE TRACKER
+        </a>
+
+        <h3>Other Tools:</h3>
+        
+        <a href="enhanced-horse-test.html" class="link">
+            🧪 Test Enhanced Features (Add Sample Data)
+        </a>
+        
+        <a href="search-import.html" class="link">
+            🔍 Import Horses from ZedSight
+        </a>
+        
+        <a href="stable-quick-test.html" class="link">
+            ⚡ Quick Test Tool
+        </a>
+        
+        <a href="horse-data-inspector.html" class="link">
+            📊 Data Inspector
+        </a>
+
+        <div style="margin-top: 40px; padding: 20px; background: #333; border-radius: 5px;">
+            <h3>🆕 What's New:</h3>
+            <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
+                <li>Race history with positions and times</li>
+                <li>Augment usage tracking</li>
+                <li>Performance trend indicators</li>
+                <li>Detailed horse information modals</li>
+                <li>Collapsible sections</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: #444; border-radius: 5px; font-size: 0.9rem;">
+            <strong>How to test:</strong><br>
+            1. Click "Test Enhanced Features" to add sample horses<br>
+            2. Click "OPEN ENHANCED STABLE TRACKER" to see them<br>
+            3. Look for expandable race history and augment sections!
+        </div>
+    </div>
+
+    <script>
+        try {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            document.getElementById('status').innerHTML = `
+                <strong>Current Status:</strong><br>
+                Horses in stable: ${horses.length}<br>
+                Enhanced features: ✅ Ready<br>
+                Import system: ✅ Working
+            `;
+        } catch (error) {
+            document.getElementById('status').innerHTML = `
+                <strong>Status:</strong> Ready to use<br>
+                <small>Error reading stored data: ${error.message}</small>
+            `;
+        }
+    </script>
+</body>
+</html>

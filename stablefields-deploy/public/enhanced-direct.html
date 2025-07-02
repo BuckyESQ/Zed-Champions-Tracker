@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏇 Enhanced StableFields - Direct Access</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+            color: white;
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #00d4aa, #6c5ce7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .big-button {
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            color: white;
+            border: none;
+            padding: 2rem 3rem;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 2rem 0;
+            box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
+        }
+
+        .big-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 212, 170, 0.5);
+        }
+
+        .features {
+            background: rgba(38, 38, 38, 0.8);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .features h3 {
+            color: #00d4aa;
+            margin-bottom: 1rem;
+        }
+
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features li {
+            padding: 0.5rem 0;
+            color: #a0a0a0;
+        }
+
+        .links {
+            margin-top: 2rem;
+        }
+
+        .link {
+            display: inline-block;
+            margin: 0.5rem;
+            padding: 1rem 2rem;
+            background: rgba(108, 92, 231, 0.2);
+            border: 2px solid #6c5ce7;
+            border-radius: 8px;
+            color: #6c5ce7;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .link:hover {
+            background: rgba(108, 92, 231, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🆕 Enhanced StableFields</h1>
+        <p style="font-size: 1.2rem; color: #a0a0a0; margin-bottom: 1rem;">
+            Now with Race History & Augment Usage!
+        </p>
+
+        <a href="stablefields-tracker.html" class="big-button">
+            🏇 OPEN ENHANCED STABLE TRACKER
+        </a>
+
+        <div class="features">
+            <h3>🚀 NEW Enhanced Features:</h3>
+            <ul>
+                <li>🏆 <strong>Race History:</strong> See last 5 races with positions, times, tracks</li>
+                <li>✨ <strong>Augment Usage:</strong> Top 3 combinations with win rates</li>
+                <li>📈 <strong>Performance Trends:</strong> Improving/declining indicators</li>
+                <li>👁️ <strong>Detailed View:</strong> Complete horse information modals</li>
+                <li>🔄 <strong>Interactive UI:</strong> Collapsible sections and animations</li>
+            </ul>
+        </div>
+
+        <div class="links">
+            <a href="enhanced-horse-test.html" class="link">
+                🧪 Test with Sample Data
+            </a>
+            <a href="search-import.html" class="link">
+                🔍 Import New Horses
+            </a>
+            <a href="quick-access.html" class="link">
+                📋 Full Menu
+            </a>
+        </div>
+
+        <div style="margin-top: 2rem; padding: 1rem; background: rgba(0, 212, 170, 0.1); border-radius: 8px; font-size: 0.9rem; color: #a0a0a0;">
+            <strong>💡 Pro Tip:</strong> Use the "Test with Sample Data" first to see all the enhanced features, then view them in the main tracker!
+        </div>
+    </div>
+
+    <script>
+        console.log('🏇 Enhanced StableFields Direct Access Page Ready!');
+        console.log('Current horses in stable:', JSON.parse(localStorage.getItem('horses') || '[]').length);
+    </script>
+</body>
+</html>
