@@ -1920,13 +1920,14 @@
             loadStable();
             loadSettings();
             
-            // Auto-load from URL parameters
+            // Auto-load from URL parameters - redirect to stable tab for horse details
             const urlParams = new URLSearchParams(window.location.search);
             const horseId = urlParams.get('horse');
             if (horseId) {
-                switchTab('search');
-                document.getElementById('horse-id-input').value = horseId;
-                searchHorse();
+                // Switch to stable tab instead of non-existent search tab
+                switchTab('stable');
+                // Optional: highlight the specific horse if needed
+                console.log('🎯 Viewing horse:', horseId);
             }
         });
 
@@ -2705,18 +2706,30 @@
             const resultsDiv = document.getElementById('horse-results');
             const statusDiv = document.getElementById('search-status');
             
-            const horseName = nameInput.value.trim();
-            const horseId = idInput.value.trim();
+            // Check if search elements exist (they were removed in the new UI)
+            if (!nameInput && !idInput) {
+                console.log('🔍 Search functionality has been moved to the Import Wizard');
+                return;
+            }
+            
+            const horseName = nameInput ? nameInput.value.trim() : '';
+            const horseId = idInput ? idInput.value.trim() : '';
             
             if (!horseName && !horseId) {
-                showStatus('Please enter a horse name or ID', 'error', 'search-status');
+                if (statusDiv) {
+                    showStatus('Please enter a horse name or ID', 'error', 'search-status');
+                }
                 return;
             }
 
             // Show loading
-            resultsDiv.innerHTML = '<div class="spinner"></div>';
-            resultsDiv.style.display = 'block';
-            statusDiv.style.display = 'none';
+            if (resultsDiv) {
+                resultsDiv.innerHTML = '<div class="spinner"></div>';
+                resultsDiv.style.display = 'block';
+            }
+            if (statusDiv) {
+                statusDiv.style.display = 'none';
+            }
 
             try {
                 // Use ZedSight API pattern
@@ -3244,7 +3257,12 @@
                 closeHorseModal();
             }
             if (e.key === 'Enter' && (e.target.id === 'horse-search-input' || e.target.id === 'horse-id-input')) {
-                searchHorse();
+                // Only call searchHorse if the elements actually exist
+                const searchInput = document.getElementById('horse-search-input');
+                const idInput = document.getElementById('horse-id-input');
+                if (searchInput || idInput) {
+                    searchHorse();
+                }
             }
         });
 
