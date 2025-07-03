@@ -2116,114 +2116,115 @@
             }
 
             // Generate breeding prediction section HTML
-            generateBreedingSection(horse, stats) {
-                // Skip breeding section for geldings or if not eligible
-                if (horse.gender === 'Gelding' || horse.status === 'retired') {
-                    return '';
-                }
-
-                const breedingPrediction = this.predictBreedingPairs(horse);
-                
-                if (breedingPrediction.bestPairs.length === 0) {
+                generateBreedingSection(horse, stats) {
+                    // Skip breeding section for geldings or if not eligible
+                    if (horse.gender === 'Gelding' || horse.status === 'retired') {
+                        return '';
+                    }
+    
+                    const breedingPrediction = this.predictBreedingPairs(horse);
+                    
+                    if (breedingPrediction.bestPairs.length === 0) {
+                        return `
+                            <div class="breeding-section">
+                                <div class="breeding-title">
+                                    <h4><i class="fas fa-heart"></i> Breeding Potential</h4>
+                                </div>
+                                <div class="breeding-empty-state">
+                                    <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 10px;"></i>
+                                    <p>No suitable breeding partners found in stable.</p>
+                                    <p class="text-muted">Import more horses to see breeding recommendations.</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+    
+                    const topPair = breedingPrediction.bestPairs[0];
+                    const foalPrediction = topPair.foalPrediction;
+    
                     return `
                         <div class="breeding-section">
                             <div class="breeding-title">
                                 <h4><i class="fas fa-heart"></i> Breeding Potential</h4>
+                                <div class="breeding-confidence">
+                                    Confidence: ${Math.round(breedingPrediction.confidence)}%
+                                </div>
                             </div>
-                            <div class="breeding-empty-state">
-                                <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 10px;"></i>
-                                <p>No suitable breeding partners found in stable.</p>
-                                <p class="text-muted">Import more horses to see breeding recommendations.</p>
+                            
+                            <div class="breeding-recommendations">
+                                <div class="breeding-card best-match">
+                                    <div class="breeding-header">
+                                        <span class="partner-name">
+                                            <i class="fas fa-crown" style="color: gold;"></i>
+                                            Best Match: ${topPair.partner.name}
+                                        </span>
+                                        <span class="compatibility-score">
+                                            ${Math.round(topPair.compatibility.score * 100)}% Compatible
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="breeding-details">
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Partner Bloodline</span>
+                                            <span class="detail-value bloodline-${topPair.partner.bloodline.toLowerCase()}">${topPair.partner.bloodline}</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Partner Stars</span>
+                                            <span class="detail-value">${topPair.partner.stars || 'N/A'}</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Expected Foal Stars</span>
+                                            <span class="detail-value star-prediction">${foalPrediction.starPotential.toFixed(1)} ⭐</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Breeding Cost</span>
+                                            <span class="detail-value">${foalPrediction.breedingCost} ZED</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Expected ROI</span>
+                                            <span class="detail-value roi-positive">${foalPrediction.expectedROI.toFixed(0)}%</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Foal Generation</span>
+                                            <span class="detail-value">Gen ${foalPrediction.foalGeneration}</span>
+                                        </div>
+                                    </div>
+    
+                                    <div class="foal-traits">
+                                        <div class="traits-title">Predicted Foal Strengths:</div>
+                                        <div class="traits-list">
+                                            ${foalPrediction.bloodlineStrengths.map(strength => `
+                                                <span class="trait-tag">${strength}</span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+    
+                                    <div class="breeding-advice">
+                                        <i class="fas fa-lightbulb"></i>
+                                        ${breedingPrediction.prediction}
+                                    </div>
+                                </div>
+    
+                                ${breedingPrediction.bestPairs.length > 1 ? `
+                                    <div class="other-matches">
+                                        <div class="other-matches-title">Other Good Matches:</div>
+                                        ${breedingPrediction.bestPairs.slice(1, 3).map(pair => `
+                                            <div class="breeding-card alternative-match">
+                                                <div class="breeding-header">
+                                                    <span class="partner-name">${pair.partner.name}</span>
+                                                    <span class="compatibility-score">${Math.round(pair.compatibility.score * 100)}%</span>
+                                                </div>
+                                                <div class="breeding-summary">
+                                                    ${pair.partner.bloodline} • ${pair.foalPrediction.starPotential.toFixed(1)}⭐ foal • ${pair.foalPrediction.breedingCost} ZED
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `;
                 }
-
-                const topPair = breedingPrediction.bestPairs[0];
-                const foalPrediction = topPair.foalPrediction;
-
-                return `
-                    <div class="breeding-section">
-                        <div class="breeding-title">
-                            <h4><i class="fas fa-heart"></i> Breeding Potential</h4>
-                            <div class="breeding-confidence">
-                                Confidence: ${Math.round(breedingPrediction.confidence)}%
-                            </div>
-                        </div>
-                        
-                        <div class="breeding-recommendations">
-                            <div class="breeding-card best-match">
-                                <div class="breeding-header">
-                                    <span class="partner-name">
-                                        <i class="fas fa-crown" style="color: gold;"></i>
-                                        Best Match: ${topPair.partner.name}
-                                    </span>
-                                    <span class="compatibility-score">
-                                        ${Math.round(topPair.compatibility.score * 100)}% Compatible
-                                    </span>
-                                </div>
-                                
-                                <div class="breeding-details">
-                                    <div class="breeding-detail">
-                                        <span class="detail-label">Partner Bloodline</span>
-                                        <span class="detail-value bloodline-${topPair.partner.bloodline.toLowerCase()}">${topPair.partner.bloodline}</span>
-                                    </div>
-                                    <div class="breeding-detail">
-                                        <span class="detail-label">Partner Stars</span>
-                                        <span class="detail-value">${topPair.partner.stars || 'N/A'}</span>
-                                    </div>
-                                    <div class="breeding-detail">
-                                        <span class="detail-label">Expected Foal Stars</span>
-                                        <span class="detail-value star-prediction">${foalPrediction.starPotential.toFixed(1)} ⭐</span>
-                                    </div>
-                                    <div class="breeding-detail">
-                                        <span class="detail-label">Breeding Cost</span>
-                                        <span class="detail-value">${foalPrediction.breedingCost} ZED</span>
-                                    </div>
-                                    <div class="breeding-detail">
-                                        <span class="detail-label">Expected ROI</span>
-                                        <span class="detail-value roi-positive">${foalPrediction.expectedROI.toFixed(0)}%</span>
-                                    </div>
-                                    <div class="breeding-detail">
-                                        <span class="detail-label">Foal Generation</span>
-                                        <span class="detail-value">Gen ${foalPrediction.foalGeneration}</span>
-                                    </div>
-                                </div>
-
-                                <div class="foal-traits">
-                                    <div class="traits-title">Predicted Foal Strengths:</div>
-                                    <div class="traits-list">
-                                        ${foalPrediction.bloodlineStrengths.map(strength => `
-                                            <span class="trait-tag">${strength}</span>
-                                        `).join('')}
-                                    </div>
-                                </div>
-
-                                <div class="breeding-advice">
-                                    <i class="fas fa-lightbulb"></i>
-                                    ${breedingPrediction.prediction}
-                                </div>
-                            </div>
-
-                            ${breedingPrediction.bestPairs.length > 1 ? `
-                                <div class="other-matches">
-                                    <div class="other-matches-title">Other Good Matches:</div>
-                                    ${breedingPrediction.bestPairs.slice(1, 3).map(pair => `
-                                        <div class="breeding-card alternative-match">
-                                            <div class="breeding-header">
-                                                <span class="partner-name">${pair.partner.name}</span>
-                                                <span class="compatibility-score">${Math.round(pair.compatibility.score * 100)}%</span>
-                                            </div>
-                                            <div class="breeding-summary">
-                                                ${pair.partner.bloodline} • ${pair.foalPrediction.starPotential.toFixed(1)}⭐ foal • ${pair.foalPrediction.breedingCost} ZED
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
             }
     </script>
 </body>
