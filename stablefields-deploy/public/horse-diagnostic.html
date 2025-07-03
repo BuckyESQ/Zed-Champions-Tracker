@@ -288,8 +288,8 @@
                                                       enhancedRace.hydraulic_augment || enhancedRace.equipment_hydraulic || 
                                                       enhancedRace.gear_hydraulic || 'None';
                         
-                        // CRITICAL: Remove any fantasy augment names from old data
-                        const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+                        // CRITICAL: Remove any fantasy/placeholder augment names from old data, keep real ZED names
+                        const fantasyAugments = ['Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300', 'Basic CPU', 'Advanced CPU', 'Elite CPU', 'Basic RAM', 'Advanced RAM', 'Elite RAM', 'Basic Hydraulic', 'Advanced Hydraulic', 'Elite Hydraulic'];
                         if (fantasyAugments.includes(enhancedRace.cpuAugment)) {
                             enhancedRace.cpuAugment = 'None';
                         }

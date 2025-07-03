@@ -76,7 +76,7 @@
                     </ul>`;
                 
                 // Check for fantasy augments
-                const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+                const fantasyAugments = ['Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300', 'Basic CPU', 'Advanced CPU', 'Elite CPU', 'Basic RAM', 'Advanced RAM', 'Elite RAM', 'Basic Hydraulic', 'Advanced Hydraulic', 'Elite Hydraulic'];
                 const hasFantasyAugments = horseRaces.some(race => 
                     fantasyAugments.includes(race.cpuAugment) || 
                     fantasyAugments.includes(race.ramAugment) || 
@@ -133,7 +133,7 @@
                         enhancedRace.hydraulicAugment = enhancedRace.augment3 || enhancedRace.hydraulic || 'None';
                         
                         // Remove fantasy augments
-                        const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+                        const fantasyAugments = ['Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300', 'Basic CPU', 'Advanced CPU', 'Elite CPU', 'Basic RAM', 'Advanced RAM', 'Elite RAM', 'Basic Hydraulic', 'Advanced Hydraulic', 'Elite Hydraulic'];
                         if (fantasyAugments.includes(enhancedRace.cpuAugment)) {
                             enhancedRace.cpuAugment = 'None';
                         }
@@ -215,7 +215,7 @@
             }
             
             // Check for fantasy augments
-            const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+            const fantasyAugments = ['Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300', 'Basic CPU', 'Advanced CPU', 'Elite CPU', 'Basic RAM', 'Advanced RAM', 'Elite RAM', 'Basic Hydraulic', 'Advanced Hydraulic', 'Elite Hydraulic'];
             const hasFantasyAugments = horseRaces.some(race => 
                 fantasyAugments.includes(race.cpuAugment) || 
                 fantasyAugments.includes(race.ramAugment) || 
