@@ -208,15 +208,81 @@
                 if (fixed.total_races) fixed.total_races = Number(fixed.total_races);
                 if (fixed.win_percentage) fixed.win_percentage = Number(fixed.win_percentage);
                 
+                // Add missing fields with default values for AI Racing Intelligence
+                if (!fixed.stars) fixed.stars = Math.round((fixed.speed_rating + fixed.endurance_rating + fixed.sprint_rating) / 60) || 3;
+                if (!fixed.status) fixed.status = 'racing';
+                
+                // Create sample race data if missing (for AI Intelligence to work)
+                if (!fixed.races || fixed.races.length === 0) {
+                    fixed.races = [];
+                    
+                    // Generate sample races based on total_races if available
+                    const raceCount = fixed.total_races || 0;
+                    if (raceCount > 0) {
+                        for (let i = 0; i < Math.min(raceCount, 10); i++) {
+                            const sampleRace = {
+                                id: `race_${fixed.id}_${i}`,
+                                horseId: fixed.id,
+                                raceName: `Sample Race ${i + 1}`,
+                                raceDate: new Date(Date.now() - (i * 7 * 24 * 60 * 60 * 1000)).toISOString(), // Weekly races going back
+                                position: Math.floor(Math.random() * 8) + 1, // Random position 1-8
+                                finishTime: (12 + Math.random() * 8).toFixed(2), // Random time 12-20 seconds
+                                gate: Math.floor(Math.random() * 8) + 1,
+                                distance: '1200m',
+                                track: 'Sample Track',
+                                fieldSize: 8,
+                                conditions: 'Good',
+                                odds: (2 + Math.random() * 18).toFixed(1), // Random odds 2-20
+                                zedChange: (Math.random() - 0.5) * 100, // Random +/- 50 ZED
+                                ratingChange: (Math.random() - 0.5) * 20, // Random +/- 10 rating
+                                cpuAugment: ['None', 'Void C100', 'Matrix C200'][Math.floor(Math.random() * 3)],
+                                ramAugment: ['None', 'Quantum R100', 'Vector R200'][Math.floor(Math.random() * 3)],
+                                hydraulicAugment: ['None', 'Titan H100', 'Storm H200'][Math.floor(Math.random() * 3)],
+                                speedStar: Math.floor(Math.random() * 6),
+                                sprintStar: Math.floor(Math.random() * 6),
+                                enduranceStar: Math.floor(Math.random() * 6),
+                                split1: (3 + Math.random() * 2).toFixed(2),
+                                split2: (6 + Math.random() * 3).toFixed(2),
+                                split3: (9 + Math.random() * 4).toFixed(2),
+                                split4: (12 + Math.random() * 5).toFixed(2)
+                            };
+                            fixed.races.push(sampleRace);
+                        }
+                    }
+                }
+                
                 return fixed;
             });
             
             localStorage.setItem('horses', JSON.stringify(fixedHorses));
             
+            // Also create sample races in the races array
+            const existingRaces = JSON.parse(localStorage.getItem('races') || '[]');
+            const newRaces = [];
+            fixedHorses.forEach(horse => {
+                if (horse.races) {
+                    newRaces.push(...horse.races);
+                }
+            });
+            localStorage.setItem('races', JSON.stringify([...existingRaces, ...newRaces]));
+            
             const output = document.getElementById('output');
             output.innerHTML = `<div class="section success">
-                <h3>✅ Horse Data Fixed!</h3>
-                <p>Normalized ${fixedHorses.length} horses. Please refresh the main tracker page.</p>
+                <h3>✅ Horse Data Enhanced!</h3>
+                <p>Fixed ${fixedHorses.length} horses with:</p>
+                <ul>
+                    <li>✅ Normalized field names</li>
+                    <li>✅ Added star ratings</li>
+                    <li>✅ Added racing status</li>
+                    <li>✅ Generated sample race data for AI Intelligence</li>
+                    <li>✅ Created ${newRaces.length} sample race records</li>
+                </ul>
+                <p><strong>Please refresh the main tracker page to see improvements!</strong></p>
+                <div style="margin-top: 15px;">
+                    <button onclick="location.href='/public/stablefields-tracker.html'" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        🏇 Go to Main Tracker
+                    </button>
+                </div>
             </div>`;
         }
         

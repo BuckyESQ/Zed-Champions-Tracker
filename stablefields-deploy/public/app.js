@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // Activate last used tab or default
-  const savedTab = localStorage.getItem('activeTab') || 'racing';
+  const savedTab = localStorage.getItem('activeTab') || 'stable';
   activateTab(savedTab);
   
   // Setup API authentication form
