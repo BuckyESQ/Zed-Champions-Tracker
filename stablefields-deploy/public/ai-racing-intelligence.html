@@ -839,12 +839,18 @@
                         hydraulic: race.hydraulicAugment || 'None'
                     };
                     
-                    // Extract star ratings for this race (legacy tracker comprehensive approach)
+                    // Clean up any fantasy augment names that might still exist
+                    const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+                    if (fantasyAugments.includes(augments.cpu)) augments.cpu = 'None';
+                    if (fantasyAugments.includes(augments.ram)) augments.ram = 'None';
+                    if (fantasyAugments.includes(augments.hydraulic)) augments.hydraulic = 'None';
+                    
+                    // Extract star ratings for this race (FIXED per horse, not per race)
                     const stars = {
                         overall: horse.stars || 0,
-                        speed: horse.speedStars || race.speedStar || 0,
-                        sprint: horse.sprintStars || race.sprintStar || 0,
-                        endurance: horse.enduranceStars || race.enduranceStar || 0
+                        speed: race.speedStar || horse.speed_rating || horse.speedStars || 0,
+                        strength: race.sprintStar || horse.sprint_rating || horse.sprintStars || 0, // Strength = Sprint in ZED
+                        stamina: race.enduranceStar || horse.endurance_rating || horse.enduranceStars || 0
                     };
                     
                     // Extract comprehensive performance metrics (legacy tracker format)

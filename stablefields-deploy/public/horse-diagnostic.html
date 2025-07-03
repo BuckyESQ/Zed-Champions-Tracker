@@ -277,20 +277,27 @@
                         }
                         
                         // Map real ZED augment data (check multiple possible field names)
-                        if (!enhancedRace.cpuAugment) {
-                            enhancedRace.cpuAugment = enhancedRace.augment1 || enhancedRace.cpu || 
-                                                    enhancedRace.cpu_augment || enhancedRace.cpuAugment || 
-                                                    enhancedRace.equipment_cpu || enhancedRace.gear_cpu || 'None';
+                        // FORCE OVERRIDE any existing fantasy augments with real data or None
+                        enhancedRace.cpuAugment = enhancedRace.augment1 || enhancedRace.cpu || 
+                                                enhancedRace.cpu_augment || enhancedRace.equipment_cpu || 
+                                                enhancedRace.gear_cpu || 'None';
+                        enhancedRace.ramAugment = enhancedRace.augment2 || enhancedRace.ram || 
+                                                enhancedRace.ram_augment || enhancedRace.equipment_ram || 
+                                                enhancedRace.gear_ram || 'None';
+                        enhancedRace.hydraulicAugment = enhancedRace.augment3 || enhancedRace.hydraulic || 
+                                                      enhancedRace.hydraulic_augment || enhancedRace.equipment_hydraulic || 
+                                                      enhancedRace.gear_hydraulic || 'None';
+                        
+                        // CRITICAL: Remove any fantasy augment names from old data
+                        const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+                        if (fantasyAugments.includes(enhancedRace.cpuAugment)) {
+                            enhancedRace.cpuAugment = 'None';
                         }
-                        if (!enhancedRace.ramAugment) {
-                            enhancedRace.ramAugment = enhancedRace.augment2 || enhancedRace.ram || 
-                                                    enhancedRace.ram_augment || enhancedRace.ramAugment || 
-                                                    enhancedRace.equipment_ram || enhancedRace.gear_ram || 'None';
+                        if (fantasyAugments.includes(enhancedRace.ramAugment)) {
+                            enhancedRace.ramAugment = 'None';
                         }
-                        if (!enhancedRace.hydraulicAugment) {
-                            enhancedRace.hydraulicAugment = enhancedRace.augment3 || enhancedRace.hydraulic || 
-                                                          enhancedRace.hydraulic_augment || enhancedRace.hydraulicAugment || 
-                                                          enhancedRace.equipment_hydraulic || enhancedRace.gear_hydraulic || 'None';
+                        if (fantasyAugments.includes(enhancedRace.hydraulicAugment)) {
+                            enhancedRace.hydraulicAugment = 'None';
                         }
                         
                         // CRITICAL FIX: Use HORSE'S fixed star ratings, not random per-race values
@@ -349,23 +356,24 @@
             
             const output = document.getElementById('output');
             output.innerHTML = `<div class="section success">
-                <h3>✅ Horse Data Enhanced for AI Intelligence!</h3>
+                <h3>✅ Horse Data Fixed for Consistent Analytics!</h3>
                 <p>Enhanced ${fixedHorses.length} horses with:</p>
                 <ul>
+                    <li>✅ FIXED star ratings per horse (no more random per-race values)</li>
+                    <li>✅ Cleaned up fantasy augment names → replaced with real data or "None"</li>
                     <li>✅ Converted existing race data to AI format</li>
                     <li>✅ Added race names, dates, and track info</li>
-                    <li>✅ Added augment usage data (CPU, RAM, Hydraulic)</li>
-                    <li>✅ Added split times and star ratings</li>
+                    <li>✅ Added split times and performance data</li>
                     <li>✅ Added ZED earnings and rating changes</li>
                     <li>✅ Preserved all your original race performance data</li>
                     <li>✅ Created ${allRaces.length} enhanced race records</li>
                 </ul>
-                <p><strong>Your real race history is preserved and enhanced!</strong></p>
+                <p><strong>🎯 Key Fix: Star ratings are now FIXED per horse, augments show real data or "None"!</strong></p>
                 <div style="margin-top: 15px;">
-                    <button onclick="location.href='/public/stablefields-tracker.html'" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <button onclick="location.href='stablefields-tracker.html'" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
                         🏇 Go to Main Tracker
                     </button>
-                    <button onclick="location.href='/public/ai-racing-intelligence.html'" style="padding: 10px 20px; background: #2e86c1; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                    <button onclick="location.href='ai-racing-intelligence.html'" style="padding: 10px 20px; background: #2e86c1; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
                         🧠 View AI Intelligence
                     </button>
                 </div>
