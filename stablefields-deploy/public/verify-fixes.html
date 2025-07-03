@@ -18,6 +18,17 @@
     <h1>🔍 Verify Star Rating & Augment Fixes</h1>
     <p>This tool verifies that the star rating and augment fixes are working correctly.</p>
     
+    <div class="section success">
+        <h3>🎯 Quick Navigation</h3>
+        <p>Your horse data looks good! Go directly to the AI Racing Intelligence:</p>
+        <button onclick="location.href='ai-racing-intelligence.html'" style="background: #28a745; color: white; font-size: 16px; padding: 15px 25px;">
+            🧠 Open AI Racing Intelligence
+        </button>
+        <button onclick="location.href='stablefields-tracker.html'" style="background: #007bff; color: white; margin-left: 10px;">
+            🏇 Main Tracker
+        </button>
+    </div>
+    
     <div class="section">
         <h3>Step 1: Check Current Data</h3>
         <button onclick="checkCurrentData()">Check Current Horse Data</button>
@@ -44,7 +55,10 @@
             const resultsDiv = document.getElementById('current-data-results');
             
             if (horses.length === 0) {
-                resultsDiv.innerHTML = '<div class="error"><p>❌ No horses found. Please import your horses first.</p></div>';
+                resultsDiv.innerHTML = `<div class="error">
+                    <p>❌ No horses found. Please import your horses first.</p>
+                    <p>👉 <a href="search-import.html" style="color: #03dac6;">Go to Import Page</a></p>
+                </div>`;
                 return;
             }
             
@@ -52,16 +66,26 @@
             const firstHorse = horses[0];
             const horseRaces = races.filter(r => r.horseId === firstHorse.id);
             
-            let html = `<div class="warning">
-                <h4>Current Data Analysis:</h4>
-                <p><strong>Horse:</strong> ${firstHorse.name}</p>
+            let html = `<div class="success">
+                <h4>✅ Data Found - Ready for AI!</h4>
+                <p><strong>Total Horses:</strong> ${horses.length}</p>
+                <p><strong>Total Races:</strong> ${races.length}</p>
+                <p><strong>Sample Horse:</strong> ${firstHorse.name}</p>
                 <p><strong>Base Star Ratings:</strong></p>
                 <ul>
-                    <li>Speed: ${firstHorse.speed_rating || firstHorse.speed || 'Not set'}</li>
-                    <li>Sprint: ${firstHorse.sprint_rating || firstHorse.sprint || 'Not set'}</li>
-                    <li>Endurance: ${firstHorse.endurance_rating || firstHorse.endurance || 'Not set'}</li>
+                    <li>Speed: ${firstHorse.speed_rating || firstHorse.speed || 'Not set'} ⭐</li>
+                    <li>Sprint: ${firstHorse.sprint_rating || firstHorse.sprint || 'Not set'} ⭐</li>
+                    <li>Endurance: ${firstHorse.endurance_rating || firstHorse.endurance || 'Not set'} ⭐</li>
                 </ul>
-                <p><strong>Races Found:</strong> ${horseRaces.length}</p>`;
+                <p><strong>Races Found:</strong> ${horseRaces.length}</p>
+                
+                <div style="margin-top: 15px; padding: 10px; background: rgba(3, 218, 198, 0.1); border-radius: 5px;">
+                    <p><strong>🎯 Your data is ready!</strong></p>
+                    <button onclick="location.href='ai-racing-intelligence.html'" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                        🧠 View AI Predictions Now
+                    </button>
+                </div>
+            </div>`;
             
             if (horseRaces.length > 0) {
                 const sampleRace = horseRaces[0];
