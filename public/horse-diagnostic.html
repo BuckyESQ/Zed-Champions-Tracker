@@ -252,21 +252,22 @@
                             enhancedRace.ratingChange = (pos <= 3 ? (8 - pos * 2) : -(Math.random() * 5)).toFixed(2);
                         }
                         
-                        // Add augment data (random but realistic)
+                        // Add real ZED augment data (not random placeholders)
                         if (!enhancedRace.cpuAugment) {
-                            enhancedRace.cpuAugment = ['None', 'Void C100', 'Matrix C200', 'Neural C300'][Math.floor(Math.random() * 4)];
+                            enhancedRace.cpuAugment = enhancedRace.augment1 || enhancedRace.cpu || 'None';
                         }
                         if (!enhancedRace.ramAugment) {
-                            enhancedRace.ramAugment = ['None', 'Quantum R100', 'Vector R200', 'Flux R300'][Math.floor(Math.random() * 4)];
+                            enhancedRace.ramAugment = enhancedRace.augment2 || enhancedRace.ram || 'None';
                         }
                         if (!enhancedRace.hydraulicAugment) {
-                            enhancedRace.hydraulicAugment = ['None', 'Titan H100', 'Storm H200', 'Lightning H300'][Math.floor(Math.random() * 4)];
+                            enhancedRace.hydraulicAugment = enhancedRace.augment3 || enhancedRace.hydraulic || 'None';
                         }
                         
-                        // Add star ratings for the race
-                        if (!enhancedRace.speedStar) enhancedRace.speedStar = Math.floor(Math.random() * 6);
-                        if (!enhancedRace.sprintStar) enhancedRace.sprintStar = Math.floor(Math.random() * 6);
-                        if (!enhancedRace.enduranceStar) enhancedRace.enduranceStar = Math.floor(Math.random() * 6);
+                        // CRITICAL FIX: Use HORSE'S fixed star ratings, not random per-race values
+                        // These should be the same for all races for this horse
+                        enhancedRace.speedStar = fixed.speed_rating || fixed.speed || 3;
+                        enhancedRace.sprintStar = fixed.sprint_rating || fixed.sprint || 3;
+                        enhancedRace.enduranceStar = fixed.endurance_rating || fixed.endurance || 3;
                         
                         // Add split times based on finish time
                         if (enhancedRace.finishTime && !enhancedRace.split1) {
