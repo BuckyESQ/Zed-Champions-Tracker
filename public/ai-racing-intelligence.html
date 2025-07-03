@@ -715,85 +715,153 @@
                 const horse = this.horses.find(h => h.id === horseId);
                 if (!horse) return null;
 
-                const horseRaces = this.races.filter(r => r.horseId === horseId);
-                if (horseRaces.length === 0) return null;
+                const relevantRaces = this.races.filter(r => r.horseId === horseId);
+                if (relevantRaces.length === 0) return null;
                 
-                // Sort races by date, most recent first
-                const sortedRaces = [...horseRaces].sort((a, b) => {
+                // Initialize with horse's starting values (comprehensive legacy tracker approach)
+                let currentMmr = Number(horse.initialMmRating !== undefined ? horse.initialMmRating : 1000);
+                let currentZedBalance = Number(horse.initialZedBalance !== undefined ? horse.initialZedBalance : 0);
+                let wins = 0;
+                let places = 0; // 2nd place
+                let shows = 0;  // 3rd place
+                let oddsSum = 0;
+                let racesWithOdds = 0;
+                let totalFinishTime = 0;
+                let racesWithTime = 0;
+                let zedInvested = 0;
+
+                // Process each race for comprehensive stats (legacy tracker methodology)
+                relevantRaces.forEach(race => {
+                    currentMmr += Number(race.ratingChange || 0);
+                    currentZedBalance += Number(race.zedChange || 0);
+                    
+                    const position = Number(race.position);
+                    if (position === 1) wins++;
+                    else if (position === 2) places++;
+                    else if (position === 3) shows++;
+
+                    // Odds analysis
+                    if (race.odds !== null && race.odds !== undefined && !isNaN(race.odds)) {
+                        oddsSum += Number(race.odds);
+                        racesWithOdds++;
+                    }
+
+                    // Finish time analysis
+                    if (race.finishTime && !isNaN(race.finishTime)) {
+                        totalFinishTime += Number(race.finishTime);
+                        racesWithTime++;
+                    }
+
+                    // Track ZED invested (for ROI calculations)
+                    if (race.zedChange && race.zedChange < 0) {
+                        zedInvested += Math.abs(race.zedChange);
+                    }
+                });
+
+                const totalRaces = relevantRaces.length;
+                
+                // Calculate comprehensive performance metrics
+                const winRate = (wins / totalRaces) * 100;
+                const placeRate = (places / totalRaces) * 100;
+                const showRate = (shows / totalRaces) * 100;
+                const itm = ((wins + places + shows) / totalRaces) * 100; // In The Money %
+                const avgOdds = racesWithOdds > 0 ? (oddsSum / racesWithOdds) : null;
+                const avgFinishTime = racesWithTime > 0 ? (totalFinishTime / racesWithTime) : null;
+                const avgPosition = relevantRaces.reduce((sum, r) => sum + r.position, 0) / totalRaces;
+
+                // Calculate Net Profit and ROI (legacy tracker approach)
+                const initialBalance = Number(horse.initialZedBalance !== undefined ? horse.initialZedBalance : 0);
+                const netProfit = currentZedBalance - initialBalance;
+                const roi = (initialBalance > 0 && !isNaN(netProfit)) ? (netProfit / initialBalance) * 100 : null;
+                const avgZedPerRace = netProfit / totalRaces;
+
+                // Recent form analysis (last 5 races) - enhanced
+                const sortedRaces = [...relevantRaces].sort((a, b) => {
                     const dateA = a.date ? new Date(a.date) : new Date(0);
                     const dateB = b.date ? new Date(b.date) : new Date(0);
                     return dateB - dateA;
                 });
+                
+                const recentRaces = sortedRaces.slice(0, 5);
+                const recentWins = recentRaces.filter(r => r.position === 1).length;
+                const recentItm = recentRaces.filter(r => r.position <= 3).length;
+                const recentForm = recentRaces.length > 0 ? (recentItm / recentRaces.length) * 100 : 0;
+                const recentWinRate = recentRaces.length > 0 ? (recentWins / recentRaces.length) * 100 : 0;
 
-                const wins = horseRaces.filter(r => r.position === 1).length;
-                const places = horseRaces.filter(r => r.position === 2).length;
-                const shows = horseRaces.filter(r => r.position === 3).length;
-                const totalRaces = horseRaces.length;
-                
-                const winRate = (wins / totalRaces) * 100;
-                const avgPosition = horseRaces.reduce((sum, r) => sum + r.position, 0) / totalRaces;
-                
-                const racesWithOdds = horseRaces.filter(r => r.odds && !isNaN(r.odds));
-                const avgOdds = racesWithOdds.length > 0 
-                    ? racesWithOdds.reduce((sum, r) => sum + parseFloat(r.odds), 0) / racesWithOdds.length 
-                    : null;
+                // MMR progression analysis
+                const mmrChange = currentMmr - Number(horse.initialMmRating || 1000);
+                const avgMmrPerRace = mmrChange / totalRaces;
 
-                const zedChange = horseRaces.reduce((sum, r) => sum + (parseFloat(r.zedChange) || 0), 0);
-                const roi = totalRaces > 0 ? (zedChange / totalRaces) : 0;
-                
-                // Process detailed race data
+                // Advanced augment analysis
+                const augmentPerformance = this.analyzeAugmentPerformance(relevantRaces);
+
+                // Distance and split analysis
+                const splitAnalysis = this.analyzeSplitPerformance(relevantRaces);
+
+                const zedChange = relevantRaces.reduce((sum, r) => sum + (parseFloat(r.zedChange) || 0), 0);
+
+                // Process detailed race data with comprehensive legacy tracker format
                 const detailedRaces = sortedRaces.map(race => {
                     // Format date if available
-                    let formattedDate = race.date 
-                        ? new Date(race.date).toLocaleDateString('en-US', { 
+                    let formattedDate = race.raceDate || race.date 
+                        ? new Date(race.raceDate || race.date).toLocaleDateString('en-US', { 
                             year: 'numeric', 
                             month: 'short', 
                             day: 'numeric'
                           })
                         : 'Unknown Date';
                         
-                    // Extract race name or create one
+                    // Extract race name (legacy tracker format)
                     const raceName = race.raceName || race.raceId || `Race #${race.raceNumber || 'Unknown'}`;
                     
-                    // Calculate time differentials if available
+                    // Calculate comprehensive time data including splits
                     let timeData = {};
                     if (race.finishTime) {
                         timeData.finishTime = race.finishTime;
                         
-                        // Calculate splits if available
-                        if (race.split1 && race.split2) {
-                            timeData.split1 = race.split1;
-                            timeData.split2 = race.split2;
-                            timeData.finalSplit = (parseFloat(race.finishTime) - parseFloat(race.split2)).toFixed(2);
+                        // Calculate splits if available (legacy tracker approach)
+                        timeData.splits = {};
+                        if (race.split1) timeData.splits.split1 = race.split1;
+                        if (race.split2) timeData.splits.split2 = race.split2;
+                        if (race.split3) timeData.splits.split3 = race.split3;
+                        if (race.split4) timeData.splits.split4 = race.split4;
+                        
+                        // Calculate final split if we have split data
+                        if (race.split2 && race.finishTime) {
+                            timeData.splits.finalSplit = (parseFloat(race.finishTime) - parseFloat(race.split2)).toFixed(2);
                         }
                     }
                     
-                    // Extract augment data
+                    // Extract augment data (comprehensive legacy tracker format)
                     const augments = {
                         cpu: race.cpuAugment || 'None',
-                        ram: race.ramAugment || 'None',
+                        ram: race.ramAugment || 'None', 
                         hydraulic: race.hydraulicAugment || 'None'
                     };
                     
-                    // Extract star ratings for this race if available
+                    // Extract star ratings for this race (legacy tracker comprehensive approach)
                     const stars = {
-                        speed: race.speedStar || horse.speedStar || 0,
-                        strength: race.strengthStar || horse.strengthStar || 0,
-                        stamina: race.staminaStar || horse.staminaStar || 0
+                        overall: horse.stars || 0,
+                        speed: horse.speedStars || race.speedStar || 0,
+                        sprint: horse.sprintStars || race.sprintStar || 0,
+                        endurance: horse.enduranceStars || race.enduranceStar || 0
                     };
                     
-                    // Extract performance metrics
+                    // Extract comprehensive performance metrics (legacy tracker format)
                     const performance = {
                         odds: race.odds || 'N/A',
                         zedChange: race.zedChange || 0,
+                        ratingChange: race.ratingChange || 0,
                         gate: race.gate || 'N/A',
                         distance: race.distance || 'N/A',
-                        track: race.track || 'Unknown'
+                        track: race.track || 'Unknown',
+                        field: race.fieldSize || 'N/A',
+                        conditions: race.conditions || 'Standard'
                     };
                     
                     return {
                         id: race.id,
-                        date: race.date,
+                        date: race.raceDate || race.date,
                         formattedDate,
                         raceName,
                         position: race.position,
@@ -804,19 +872,104 @@
                     };
                 });
 
+                // Return comprehensive stats object (legacy tracker enhanced format)
                 return {
+                    horse,
                     totalRaces,
                     wins,
                     places, 
                     shows,
                     winRate,
+                    placeRate,
+                    showRate,
+                    itm, // In The Money percentage
                     avgPosition,
                     avgOdds,
-                    zedChange,
+                    avgFinishTime,
+                    currentMmr,
+                    mmrChange,
+                    avgMmrPerRace,
+                    currentZedBalance,
+                    netProfit,
                     roi,
-                    recentForm: this.getRecentForm(sortedRaces),
-                    detailedRaces
+                    avgZedPerRace,
+                    recentForm,
+                    recentWinRate,
+                    recentRaces: recentRaces.length,
+                    augmentPerformance,
+                    splitAnalysis,
+                    detailedRaces,
+                    zedChange
                 };
+            }
+
+            // Enhanced augment performance analysis (legacy tracker methodology)
+            analyzeAugmentPerformance(races) {
+                const augmentStats = {
+                    individual: {},
+                    combinations: {}
+                };
+
+                races.forEach(race => {
+                    // Individual augment tracking
+                    ['cpuAugment', 'ramAugment', 'hydraulicAugment'].forEach(augmentType => {
+                        const augment = race[augmentType];
+                        if (augment && augment !== 'None') {
+                            if (!augmentStats.individual[augment]) {
+                                augmentStats.individual[augment] = { races: 0, wins: 0, totalPosition: 0 };
+                            }
+                            augmentStats.individual[augment].races++;
+                            if (race.position === 1) augmentStats.individual[augment].wins++;
+                            augmentStats.individual[augment].totalPosition += race.position;
+                        }
+                    });
+
+                    // Combination tracking
+                    const combo = `${race.cpuAugment || 'None'}/${race.ramAugment || 'None'}/${race.hydraulicAugment || 'None'}`;
+                    if (!augmentStats.combinations[combo]) {
+                        augmentStats.combinations[combo] = { races: 0, wins: 0, totalPosition: 0 };
+                    }
+                    augmentStats.combinations[combo].races++;
+                    if (race.position === 1) augmentStats.combinations[combo].wins++;
+                    augmentStats.combinations[combo].totalPosition += race.position;
+                });
+
+                return augmentStats;
+            }
+
+            // Enhanced split performance analysis
+            analyzeSplitPerformance(races) {
+                const splitData = {
+                    hasData: false,
+                    avgSplit1: null,
+                    avgSplit2: null,
+                    avgSplit3: null,
+                    avgSplit4: null,
+                    bestSplit1: null,
+                    bestSplit2: null,
+                    consistency: null
+                };
+
+                const racesWithSplits = races.filter(r => r.split1 || r.split2);
+                if (racesWithSplits.length === 0) return splitData;
+
+                splitData.hasData = true;
+
+                // Calculate averages for each split
+                ['split1', 'split2', 'split3', 'split4'].forEach(splitName => {
+                    const validSplits = racesWithSplits
+                        .filter(r => r[splitName] && !isNaN(r[splitName]))
+                        .map(r => parseFloat(r[splitName]));
+                    
+                    if (validSplits.length > 0) {
+                        splitData[`avg${splitName.charAt(0).toUpperCase() + splitName.slice(1)}`] = 
+                            validSplits.reduce((sum, split) => sum + split, 0) / validSplits.length;
+                        splitData[`best${splitName.charAt(0).toUpperCase() + splitName.slice(1)}`] = 
+                            Math.min(...validSplits);
+                    }
+                });
+
+                return splitData;
             }
 
             getRecentForm(races) {
