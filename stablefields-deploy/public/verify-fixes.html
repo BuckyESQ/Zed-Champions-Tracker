@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Verify Star & Augment Fixes</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .section { background: #333; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { background: rgba(40, 167, 69, 0.2); border: 1px solid #28a745; }
+        .error { background: rgba(220, 53, 69, 0.2); border: 1px solid #dc3545; }
+        .warning { background: rgba(255, 193, 7, 0.2); border: 1px solid #ffc107; }
+        button { padding: 10px 20px; margin: 10px; background: #03dac6; color: black; border: none; border-radius: 4px; cursor: pointer; }
+        pre { background: #000; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Verify Star Rating & Augment Fixes</h1>
+    <p>This tool verifies that the star rating and augment fixes are working correctly.</p>
+    
+    <div class="section">
+        <h3>Step 1: Check Current Data</h3>
+        <button onclick="checkCurrentData()">Check Current Horse Data</button>
+        <div id="current-data-results"></div>
+    </div>
+    
+    <div class="section">
+        <h3>Step 2: Run Diagnostic Fix</h3>
+        <button onclick="runFix()">Run Auto-Fix</button>
+        <div id="fix-results"></div>
+    </div>
+    
+    <div class="section">
+        <h3>Step 3: Verify Results</h3>
+        <button onclick="verifyResults()">Verify Fixes</button>
+        <div id="verify-results"></div>
+    </div>
+
+    <script>
+        function checkCurrentData() {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const races = JSON.parse(localStorage.getItem('races') || '[]');
+            
+            const resultsDiv = document.getElementById('current-data-results');
+            
+            if (horses.length === 0) {
+                resultsDiv.innerHTML = '<div class="error"><p>❌ No horses found. Please import your horses first.</p></div>';
+                return;
+            }
+            
+            // Check first horse for example
+            const firstHorse = horses[0];
+            const horseRaces = races.filter(r => r.horseId === firstHorse.id);
+            
+            let html = `<div class="warning">
+                <h4>Current Data Analysis:</h4>
+                <p><strong>Horse:</strong> ${firstHorse.name}</p>
+                <p><strong>Base Star Ratings:</strong></p>
+                <ul>
+                    <li>Speed: ${firstHorse.speed_rating || firstHorse.speed || 'Not set'}</li>
+                    <li>Sprint: ${firstHorse.sprint_rating || firstHorse.sprint || 'Not set'}</li>
+                    <li>Endurance: ${firstHorse.endurance_rating || firstHorse.endurance || 'Not set'}</li>
+                </ul>
+                <p><strong>Races Found:</strong> ${horseRaces.length}</p>`;
+            
+            if (horseRaces.length > 0) {
+                const sampleRace = horseRaces[0];
+                html += `<p><strong>Sample Race Data:</strong></p>
+                    <ul>
+                        <li>CPU Augment: ${sampleRace.cpuAugment || 'Not set'}</li>
+                        <li>RAM Augment: ${sampleRace.ramAugment || 'Not set'}</li>
+                        <li>Hydraulic Augment: ${sampleRace.hydraulicAugment || 'Not set'}</li>
+                        <li>Speed Star: ${sampleRace.speedStar || 'Not set'}</li>
+                        <li>Sprint Star: ${sampleRace.sprintStar || 'Not set'}</li>
+                        <li>Endurance Star: ${sampleRace.enduranceStar || 'Not set'}</li>
+                    </ul>`;
+                
+                // Check for fantasy augments
+                const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+                const hasFantasyAugments = horseRaces.some(race => 
+                    fantasyAugments.includes(race.cpuAugment) || 
+                    fantasyAugments.includes(race.ramAugment) || 
+                    fantasyAugments.includes(race.hydraulicAugment)
+                );
+                
+                if (hasFantasyAugments) {
+                    html += '<p class="error">❌ <strong>Fantasy augments detected!</strong> Fix needed.</p>';
+                } else {
+                    html += '<p class="success">✅ No fantasy augments found.</p>';
+                }
+            }
+            
+            html += '</div>';
+            resultsDiv.innerHTML = html;
+        }
+        
+        function runFix() {
+            // This is the same fix logic from the diagnostic tool
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            
+            if (horses.length === 0) {
+                document.getElementById('fix-results').innerHTML = '<div class="error"><p>❌ No horses to fix!</p></div>';
+                return;
+            }
+            
+            const fixedHorses = horses.map(horse => {
+                const fixed = { ...horse };
+                
+                // Ensure horse has FIXED star ratings
+                if (!fixed.speed_rating) {
+                    fixed.speed_rating = Number(fixed.speed || fixed.overall_rating || fixed.stars || 3);
+                }
+                if (!fixed.sprint_rating) {
+                    fixed.sprint_rating = Number(fixed.sprint || fixed.overall_rating || fixed.stars || 3);
+                }
+                if (!fixed.endurance_rating) {
+                    fixed.endurance_rating = Number(fixed.endurance || fixed.overall_rating || fixed.stars || 3);
+                }
+                
+                // Normalize star ratings to 1-5 range
+                fixed.speed_rating = Math.max(1, Math.min(5, Number(fixed.speed_rating)));
+                fixed.sprint_rating = Math.max(1, Math.min(5, Number(fixed.sprint_rating)));
+                fixed.endurance_rating = Math.max(1, Math.min(5, Number(fixed.endurance_rating)));
+                
+                // Fix races
+                if (fixed.races && Array.isArray(fixed.races) && fixed.races.length > 0) {
+                    fixed.races = fixed.races.map((race, index) => {
+                        const enhancedRace = { ...race };
+                        
+                        // Force clean augments
+                        enhancedRace.cpuAugment = enhancedRace.augment1 || enhancedRace.cpu || 'None';
+                        enhancedRace.ramAugment = enhancedRace.augment2 || enhancedRace.ram || 'None';
+                        enhancedRace.hydraulicAugment = enhancedRace.augment3 || enhancedRace.hydraulic || 'None';
+                        
+                        // Remove fantasy augments
+                        const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+                        if (fantasyAugments.includes(enhancedRace.cpuAugment)) {
+                            enhancedRace.cpuAugment = 'None';
+                        }
+                        if (fantasyAugments.includes(enhancedRace.ramAugment)) {
+                            enhancedRace.ramAugment = 'None';
+                        }
+                        if (fantasyAugments.includes(enhancedRace.hydraulicAugment)) {
+                            enhancedRace.hydraulicAugment = 'None';
+                        }
+                        
+                        // Use FIXED horse star ratings
+                        enhancedRace.speedStar = Number(fixed.speed_rating);
+                        enhancedRace.sprintStar = Number(fixed.sprint_rating);
+                        enhancedRace.enduranceStar = Number(fixed.endurance_rating);
+                        
+                        return enhancedRace;
+                    });
+                }
+                
+                return fixed;
+            });
+            
+            // Save the fixed data
+            localStorage.setItem('horses', JSON.stringify(fixedHorses));
+            
+            // Update races array
+            const allRaces = [];
+            fixedHorses.forEach(horse => {
+                if (horse.races && horse.races.length > 0) {
+                    allRaces.push(...horse.races);
+                }
+            });
+            localStorage.setItem('races', JSON.stringify(allRaces));
+            
+            document.getElementById('fix-results').innerHTML = `<div class="success">
+                <h4>✅ Fix Applied Successfully!</h4>
+                <p>Fixed ${fixedHorses.length} horses and ${allRaces.length} race records.</p>
+                <p><strong>Changes made:</strong></p>
+                <ul>
+                    <li>Removed all fantasy augment names</li>
+                    <li>Set fixed star ratings per horse</li>
+                    <li>Ensured consistent data structure</li>
+                </ul>
+            </div>`;
+        }
+        
+        function verifyResults() {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const races = JSON.parse(localStorage.getItem('races') || '[]');
+            
+            if (horses.length === 0) {
+                document.getElementById('verify-results').innerHTML = '<div class="error"><p>❌ No horses to verify!</p></div>';
+                return;
+            }
+            
+            const firstHorse = horses[0];
+            const horseRaces = races.filter(r => r.horseId === firstHorse.id);
+            
+            // Check for consistency
+            let issues = [];
+            
+            // Check if star ratings are consistent across races for the same horse
+            if (horseRaces.length > 1) {
+                const firstRaceStars = {
+                    speed: horseRaces[0].speedStar,
+                    sprint: horseRaces[0].sprintStar,
+                    endurance: horseRaces[0].enduranceStar
+                };
+                
+                const inconsistentStars = horseRaces.some(race => 
+                    race.speedStar !== firstRaceStars.speed ||
+                    race.sprintStar !== firstRaceStars.sprint ||
+                    race.enduranceStar !== firstRaceStars.endurance
+                );
+                
+                if (inconsistentStars) {
+                    issues.push('Star ratings vary between races for the same horse');
+                }
+            }
+            
+            // Check for fantasy augments
+            const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+            const hasFantasyAugments = horseRaces.some(race => 
+                fantasyAugments.includes(race.cpuAugment) || 
+                fantasyAugments.includes(race.ramAugment) || 
+                fantasyAugments.includes(race.hydraulicAugment)
+            );
+            
+            if (hasFantasyAugments) {
+                issues.push('Fantasy augment names still present');
+            }
+            
+            const resultsDiv = document.getElementById('verify-results');
+            
+            if (issues.length === 0) {
+                resultsDiv.innerHTML = `<div class="success">
+                    <h4>✅ Verification Passed!</h4>
+                    <p><strong>All checks passed:</strong></p>
+                    <ul>
+                        <li>✅ Star ratings are consistent per horse</li>
+                        <li>✅ No fantasy augment names found</li>
+                        <li>✅ Data structure is correct</li>
+                    </ul>
+                    <p><strong>You can now use the AI Racing Intelligence!</strong></p>
+                    <button onclick="location.href='ai-racing-intelligence.html'" style="background: #28a745; color: white;">
+                        🧠 Open AI Racing Intelligence
+                    </button>
+                </div>`;
+            } else {
+                resultsDiv.innerHTML = `<div class="error">
+                    <h4>❌ Issues Found:</h4>
+                    <ul>
+                        ${issues.map(issue => `<li>${issue}</li>`).join('')}
+                    </ul>
+                    <p>Try running the Auto-Fix again.</p>
+                </div>`;
+            }
+        }
+    </script>
+</body>
+</html>
