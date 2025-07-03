@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug ZED Data Structure</title>
+</head>
+<body>
+    <h1>ZED Data Structure Debug</h1>
+    <button onclick="debugData()">Debug Current Data</button>
+    <div id="output"></div>
+
+    <script>
+        function debugData() {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const races = JSON.parse(localStorage.getItem('races') || '[]');
+            
+            let html = '<h2>Horses Data Structure</h2>';
+            
+            if (horses.length > 0) {
+                html += '<h3>First Horse Sample:</h3>';
+                html += '<pre>' + JSON.stringify(horses[0], null, 2) + '</pre>';
+                
+                html += '<h3>All Unique Keys Found in Horses:</h3>';
+                const allKeys = new Set();
+                horses.forEach(horse => {
+                    Object.keys(horse).forEach(key => allKeys.add(key));
+                });
+                html += '<ul>';
+                Array.from(allKeys).sort().forEach(key => {
+                    html += `<li>${key}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            if (races.length > 0) {
+                html += '<h3>First Race Sample:</h3>';
+                html += '<pre>' + JSON.stringify(races[0], null, 2) + '</pre>';
+                
+                html += '<h3>All Unique Keys Found in Races:</h3>';
+                const allRaceKeys = new Set();
+                races.forEach(race => {
+                    Object.keys(race).forEach(key => allRaceKeys.add(key));
+                });
+                html += '<ul>';
+                Array.from(allRaceKeys).sort().forEach(key => {
+                    html += `<li>${key}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            document.getElementById('output').innerHTML = html;
+        }
+    </script>
+</body>
+</html>

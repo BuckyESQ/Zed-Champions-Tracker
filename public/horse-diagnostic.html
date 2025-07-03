@@ -193,6 +193,12 @@
                 // Keep all existing data, just enhance it
                 const fixed = { ...horse };
                 
+                // Debug: Log the original horse data structure for the first horse
+                if (horse === horses[0]) {
+                    console.log('🔍 Original horse data structure:', horse);
+                    console.log('🔍 Available keys:', Object.keys(horse));
+                }
+                
                 // Ensure basic fields exist
                 if (!fixed.name && fixed.horse_name) fixed.name = fixed.horse_name;
                 if (!fixed.speed_rating && fixed.speed) fixed.speed_rating = fixed.speed;
@@ -201,11 +207,29 @@
                 if (!fixed.total_races && fixed.raceCount) fixed.total_races = fixed.raceCount;
                 if (!fixed.win_percentage && fixed.winRate) fixed.win_percentage = fixed.winRate;
                 
-                // Convert complete_rating to stars if missing
+                // Convert complete_rating to stars if missing, ensure consistent star ratings
                 if (!fixed.stars && fixed.complete_rating) {
                     fixed.stars = Math.round(parseFloat(fixed.complete_rating));
                 }
                 if (!fixed.stars) fixed.stars = 3; // Default
+                
+                // CRITICAL: Ensure horse has FIXED star ratings that don't change per race
+                // These should be consistent characteristics of the horse
+                if (!fixed.speed_rating) {
+                    fixed.speed_rating = Number(fixed.speed || fixed.overall_rating || fixed.stars || 3);
+                }
+                if (!fixed.sprint_rating) {
+                    fixed.sprint_rating = Number(fixed.sprint || fixed.overall_rating || fixed.stars || 3);
+                }
+                if (!fixed.endurance_rating) {
+                    fixed.endurance_rating = Number(fixed.endurance || fixed.overall_rating || fixed.stars || 3);
+                }
+                
+                // Normalize star ratings to 1-5 range
+                fixed.speed_rating = Math.max(1, Math.min(5, Number(fixed.speed_rating)));
+                fixed.sprint_rating = Math.max(1, Math.min(5, Number(fixed.sprint_rating)));
+                fixed.endurance_rating = Math.max(1, Math.min(5, Number(fixed.endurance_rating)));
+                fixed.stars = Math.max(1, Math.min(5, Number(fixed.stars)));
                 
                 // Add racing status if missing
                 if (!fixed.status) fixed.status = 'racing';
@@ -252,22 +276,33 @@
                             enhancedRace.ratingChange = (pos <= 3 ? (8 - pos * 2) : -(Math.random() * 5)).toFixed(2);
                         }
                         
-                        // Add real ZED augment data (not random placeholders)
+                        // Map real ZED augment data (check multiple possible field names)
                         if (!enhancedRace.cpuAugment) {
-                            enhancedRace.cpuAugment = enhancedRace.augment1 || enhancedRace.cpu || 'None';
+                            enhancedRace.cpuAugment = enhancedRace.augment1 || enhancedRace.cpu || 
+                                                    enhancedRace.cpu_augment || enhancedRace.cpuAugment || 
+                                                    enhancedRace.equipment_cpu || enhancedRace.gear_cpu || 'None';
                         }
                         if (!enhancedRace.ramAugment) {
-                            enhancedRace.ramAugment = enhancedRace.augment2 || enhancedRace.ram || 'None';
+                            enhancedRace.ramAugment = enhancedRace.augment2 || enhancedRace.ram || 
+                                                    enhancedRace.ram_augment || enhancedRace.ramAugment || 
+                                                    enhancedRace.equipment_ram || enhancedRace.gear_ram || 'None';
                         }
                         if (!enhancedRace.hydraulicAugment) {
-                            enhancedRace.hydraulicAugment = enhancedRace.augment3 || enhancedRace.hydraulic || 'None';
+                            enhancedRace.hydraulicAugment = enhancedRace.augment3 || enhancedRace.hydraulic || 
+                                                          enhancedRace.hydraulic_augment || enhancedRace.hydraulicAugment || 
+                                                          enhancedRace.equipment_hydraulic || enhancedRace.gear_hydraulic || 'None';
                         }
                         
                         // CRITICAL FIX: Use HORSE'S fixed star ratings, not random per-race values
-                        // These should be the same for all races for this horse
-                        enhancedRace.speedStar = fixed.speed_rating || fixed.speed || 3;
-                        enhancedRace.sprintStar = fixed.sprint_rating || fixed.sprint || 3;
-                        enhancedRace.enduranceStar = fixed.endurance_rating || fixed.endurance || 3;
+                        // These should be the same for all races for this horse - use FIXED horse ratings
+                        enhancedRace.speedStar = Number(fixed.speed_rating || fixed.speed || fixed.overall_rating || 3);
+                        enhancedRace.sprintStar = Number(fixed.sprint_rating || fixed.sprint || fixed.overall_rating || 3);
+                        enhancedRace.enduranceStar = Number(fixed.endurance_rating || fixed.endurance || fixed.overall_rating || 3);
+                        
+                        // Ensure we don't go above 5 stars or below 1
+                        enhancedRace.speedStar = Math.max(1, Math.min(5, enhancedRace.speedStar));
+                        enhancedRace.sprintStar = Math.max(1, Math.min(5, enhancedRace.sprintStar));
+                        enhancedRace.enduranceStar = Math.max(1, Math.min(5, enhancedRace.enduranceStar));
                         
                         // Add split times based on finish time
                         if (enhancedRace.finishTime && !enhancedRace.split1) {
