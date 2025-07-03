@@ -68,6 +68,7 @@
             <button onclick="fixHorseData()">🔧 Auto-Fix Horse Data</button>
             <button onclick="clearOutput()">🧹 Clear Output</button>
             <button onclick="testBasics()">🧪 Test Basic Functions</button>
+            <button onclick="debugMainTracker()">🎯 Debug Main Tracker</button>
         </div>
         
         <div id="output"></div>
@@ -233,6 +234,37 @@
                 <p><strong>LocalStorage test:</strong></p>
                 <pre>horses: ${localStorage.getItem('horses') ? 'EXISTS' : 'MISSING'}
 races: ${localStorage.getItem('races') ? 'EXISTS' : 'MISSING'}</pre>
+            </div>`;
+        }
+        
+        function debugMainTracker() {
+            const output = document.getElementById('output');
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            
+            output.innerHTML = `<div class="section warning">
+                <h3>🔧 Debug: Simulating Main Tracker Load</h3>
+                <p><strong>Horse Data Status:</strong></p>
+                <pre>Total Horses: ${horses.length}
+First Horse Name: ${horses[0]?.name || 'N/A'}
+loadStable() simulation:</pre>
+                
+                <div style="margin: 15px 0; padding: 10px; background: #222; border-radius: 5px;">
+                    <p><strong>🎯 Quick Fix Options:</strong></p>
+                    <ol>
+                        <li><strong>Go to main tracker:</strong> <a href="/public/stablefields-tracker.html" style="color: #00d4aa;">stablefields.com/public/stablefields-tracker.html</a></li>
+                        <li><strong>Open browser console (F12)</strong> and look for red error messages</li>
+                        <li><strong>Click the "My Stable" tab</strong> if it's not already active</li>
+                        <li><strong>Force refresh the main page:</strong> Ctrl+F5 or Cmd+Shift+R</li>
+                    </ol>
+                </div>
+                
+                <p><strong>Expected Result:</strong> You should see ${horses.length} horse cards in a grid layout.</p>
+                
+                <div style="margin-top: 15px;">
+                    <button onclick="location.href='/public/stablefields-tracker.html'" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        🏇 Go to Main Tracker
+                    </button>
+                </div>
             </div>`;
         }
         
