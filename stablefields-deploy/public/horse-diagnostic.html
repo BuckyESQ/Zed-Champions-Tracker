@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 StableFields Data Diagnostic</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: #fff; 
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { 
+            background: #333; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 8px; 
+            border-left: 4px solid #00d4aa;
+        }
+        .success { border-left-color: #28a745; }
+        .warning { border-left-color: #ffc107; }
+        .error { border-left-color: #dc3545; }
+        pre { 
+            background: #000; 
+            padding: 15px; 
+            border-radius: 4px; 
+            overflow-x: auto; 
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+        button { 
+            padding: 10px 20px; 
+            background: #00d4aa; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+        }
+        button:hover { background: #00b894; }
+        .field-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .field-item {
+            background: #444;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .has-value { background: #2d5016; }
+        .no-value { background: #5d1a1a; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 StableFields Data Diagnostic Tool</h1>
+        <p>This tool helps diagnose why your horses aren't displaying properly.</p>
+        
+        <div class="section">
+            <h2>📊 Quick Analysis</h2>
+            <button onclick="runDiagnostic()">🔬 Run Complete Diagnostic</button>
+            <button onclick="fixHorseData()">🔧 Auto-Fix Horse Data</button>
+            <button onclick="clearOutput()">🧹 Clear Output</button>
+        </div>
+        
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function runDiagnostic() {
+            const output = document.getElementById('output');
+            let results = '';
+            
+            // Check localStorage
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const races = JSON.parse(localStorage.getItem('races') || '[]');
+            
+            results += `<div class="section ${horses.length > 0 ? 'success' : 'warning'}">
+                <h3>🐎 Horses in Storage</h3>
+                <p><strong>Total Horses:</strong> ${horses.length}</p>
+                <p><strong>Total Races:</strong> ${races.length}</p>
+            `;
+            
+            if (horses.length > 0) {
+                const firstHorse = horses[0];
+                results += `<h4>First Horse Data Structure:</h4>`;
+                results += `<pre>${JSON.stringify(firstHorse, null, 2)}</pre>`;
+                
+                // Check what fields are missing vs expected
+                const expectedFields = [
+                    'name', 'id', 'bloodline', 'generation', 'gender',
+                    'speed_rating', 'endurance_rating', 'sprint_rating',
+                    'total_races', 'win_percentage', 'races'
+                ];
+                
+                const actualFields = Object.keys(firstHorse);
+                const missingFields = expectedFields.filter(field => !actualFields.includes(field));
+                const extraFields = actualFields.filter(field => !expectedFields.includes(field));
+                
+                results += `<h4>Field Analysis:</h4>`;
+                results += `<div class="field-list">`;
+                expectedFields.forEach(field => {
+                    const hasValue = firstHorse[field] !== undefined && firstHorse[field] !== null;
+                    results += `<div class="field-item ${hasValue ? 'has-value' : 'no-value'}">
+                        ${field}: ${hasValue ? '✅' : '❌'}
+                    </div>`;
+                });
+                results += `</div>`;
+                
+                if (missingFields.length > 0) {
+                    results += `<p><strong>❌ Missing Expected Fields:</strong> ${missingFields.join(', ')}</p>`;
+                }
+                
+                if (extraFields.length > 0) {
+                    results += `<p><strong>ℹ️ Additional Fields Found:</strong> ${extraFields.join(', ')}</p>`;
+                }
+            }
+            
+            results += `</div>`;
+            
+            // Check if elements exist on the page
+            const requiredElements = [
+                'stable-count', 'empty-stable', 'stable-stats', 
+                'stable-filters', 'stable-horses-grid'
+            ];
+            
+            results += `<div class="section">
+                <h3>🎯 DOM Element Check</h3>
+                <div class="field-list">`;
+            
+            requiredElements.forEach(elementId => {
+                const exists = document.getElementById(elementId) !== null;
+                results += `<div class="field-item ${exists ? 'has-value' : 'no-value'}">
+                    #${elementId}: ${exists ? '✅ Found' : '❌ Missing'}
+                </div>`;
+            });
+            
+            results += `</div></div>`;
+            
+            // Check browser console for errors
+            results += `<div class="section warning">
+                <h3>🚨 Next Steps</h3>
+                <ol>
+                    <li>Open browser console (F12) and check for JavaScript errors</li>
+                    <li>Verify that all required DOM elements exist in the HTML</li>
+                    <li>Check if horse data has the correct field names</li>
+                    <li>Use the "Auto-Fix" button to normalize horse data</li>
+                </ol>
+            </div>`;
+            
+            output.innerHTML = results;
+        }
+        
+        function fixHorseData() {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            
+            if (horses.length === 0) {
+                alert('No horses found to fix!');
+                return;
+            }
+            
+            const fixedHorses = horses.map(horse => {
+                // Normalize common field name issues
+                const fixed = { ...horse };
+                
+                // Ensure basic fields exist
+                if (!fixed.name && fixed.horse_name) fixed.name = fixed.horse_name;
+                if (!fixed.speed_rating && fixed.speed) fixed.speed_rating = fixed.speed;
+                if (!fixed.endurance_rating && fixed.endurance) fixed.endurance_rating = fixed.endurance;
+                if (!fixed.sprint_rating && fixed.sprint) fixed.sprint_rating = fixed.sprint;
+                if (!fixed.total_races && fixed.raceCount) fixed.total_races = fixed.raceCount;
+                if (!fixed.win_percentage && fixed.winRate) fixed.win_percentage = fixed.winRate;
+                
+                // Ensure numeric fields are numbers
+                if (fixed.speed_rating) fixed.speed_rating = Number(fixed.speed_rating);
+                if (fixed.endurance_rating) fixed.endurance_rating = Number(fixed.endurance_rating);
+                if (fixed.sprint_rating) fixed.sprint_rating = Number(fixed.sprint_rating);
+                if (fixed.total_races) fixed.total_races = Number(fixed.total_races);
+                if (fixed.win_percentage) fixed.win_percentage = Number(fixed.win_percentage);
+                
+                return fixed;
+            });
+            
+            localStorage.setItem('horses', JSON.stringify(fixedHorses));
+            
+            const output = document.getElementById('output');
+            output.innerHTML = `<div class="section success">
+                <h3>✅ Horse Data Fixed!</h3>
+                <p>Normalized ${fixedHorses.length} horses. Please refresh the main tracker page.</p>
+            </div>`;
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+        }
+        
+        // Auto-run diagnostic on load
+        window.addEventListener('load', () => {
+            setTimeout(runDiagnostic, 500);
+        });
+    </script>
+</body>
+</html>
