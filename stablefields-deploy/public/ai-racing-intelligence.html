@@ -2225,7 +2225,71 @@
                         </div>
                     `;
                 }
+
+            init() {
+                this.loadData();
+                this.renderAllRacingCards();
             }
+        }
+
+        // Global functions for buttons
+        function viewHorseDetails(horseId) {
+            // Navigate to the main tracker with horse details
+            window.location.href = `/public/stablefields-tracker.html?horse=${horseId}`;
+        }
+
+        function recordRace(horseId) {
+            // Navigate to the main tracker's racing tab
+            window.location.href = `/public/stablefields-tracker.html?tab=racing&horse=${horseId}`;
+        }
+        
+        function toggleRaceView(horseId, viewType) {
+            // Get all elements for this horse
+            const timelineView = document.getElementById(`race-timeline-${horseId}`);
+            const tableView = document.getElementById(`race-table-${horseId}`);
+            const toggleButtons = document.querySelectorAll(`.view-toggle .toggle-btn`);
+            
+            // Reset all buttons
+            toggleButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Find the button that was clicked and activate it
+            const clickedButton = Array.from(toggleButtons).find(btn => 
+                btn.textContent.toLowerCase() === viewType
+            );
+            if (clickedButton) clickedButton.classList.add('active');
+            
+            // Apply the correct view
+            if (viewType === 'timeline') {
+                if (timelineView) {
+                    timelineView.style.display = 'block';
+                    timelineView.classList.remove('compact-view');
+                }
+                if (tableView) tableView.style.display = 'none';
+            } else if (viewType === 'table') {
+                if (timelineView) timelineView.style.display = 'none';
+                if (tableView) tableView.style.display = 'table';
+            } else if (viewType === 'compact') {
+                if (timelineView) {
+                    timelineView.style.display = 'block';
+                    timelineView.classList.add('compact-view');
+                }
+                if (tableView) tableView.style.display = 'none';
+            }
+        }
+
+        // Initialize the AI Racing Intelligence system
+        document.addEventListener('DOMContentLoaded', () => {
+            const aiEngine = new AIRacingIntelligence();
+            aiEngine.init();
+
+            // Refresh data every 30 seconds if the page is visible
+            setInterval(() => {
+                if (!document.hidden) {
+                    aiEngine.loadData();
+                    aiEngine.renderAllRacingCards();
+                }
+            }, 30000);
+        });
     </script>
 </body>
 </html>
