@@ -682,9 +682,9 @@
 
             getDefaultAugments() {
                 return {
-                    CPU: ['Void C100', 'Matrix C200', 'Neural C300'],
-                    RAM: ['Quantum R100', 'Vector R200', 'Flux R300'], 
-                    Hydraulic: ['Titan H100', 'Storm H200', 'Lightning H300']
+                    CPU: ['None', 'Basic CPU', 'Advanced CPU', 'Elite CPU', 'Legendary CPU'],
+                    RAM: ['None', 'Basic RAM', 'Advanced RAM', 'Elite RAM', 'Legendary RAM'], 
+                    Hydraulic: ['None', 'Basic Hydraulic', 'Advanced Hydraulic', 'Elite Hydraulic', 'Legendary Hydraulic']
                 };
             }
 
@@ -1014,11 +1014,11 @@
 
             recommendAugments(horse, stats) {
                 if (!stats || stats.totalRaces < 2) {
-                    // Default recommendations for new horses
+                    // Default recommendations for new horses - use None as default
                     return {
-                        CPU: this.augments.CPU[0] || 'Void C100',
-                        RAM: this.augments.RAM[0] || 'Quantum R100', 
-                        Hydraulic: this.augments.Hydraulic[0] || 'Titan H100',
+                        CPU: this.augments.CPU[0] || 'None',
+                        RAM: this.augments.RAM[0] || 'None', 
+                        Hydraulic: this.augments.Hydraulic[0] || 'None',
                         confidence: 60
                     };
                 }
