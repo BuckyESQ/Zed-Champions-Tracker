@@ -11,6 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
+    <!-- ZED Champions Standardized Data Model -->
+    <script src="zed-data-model.js"></script>
+    
     <style>
         :root {
             --primary-color: #2e86c1;
@@ -899,7 +902,7 @@
         </div>
     </div>
 
-    <script src="/public/app.js"></script>
+    <script src="app.js"></script>
     <script>
         // AI Racing Intelligence Engine
         class AIRacingIntelligence {
@@ -1604,13 +1607,14 @@
                     netProfit,
                     roi,
                     avgZedPerRace,
+                    zedChange,
                     recentForm,
                     recentWinRate,
                     recentRaces: recentRaces.length,
+                    recentItm,
                     augmentPerformance,
                     splitAnalysis,
-                    detailedRaces,
-                    zedChange
+                    detailedRaces
                 };
             }
 
@@ -1685,14 +1689,16 @@
             }
 
             analyzeAugmentPerformance(races) {
-                const augmentStats = {};
+                const augmentStats = {
+                    individual: {}
+                };
 
                 races.forEach(race => {
                     ['cpuAugment', 'ramAugment', 'hydraulicAugment'].forEach(augmentType => {
                         const augmentName = race[augmentType];
                         if (augmentName && augmentName !== 'None') {
-                            if (!augmentStats[augmentName]) {
-                                augmentStats[augmentName] = {
+                            if (!augmentStats.individual[augmentName]) {
+                                augmentStats.individual[augmentName] = {
                                     races: 0,
                                     wins: 0,
                                     totalPosition: 0,
@@ -1700,17 +1706,17 @@
                                 };
                             }
                             
-                            augmentStats[augmentName].races++;
-                            if (race.position === 1) augmentStats[augmentName].wins++;
-                            augmentStats[augmentName].totalPosition += race.position;
-                            augmentStats[augmentName].zedChange += parseFloat(race.zedChange) || 0;
+                            augmentStats.individual[augmentName].races++;
+                            if (race.position === 1) augmentStats.individual[augmentName].wins++;
+                            augmentStats.individual[augmentName].totalPosition += race.position;
+                            augmentStats.individual[augmentName].zedChange += parseFloat(race.zedChange) || 0;
                         }
                     });
                 });
 
                 // Calculate win rates and average positions
-                Object.keys(augmentStats).forEach(augment => {
-                    const stats = augmentStats[augment];
+                Object.keys(augmentStats.individual).forEach(augment => {
+                    const stats = augmentStats.individual[augment];
                     stats.winRate = (stats.wins / stats.races) * 100;
                     stats.avgPosition = stats.totalPosition / stats.races;
                     stats.avgZedPerRace = stats.zedChange / stats.races;
@@ -1759,9 +1765,9 @@
                 let bestScore = -1;
 
                 typeAugments.forEach(augment => {
-                    if (augmentStats[augment] && augmentStats[augment].races >= 2) {
+                    if (augmentStats.individual[augment] && augmentStats.individual[augment].races >= 2) {
                         // Score based on win rate and average ZED per race
-                        const score = augmentStats[augment].winRate + (augmentStats[augment].avgZedPerRace / 100);
+                        const score = augmentStats.individual[augment].winRate + (augmentStats.individual[augment].avgZedPerRace / 100);
                         if (score > bestScore) {
                             bestScore = score;
                             bestAugment = augment;
@@ -2278,12 +2284,12 @@
         // Global functions for buttons
         function viewHorseDetails(horseId) {
             // Navigate to the main tracker with horse details
-            window.location.href = `/public/stablefields-tracker.html?horse=${horseId}`;
+            window.location.href = `stablefields-tracker.html?horse=${horseId}`;
         }
 
         function recordRace(horseId) {
             // Navigate to the main tracker's racing tab
-            window.location.href = `/public/stablefields-tracker.html?tab=racing&horse=${horseId}`;
+            window.location.href = `stablefields-tracker.html?tab=racing&horse=${horseId}`;
         }
         
         function toggleRaceView(horseId, viewType) {

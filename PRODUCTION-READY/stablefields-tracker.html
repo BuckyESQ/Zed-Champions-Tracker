@@ -14,6 +14,9 @@
     <script src="https://cdn.jsdelivr.net/npm/date-fns@2.30.0/dist/date-fns.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     
+    <!-- ZED Champions Standardized Data Model -->
+    <script src="zed-data-model.js"></script>
+    
     <style>
         :root {
             --primary: #00d4aa;
@@ -916,31 +919,49 @@
         .horse-card {
             background: var(--bg-secondary);
             border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem;
+            border-radius: 15px;
+            padding: 1.5rem;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
+            overflow: hidden;
+        }
+
+        .horse-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .horse-card:hover::before,
+        .horse-card.selected::before {
+            opacity: 1;
         }
 
         .horse-card:hover {
             border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(0, 212, 170, 0.25);
         }
 
         .horse-card.selected {
             border-color: var(--primary);
-            background: rgba(0, 212, 170, 0.1);
-            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.2);
+            background: rgba(0, 212, 170, 0.08);
+            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.3);
         }
 
         .horse-card .selection-indicator {
             position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
-            width: 24px;
-            height: 24px;
+            top: 1rem;
+            right: 1rem;
+            width: 28px;
+            height: 28px;
             border: 2px solid var(--border);
             border-radius: 50%;
             background: var(--bg-card);
@@ -948,26 +969,30 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            z-index: 10;
         }
 
         .horse-card.selected .selection-indicator {
             background: var(--primary);
             border-color: var(--primary);
             color: #000;
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.3);
         }
 
         .horse-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            padding-right: 3rem; /* Space for selection indicator */
         }
 
         .horse-name {
-            font-size: 1.125rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--primary);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', sans-serif;
         }
 
         .horse-bloodline {
@@ -975,33 +1000,200 @@
             font-size: 0.875rem;
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .bloodline-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bloodline-nakamoto { 
+            background: rgba(255, 107, 107, 0.2); 
+            color: #ff6b6b; 
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        .bloodline-szabo { 
+            background: rgba(3, 218, 198, 0.2); 
+            color: #03dac6; 
+            border: 1px solid rgba(3, 218, 198, 0.3);
+        }
+        .bloodline-finney { 
+            background: rgba(187, 134, 252, 0.2); 
+            color: #bb86fc; 
+            border: 1px solid rgba(187, 134, 252, 0.3);
+        }
+        .bloodline-buterin { 
+            background: rgba(255, 235, 59, 0.2); 
+            color: #ffeb3b; 
+            border: 1px solid rgba(255, 235, 59, 0.3);
+        }
+
+        .horse-star-ratings {
+            display: flex;
+            justify-content: space-between;
+            margin: 1rem 0;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .star-rating {
+            text-align: center;
+            flex: 1;
+        }
+
+        .star-rating-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .star-rating-value {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            margin-bottom: 0.25rem;
+        }
+
+        .star {
+            color: #ffd700;
+            font-size: 0.9rem;
+        }
+
+        .star.empty {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .star-rating-number {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
         }
 
         .horse-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            margin: 0.75rem 0;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+            margin: 1rem 0;
         }
 
         .horse-stat {
             background: var(--bg-card);
-            padding: 0.5rem;
-            border-radius: 6px;
+            padding: 0.75rem 0.5rem;
+            border-radius: 8px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .horse-stat-value {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary);
             display: block;
+            font-size: 1.1rem;
         }
 
         .horse-stat-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-secondary);
             margin-top: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .horse-performance-preview {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .performance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .performance-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .recent-form {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .form-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-win {
+            background: #4ecca3;
+            border-color: #4ecca3;
+        }
+
+        .form-place {
+            background: #ffeaa7;
+            border-color: #ffeaa7;
+        }
+
+        .form-show {
+            background: #fab1a0;
+            border-color: #fab1a0;
+        }
+
+        .form-loss {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .horse-quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .quick-action-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .horse-id-display {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: 'Courier New', monospace;
+            margin-top: 0.5rem;
+            text-align: center;
+            padding: 0.25rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
         }
 
         /* Enhanced Horse Card Sections */
@@ -2069,52 +2261,174 @@
         }
 
         function createHorseCard(horse) {
-            const hasDetails = horse.details && horse.details.success;
-            const races = hasDetails ? horse.details.total_races || 0 : 'N/A';
-            const winRate = hasDetails && horse.details.win_percentage && typeof horse.details.win_percentage === 'number' 
-                ? `${horse.details.win_percentage.toFixed(1)}%` 
-                : 'N/A';
+            // Use standardized data model to ensure consistent data structure
+            const standardHorse = typeof ZEDDataModel !== 'undefined' ? 
+                ZEDDataModel.createStandardHorse(horse) : horse;
+            
+            // Extract enhanced horse data using horse-diagnostic methodology
+            const races = standardHorse.races ? standardHorse.races.length : (standardHorse.total_races || 0);
+            const wins = standardHorse.races ? 
+                standardHorse.races.filter(r => r.position === 1).length : 
+                (standardHorse.wins || 0);
+            
+            const winRate = races > 0 ? ((wins / races) * 100).toFixed(1) : '0.0';
+            
+            // Calculate recent form (last 5 races)
+            const recentRaces = standardHorse.races ? 
+                standardHorse.races.slice(-5).reverse() : []; // Most recent first
+            
+            // Star ratings with proper scaling (horse-diagnostic structure)
+            const speedStars = normalizeRating(standardHorse.speed_rating || standardHorse.speed || 3);
+            const sprintStars = normalizeRating(standardHorse.sprint_rating || standardHorse.sprint || 3);
+            const enduranceStars = normalizeRating(standardHorse.endurance_rating || standardHorse.endurance || 3);
+            
+            // Generate star display
+            const generateStarDisplay = (rating, maxStars = 5) => {
+                const fullStars = Math.floor(rating);
+                const hasHalfStar = (rating % 1) >= 0.5;
+                let starHtml = '';
+                
+                for (let i = 0; i < maxStars; i++) {
+                    if (i < fullStars) {
+                        starHtml += '<i class="fas fa-star star"></i>';
+                    } else if (i === fullStars && hasHalfStar) {
+                        starHtml += '<i class="fas fa-star-half-alt star"></i>';
+                    } else {
+                        starHtml += '<i class="far fa-star star empty"></i>';
+                    }
+                }
+                return starHtml;
+            };
+            
+            // Bloodline badge with proper styling
+            const bloodlineLower = (standardHorse.bloodline || 'nakamoto').toLowerCase();
+            
+            // Recent form indicators (zedsight style)
+            const recentFormHtml = recentRaces.length > 0 ? 
+                recentRaces.map(race => {
+                    const pos = race.position;
+                    if (pos === 1) return '<div class="form-indicator form-win" title="Win"></div>';
+                    else if (pos === 2) return '<div class="form-indicator form-place" title="2nd Place"></div>';
+                    else if (pos === 3) return '<div class="form-indicator form-show" title="3rd Place"></div>';
+                    else return '<div class="form-indicator form-loss" title="4th+ Place"></div>';
+                }).join('') :
+                '<span style="font-size: 0.7rem; color: var(--text-secondary);">No races</span>';
+            
+            // Calculate ITM (In The Money) percentage
+            const itmRaces = standardHorse.races ? 
+                standardHorse.races.filter(r => r.position <= 3).length : 0;
+            const itmRate = races > 0 ? ((itmRaces / races) * 100).toFixed(1) : '0.0';
+            
+            // Financial data (if available)
+            const lifetimeEarnings = standardHorse.lifetime_earnings || 0;
+            const earningsDisplay = lifetimeEarnings > 0 ? 
+                `${lifetimeEarnings.toFixed(1)} ZED` : 'N/A';
             
             return `
-                <div class="horse-card" onclick="toggleHorseSelection('${horse.id}')">
+                <div class="horse-card" onclick="toggleHorseSelection('${standardHorse.id}')" data-horse-id="${standardHorse.id}">
                     <div class="selection-indicator">
                         <i class="fas fa-check" style="display: none;"></i>
                     </div>
                     
                     <div class="horse-header">
                         <div>
-                            <div class="horse-name">${horse.name}</div>
+                            <div class="horse-name">${standardHorse.name || 'Unknown Horse'}</div>
                             <div class="horse-bloodline">
-                                <i class="fas fa-certificate"></i>
-                                ${horse.bloodline} • Gen ${horse.generation} • ${horse.gender}
+                                <span class="bloodline-badge bloodline-${bloodlineLower}">
+                                    ${standardHorse.bloodline || 'Nakamoto'}
+                                </span>
+                                <span>Gen ${standardHorse.generation || 1}</span>
+                                <span>•</span>
+                                <span>${standardHorse.gender || 'Stallion'}</span>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- Star Ratings Section (zedsight style) -->
+                    <div class="horse-star-ratings">
+                        <div class="star-rating">
+                            <div class="star-rating-label">Speed</div>
+                            <div class="star-rating-value">${generateStarDisplay(speedStars)}</div>
+                            <div class="star-rating-number">${speedStars.toFixed(1)}</div>
+                        </div>
+                        <div class="star-rating">
+                            <div class="star-rating-label">Sprint</div>
+                            <div class="star-rating-value">${generateStarDisplay(sprintStars)}</div>
+                            <div class="star-rating-number">${sprintStars.toFixed(1)}</div>
+                        </div>
+                        <div class="star-rating">
+                            <div class="star-rating-label">Endurance</div>
+                            <div class="star-rating-value">${generateStarDisplay(enduranceStars)}</div>
+                            <div class="star-rating-number">${enduranceStars.toFixed(1)}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Stats -->
                     <div class="horse-stats">
-                        <div class="horse-stat">
-                            <span class="horse-stat-value">${horse.speed_rating || 'N/A'}</span>
-                            <div class="horse-stat-label">Speed</div>
-                        </div>
-                        <div class="horse-stat">
-                            <span class="horse-stat-value">${horse.endurance_rating || 'N/A'}</span>
-                            <div class="horse-stat-label">Endurance</div>
-                        </div>
                         <div class="horse-stat">
                             <span class="horse-stat-value">${races}</span>
                             <div class="horse-stat-label">Races</div>
                         </div>
                         <div class="horse-stat">
-                            <span class="horse-stat-value">${winRate}</span>
+                            <span class="horse-stat-value">${winRate}%</span>
                             <div class="horse-stat-label">Win Rate</div>
+                        </div>
+                        <div class="horse-stat">
+                            <span class="horse-stat-value">${itmRate}%</span>
+                            <div class="horse-stat-label">ITM Rate</div>
                         </div>
                     </div>
                     
-                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
-                        ID: ${horse.id}
+                    <!-- Recent Performance Preview -->
+                    <div class="horse-performance-preview">
+                        <div class="performance-header">
+                            <div class="performance-title">Recent Form</div>
+                            <div class="recent-form">
+                                ${recentFormHtml}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="horse-quick-actions">
+                        <div class="quick-action-btn" onclick="event.stopPropagation(); viewHorseAI('${standardHorse.id}')">
+                            <i class="fas fa-brain"></i> AI Analysis
+                        </div>
+                        <div class="quick-action-btn" onclick="event.stopPropagation(); viewHorseDetails('${standardHorse.id}')">
+                            <i class="fas fa-chart-line"></i> Details
+                        </div>
+                    </div>
+                    
+                    <!-- Horse ID Display -->
+                    <div class="horse-id-display">
+                        ID: ${standardHorse.id}
                     </div>
                 </div>
             `;
+        }
+        
+        // Helper function to normalize rating (matches horse-diagnostic logic)
+        function normalizeRating(rating) {
+            const num = parseFloat(rating);
+            return isNaN(num) ? 3.0 : Math.max(0.5, Math.min(5.0, num));
+        }
+        
+        // Quick action functions for enhanced horse cards
+        function viewHorseAI(horseId) {
+            // Navigate to AI Racing Intelligence with specific horse
+            window.location.href = `ai-racing-intelligence.html?horse=${horseId}`;
+        }
+        
+        function viewHorseDetails(horseId) {
+            // Open detailed horse analysis (could be modal or new page)
+            console.log('View details for horse:', horseId);
+            // For now, we'll show an alert with horse data
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const horse = horses.find(h => h.id === horseId);
+            if (horse) {
+                alert(`Horse Details:\n\nName: ${horse.name}\nBloodline: ${horse.bloodline}\nRaces: ${horse.races ? horse.races.length : 0}\n\nFull data logged to console.`);
+                console.log('Full horse data:', horse);
+            }
         }
 
         function toggleHorseSelection(horseId) {
