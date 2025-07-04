@@ -1401,10 +1401,11 @@
                     const savedAugments = localStorage.getItem('augments');
                     if (savedAugments) {
                         const customAugments = JSON.parse(savedAugments);
-                        // Merge with defaults
+                        // Merge with defaults - augments are objects, not arrays
                         Object.keys(customAugments).forEach(type => {
                             if (this.augments[type]) {
-                                this.augments[type] = [...new Set([...this.augments[type], ...customAugments[type]])];
+                                // For object-based augments, merge the objects
+                                this.augments[type] = { ...this.augments[type], ...customAugments[type] };
                             }
                         });
                     }
