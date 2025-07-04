@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Intelligence - Simple Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .card {
+            background: #2d3748;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #00d4aa;
+        }
+        .horse-card {
+            background: #2d3748;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid #444;
+        }
+        .prediction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .prediction-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        .prediction-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #00d4aa;
+        }
+        button {
+            background: #00d4aa;
+            color: #1a1a1a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        button:hover { background: #00b894; }
+        .nav-links {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .nav-links a {
+            color: #00d4aa;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border: 1px solid #00d4aa;
+            border-radius: 5px;
+        }
+        .nav-links a:hover {
+            background: #00d4aa;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 AI Racing Intelligence - Test Mode</h1>
+        
+        <div class="nav-links">
+            <a href="stablefields-tracker.html">← Back to Tracker</a>
+            <a href="debug-ai-functions.html">🔧 Debug Tool</a>
+            <a href="search-import.html">Import Horses</a>
+        </div>
+        
+        <div class="card">
+            <h3>System Status</h3>
+            <button onclick="testBasicFunctions()">Test Basic Functions</button>
+            <button onclick="loadTestData()">Load Test Data</button>
+            <button onclick="runAIAnalysis()">Run AI Analysis</button>
+            <button onclick="clearData()">Clear All Data</button>
+            <div id="status-output"></div>
+        </div>
+        
+        <div id="horses-container"></div>
+        
+        <div id="no-data" style="display: none;">
+            <div class="card">
+                <h3>No Data Available</h3>
+                <p>Click "Load Test Data" to create sample horses and races for testing.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple AI Intelligence Class - Guaranteed to Work
+        class SimpleAI {
+            constructor() {
+                this.horses = [];
+                this.races = [];
+                this.loadData();
+            }
+            
+            loadData() {
+                try {
+                    this.horses = JSON.parse(localStorage.getItem('horses') || '[]');
+                    this.races = JSON.parse(localStorage.getItem('races') || '[]');
+                    console.log('Data loaded:', this.horses.length, 'horses,', this.races.length, 'races');
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.horses = [];
+                    this.races = [];
+                }
+            }
+            
+            calculateStats(horseId) {
+                const horseRaces = this.races.filter(r => r.horseId === horseId);
+                if (horseRaces.length === 0) return null;
+                
+                const wins = horseRaces.filter(r => r.position === 1).length;
+                const places = horseRaces.filter(r => r.position === 2).length;
+                const shows = horseRaces.filter(r => r.position === 3).length;
+                const totalRaces = horseRaces.length;
+                
+                const winRate = (wins / totalRaces) * 100;
+                const itm = ((wins + places + shows) / totalRaces) * 100;
+                const avgPosition = horseRaces.reduce((sum, r) => sum + r.position, 0) / totalRaces;
+                
+                const zedChange = horseRaces.reduce((sum, r) => sum + (parseFloat(r.zedChange) || 0), 0);
+                const roi = zedChange; // Simplified
+                
+                return {
+                    totalRaces,
+                    wins,
+                    places,
+                    shows,
+                    winRate: winRate.toFixed(1),
+                    itm: itm.toFixed(1),
+                    avgPosition: avgPosition.toFixed(1),
+                    roi: roi.toFixed(0)
+                };
+            }
+            
+            predictWinProbability(horse, stats) {
+                if (!stats) return 15;
+                
+                let probability = parseFloat(stats.winRate) || 15;
+                
+                // Star bonus
+                if (horse.stars) {
+                    const starBonus = (parseFloat(horse.stars) - 3) * 3;
+                    probability += starBonus;
+                }
+                
+                // Bloodline modifier
+                const bloodlineBonus = {
+                    'Nakamoto': 2,
+                    'Szabo': 1,
+                    'Finney': 0,
+                    'Buterin': 1
+                };
+                probability += bloodlineBonus[horse.bloodline] || 0;
+                
+                return Math.max(5, Math.min(85, probability));
+            }
+            
+            recommendAugments(horse, stats) {
+                // Simple recommendation logic
+                if (!stats || stats.totalRaces < 2) {
+                    return {
+                        CPU: 'None',
+                        RAM: 'None',
+                        Hydraulic: 'None',
+                        confidence: 60
+                    };
+                }
+                
+                // Based on performance
+                const winRate = parseFloat(stats.winRate) || 0;
+                
+                let cpu = 'None', ram = 'None', hydraulic = 'None';
+                let confidence = 70;
+                
+                if (winRate > 25) {
+                    cpu = 'Crimson C';
+                    ram = 'Void R100';
+                    hydraulic = 'Darklight 100H';
+                    confidence = 85;
+                } else if (winRate > 15) {
+                    cpu = 'Void C100';
+                    ram = 'Midnight 100R';
+                    hydraulic = 'Crimson H';
+                    confidence = 75;
+                } else {
+                    cpu = 'GX-Core C';
+                    ram = 'Crimson R';
+                    hydraulic = 'Midnight 100H';
+                    confidence = 65;
+                }
+                
+                return { CPU: cpu, RAM: ram, Hydraulic: hydraulic, confidence };
+            }
+            
+            calculateReadiness(horse, stats) {
+                let score = 50;
+                
+                if (stats) {
+                    score += Math.min(20, stats.totalRaces * 2);
+                    score += parseFloat(stats.winRate) / 5;
+                    if (parseFloat(stats.roi) > 0) score += 15;
+                }
+                
+                if (horse.stars) {
+                    score += (parseFloat(horse.stars) - 3) * 5;
+                }
+                
+                return Math.max(10, Math.min(100, score)).toFixed(0);
+            }
+            
+            renderHorseCard(horse) {
+                const stats = this.calculateStats(horse.id);
+                const winProb = this.predictWinProbability(horse, stats);
+                const augments = this.recommendAugments(horse, stats);
+                const readiness = this.calculateReadiness(horse, stats);
+                
+                return `
+                    <div class="horse-card">
+                        <h3>${horse.name}</h3>
+                        <p><strong>Bloodline:</strong> ${horse.bloodline} | <strong>Stars:</strong> ${horse.stars || 'N/A'} | <strong>Gender:</strong> ${horse.gender}</p>
+                        
+                        <div class="prediction-grid">
+                            <div class="prediction-card">
+                                <div class="prediction-value">${winProb.toFixed(1)}%</div>
+                                <div>Win Probability</div>
+                            </div>
+                            <div class="prediction-card">
+                                <div class="prediction-value">${readiness}</div>
+                                <div>Readiness Score</div>
+                            </div>
+                            <div class="prediction-card">
+                                <div class="prediction-value">${stats ? stats.winRate : '0'}%</div>
+                                <div>Historical Win Rate</div>
+                            </div>
+                            <div class="prediction-card">
+                                <div class="prediction-value">${augments.confidence}%</div>
+                                <div>Augment Confidence</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <h4>Recommended Augments:</h4>
+                            <p><strong>CPU:</strong> ${augments.CPU} | <strong>RAM:</strong> ${augments.RAM} | <strong>Hydraulic:</strong> ${augments.Hydraulic}</p>
+                        </div>
+                        
+                        ${stats ? `
+                        <div style="margin-top: 15px;">
+                            <h4>Race Statistics:</h4>
+                            <p>
+                                <strong>Races:</strong> ${stats.totalRaces} | 
+                                <strong>Wins:</strong> ${stats.wins} | 
+                                <strong>ITM:</strong> ${stats.itm}% | 
+                                <strong>Avg Position:</strong> ${stats.avgPosition} |
+                                <strong>ROI:</strong> ${stats.roi} ZED
+                            </p>
+                        </div>
+                        ` : '<p><em>No race history available</em></p>'}
+                    </div>
+                `;
+            }
+            
+            render() {
+                const container = document.getElementById('horses-container');
+                const noData = document.getElementById('no-data');
+                
+                if (this.horses.length === 0) {
+                    container.innerHTML = '';
+                    noData.style.display = 'block';
+                    return;
+                }
+                
+                const racingHorses = this.horses.filter(h => h.status === 'racing' || !h.status);
+                
+                if (racingHorses.length === 0) {
+                    container.innerHTML = '<div class="card"><h3>No Racing Horses</h3><p>Add horses with "racing" status to see predictions.</p></div>';
+                    noData.style.display = 'none';
+                    return;
+                }
+                
+                const cards = racingHorses.map(horse => this.renderHorseCard(horse)).join('');
+                container.innerHTML = cards;
+                noData.style.display = 'none';
+            }
+        }
+        
+        // Global AI instance
+        let ai;
+        
+        function testBasicFunctions() {
+            const output = document.getElementById('status-output');
+            
+            try {
+                // Test localStorage
+                localStorage.setItem('test', 'working');
+                const test = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (test !== 'working') {
+                    throw new Error('LocalStorage not working');
+                }
+                
+                // Test AI creation
+                ai = new SimpleAI();
+                
+                output.innerHTML = `
+                    <div style="background: rgba(40, 167, 69, 0.2); padding: 10px; margin: 10px 0; border-radius: 5px;">
+                        ✅ Basic Functions Working<br>
+                        ✅ LocalStorage: OK<br>
+                        ✅ AI Class: Created<br>
+                        ✅ Data: ${ai.horses.length} horses, ${ai.races.length} races
+                    </div>
+                `;
+                
+                ai.render();
+                
+            } catch (error) {
+                output.innerHTML = `
+                    <div style="background: rgba(220, 53, 69, 0.2); padding: 10px; margin: 10px 0; border-radius: 5px;">
+                        ❌ Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function loadTestData() {
+            const testHorses = [
+                {
+                    id: 'test-1',
+                    name: 'Thunder Strike',
+                    bloodline: 'Nakamoto',
+                    gender: 'Stallion',
+                    stars: 4.2,
+                    status: 'racing'
+                },
+                {
+                    id: 'test-2',
+                    name: 'Lightning Bolt',
+                    bloodline: 'Szabo',
+                    gender: 'Mare',
+                    stars: 3.8,
+                    status: 'racing'
+                }
+            ];
+            
+            const testRaces = [
+                {
+                    id: 'race-1',
+                    horseId: 'test-1',
+                    position: 1,
+                    zedChange: 150,
+                    date: '2025-07-01'
+                },
+                {
+                    id: 'race-2',
+                    horseId: 'test-1',
+                    position: 2,
+                    zedChange: 75,
+                    date: '2025-07-02'
+                },
+                {
+                    id: 'race-3',
+                    horseId: 'test-2',
+                    position: 3,
+                    zedChange: 25,
+                    date: '2025-07-03'
+                }
+            ];
+            
+            localStorage.setItem('horses', JSON.stringify(testHorses));
+            localStorage.setItem('races', JSON.stringify(testRaces));
+            
+            document.getElementById('status-output').innerHTML = `
+                <div style="background: rgba(40, 167, 69, 0.2); padding: 10px; margin: 10px 0; border-radius: 5px;">
+                    ✅ Test data loaded: ${testHorses.length} horses, ${testRaces.length} races
+                </div>
+            `;
+            
+            // Reload AI
+            testBasicFunctions();
+        }
+        
+        function runAIAnalysis() {
+            if (!ai) {
+                ai = new SimpleAI();
+            }
+            
+            ai.loadData();
+            ai.render();
+            
+            document.getElementById('status-output').innerHTML = `
+                <div style="background: rgba(40, 167, 69, 0.2); padding: 10px; margin: 10px 0; border-radius: 5px;">
+                    ✅ AI Analysis Complete<br>
+                    🐴 Analyzed ${ai.horses.length} horses<br>
+                    🏁 Using ${ai.races.length} race records
+                </div>
+            `;
+        }
+        
+        function clearData() {
+            localStorage.clear();
+            document.getElementById('horses-container').innerHTML = '';
+            document.getElementById('no-data').style.display = 'block';
+            document.getElementById('status-output').innerHTML = `
+                <div style="background: rgba(255, 193, 7, 0.2); padding: 10px; margin: 10px 0; border-radius: 5px;">
+                    ⚠️ All data cleared
+                </div>
+            `;
+        }
+        
+        // Auto-initialize
+        window.addEventListener('load', () => {
+            console.log('Simple AI Test loaded');
+            testBasicFunctions();
+        });
+    </script>
+</body>
+</html>

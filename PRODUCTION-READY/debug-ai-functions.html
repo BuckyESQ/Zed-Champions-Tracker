@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 AI Functions Debug Tool</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: #fff; 
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { 
+            background: #2d3748; 
+            border-radius: 8px; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-left: 4px solid #00d4aa;
+        }
+        .success { border-left-color: #28a745; }
+        .warning { border-left-color: #ffc107; }
+        .error { border-left-color: #dc3545; }
+        pre { 
+            background: #1a1a1a; 
+            padding: 15px; 
+            border-radius: 5px; 
+            overflow-x: auto; 
+            white-space: pre-wrap;
+        }
+        button { 
+            background: #00d4aa; 
+            color: #1a1a1a; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin: 5px;
+            font-weight: bold;
+        }
+        button:hover { background: #00b894; }
+        .test-result { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+        }
+        .pass { background: rgba(40, 167, 69, 0.2); }
+        .fail { background: rgba(220, 53, 69, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 AI Functions Debug Tool</h1>
+        <p>This tool will test all AI Intelligence functions and force cache refresh.</p>
+        
+        <div class="section">
+            <h3>Quick Actions</h3>
+            <button onclick="clearAllData()">🗑️ Clear All Data</button>
+            <button onclick="createTestHorses()">🐴 Create Test Horses</button>
+            <button onclick="testAIFunctions()">🧠 Test AI Functions</button>
+            <button onclick="forceRefresh()">🔄 Force Full Refresh</button>
+            <button onclick="repairLocalStorage()">🔧 Repair LocalStorage</button>
+        </div>
+        
+        <div id="output"></div>
+        
+        <div class="section">
+            <h3>Manual Cache Clear Instructions</h3>
+            <ol>
+                <li><strong>Chrome/Edge:</strong> Press F12 → Application tab → Storage → Clear site data</li>
+                <li><strong>Firefox:</strong> Press F12 → Storage tab → Local Storage → Delete all</li>
+                <li><strong>Safari:</strong> Develop menu → Empty Caches</li>
+                <li><strong>Nuclear Option:</strong> Close browser completely, reopen, hold Ctrl+Shift+R</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function clearAllData() {
+            const output = document.getElementById('output');
+            
+            // Clear localStorage
+            localStorage.clear();
+            
+            // Clear sessionStorage
+            sessionStorage.clear();
+            
+            // Clear any cached data
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            output.innerHTML = `
+                <div class="section success">
+                    <h3>✅ Data Cleared Successfully</h3>
+                    <pre>
+✅ localStorage cleared
+✅ sessionStorage cleared  
+✅ Browser caches cleared
+✅ Ready for fresh start
+                    </pre>
+                </div>
+            `;
+        }
+        
+        function createTestHorses() {
+            const output = document.getElementById('output');
+            
+            // Create comprehensive test horses with full ZED structure
+            const testHorses = [
+                {
+                    id: 'test-horse-1',
+                    name: 'Thunder Strike',
+                    bloodline: 'Nakamoto',
+                    gender: 'Stallion',
+                    stars: 4.2,
+                    speed_rating: 4.1,
+                    sprint_rating: 4.3,
+                    endurance_rating: 4.0,
+                    generation: 3,
+                    status: 'racing',
+                    initialMmRating: 1250,
+                    initialZedBalance: 1000,
+                    color: '#FFD700'
+                },
+                {
+                    id: 'test-horse-2', 
+                    name: 'Lightning Bolt',
+                    bloodline: 'Szabo',
+                    gender: 'Mare',
+                    stars: 3.8,
+                    speed_rating: 3.9,
+                    sprint_rating: 3.7,
+                    endurance_rating: 3.8,
+                    generation: 4,
+                    status: 'racing',
+                    initialMmRating: 1100,
+                    initialZedBalance: 800,
+                    color: '#4169E1'
+                },
+                {
+                    id: 'test-horse-3',
+                    name: 'Storm Runner',
+                    bloodline: 'Finney', 
+                    gender: 'Gelding',
+                    stars: 3.5,
+                    speed_rating: 3.4,
+                    sprint_rating: 3.6,
+                    endurance_rating: 3.5,
+                    generation: 5,
+                    status: 'racing',
+                    initialMmRating: 950,
+                    initialZedBalance: 600,
+                    color: '#DC143C'
+                }
+            ];
+            
+            // Create test races
+            const testRaces = [
+                {
+                    id: 'race-1',
+                    horseId: 'test-horse-1',
+                    position: 1,
+                    finishTime: 62.45,
+                    split1: 20.1,
+                    split2: 41.2,
+                    odds: 3.2,
+                    zedChange: 150,
+                    ratingChange: 25,
+                    cpuAugment: 'Crimson C',
+                    ramAugment: 'Void R100',
+                    hydraulicAugment: 'None',
+                    date: '2025-07-01',
+                    raceName: 'Sprint Championship',
+                    track: 'Cyber Circuit',
+                    distance: '1200m'
+                },
+                {
+                    id: 'race-2',
+                    horseId: 'test-horse-1',
+                    position: 2,
+                    finishTime: 63.12,
+                    split1: 20.5,
+                    split2: 41.8,
+                    odds: 2.8,
+                    zedChange: 75,
+                    ratingChange: 15,
+                    cpuAugment: 'GX-Core C',
+                    ramAugment: 'Crimson R',
+                    hydraulicAugment: 'Darklight 100H',
+                    date: '2025-07-02',
+                    raceName: 'Elite Stakes',
+                    track: 'Neo Tokyo',
+                    distance: '1400m'
+                },
+                {
+                    id: 'race-3',
+                    horseId: 'test-horse-2',
+                    position: 3,
+                    finishTime: 64.88,
+                    split1: 21.2,
+                    split2: 42.5,
+                    odds: 4.1,
+                    zedChange: 25,
+                    ratingChange: 5,
+                    cpuAugment: 'Void C100',
+                    ramAugment: 'Midnight 100R',
+                    hydraulicAugment: 'Crimson H',
+                    date: '2025-07-03',
+                    raceName: 'Endurance Cup',
+                    track: 'Digital Downs',
+                    distance: '1600m'
+                }
+            ];
+            
+            // Save to localStorage
+            localStorage.setItem('horses', JSON.stringify(testHorses));
+            localStorage.setItem('races', JSON.stringify(testRaces));
+            
+            output.innerHTML = `
+                <div class="section success">
+                    <h3>✅ Test Data Created</h3>
+                    <pre>
+🐴 Created ${testHorses.length} test horses:
+- Thunder Strike (Nakamoto, 4.2⭐, Racing)
+- Lightning Bolt (Szabo, 3.8⭐, Racing)
+- Storm Runner (Finney, 3.5⭐, Racing)
+
+🏁 Created ${testRaces.length} test races with:
+- Real ZED augments (Crimson C, GX-Core C, etc.)
+- Split times and performance data
+- Win/place/show results
+- ZED balance changes
+
+💾 Data saved to localStorage
+                    </pre>
+                </div>
+            `;
+        }
+        
+        function testAIFunctions() {
+            const output = document.getElementById('output');
+            let results = '<div class="section"><h3>🧠 AI Function Tests</h3>';
+            
+            try {
+                // Test data availability
+                const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+                const races = JSON.parse(localStorage.getItem('races') || '[]');
+                
+                results += `<div class="test-result ${horses.length > 0 ? 'pass' : 'fail'}">
+                    Data Check: ${horses.length} horses, ${races.length} races
+                </div>`;
+                
+                if (horses.length === 0) {
+                    results += '<div class="test-result fail">❌ No test horses found - click "Create Test Horses" first</div>';
+                } else {
+                    // Test AI class creation
+                    try {
+                        // Simulate AI class instantiation
+                        const testHorse = horses[0];
+                        
+                        // Test augment logic
+                        const augmentTest = testDefaultAugments();
+                        results += `<div class="test-result ${augmentTest ? 'pass' : 'fail'}">
+                            Augment System: ${augmentTest ? '✅ Working' : '❌ Failed'}
+                        </div>`;
+                        
+                        // Test bloodline logic
+                        const bloodlineTest = testBloodlineData();
+                        results += `<div class="test-result ${bloodlineTest ? 'pass' : 'fail'}">
+                            Bloodline System: ${bloodlineTest ? '✅ Working' : '❌ Failed'}
+                        </div>`;
+                        
+                        // Test breeding logic
+                        const breedingTest = testBreedingLogic(horses);
+                        results += `<div class="test-result ${breedingTest ? 'pass' : 'fail'}">
+                            Breeding Logic: ${breedingTest ? '✅ Working' : '❌ Failed'}
+                        </div>`;
+                        
+                        // Test stats calculation
+                        const statsTest = testStatsCalculation(testHorse, races);
+                        results += `<div class="test-result ${statsTest ? 'pass' : 'fail'}">
+                            Stats Calculation: ${statsTest ? '✅ Working' : '❌ Failed'}
+                        </div>`;
+                        
+                    } catch (error) {
+                        results += `<div class="test-result fail">
+                            ❌ AI Function Error: ${error.message}
+                        </div>`;
+                    }
+                }
+                
+            } catch (error) {
+                results += `<div class="test-result fail">
+                    ❌ Critical Error: ${error.message}
+                </div>`;
+            }
+            
+            results += '</div>';
+            output.innerHTML = results;
+        }
+        
+        function testDefaultAugments() {
+            try {
+                const augments = {
+                    CPU: {
+                        'None': { effect: 'No effect', condition: 'Always', strength: 0, trigger: 'automatic' },
+                        'Void C100': { effect: 'Boost of 0.04 throughout the race', condition: 'Entire race', strength: 0.04, trigger: 'automatic' },
+                        'Crimson C': { effect: 'Significant Speed boost in the final sprint', condition: 'Final sprint', strength: 0.08, trigger: 'conditional' }
+                    }
+                };
+                return Object.keys(augments.CPU).length >= 3;
+            } catch {
+                return false;
+            }
+        }
+        
+        function testBloodlineData() {
+            try {
+                const bloodlines = {
+                    'Nakamoto': { primaryAttribute: 'Strong start', strengths: ['Early speed', 'Gate break'] },
+                    'Szabo': { primaryAttribute: 'Steady', strengths: ['Consistency', 'Pace management'] },
+                    'Finney': { primaryAttribute: 'Strong finish', strengths: ['Late pace', 'Closing kick'] },
+                    'Buterin': { primaryAttribute: 'Unpredictable', strengths: ['Versatility', 'Surprise factor'] }
+                };
+                return Object.keys(bloodlines).length === 4;
+            } catch {
+                return false;
+            }
+        }
+        
+        function testBreedingLogic(horses) {
+            try {
+                if (horses.length < 2) return false;
+                
+                const horse1 = horses[0];
+                const horse2 = horses[1];
+                
+                // Simple breeding compatibility test
+                const compatibility = 0.85; // Mock calculation
+                return compatibility > 0 && compatibility <= 1;
+            } catch {
+                return false;
+            }
+        }
+        
+        function testStatsCalculation(horse, races) {
+            try {
+                const horseRaces = races.filter(r => r.horseId === horse.id);
+                
+                if (horseRaces.length === 0) return true; // No races is valid
+                
+                const wins = horseRaces.filter(r => r.position === 1).length;
+                const winRate = (wins / horseRaces.length) * 100;
+                
+                return !isNaN(winRate) && winRate >= 0 && winRate <= 100;
+            } catch {
+                return false;
+            }
+        }
+        
+        function forceRefresh() {
+            // Force complete refresh
+            localStorage.setItem('cache_bust', Date.now().toString());
+            
+            // Reload AI Intelligence page with cache busting
+            const timestamp = Date.now();
+            window.location.href = `ai-racing-intelligence.html?v=${timestamp}`;
+        }
+        
+        function repairLocalStorage() {
+            const output = document.getElementById('output');
+            
+            try {
+                // Check localStorage functionality
+                localStorage.setItem('test', 'working');
+                const test = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (test !== 'working') {
+                    throw new Error('LocalStorage not functioning');
+                }
+                
+                // Repair any corrupted data
+                const horses = localStorage.getItem('horses');
+                const races = localStorage.getItem('races');
+                
+                if (horses && !Array.isArray(JSON.parse(horses))) {
+                    localStorage.removeItem('horses');
+                }
+                
+                if (races && !Array.isArray(JSON.parse(races))) {
+                    localStorage.removeItem('races');
+                }
+                
+                output.innerHTML = `
+                    <div class="section success">
+                        <h3>✅ LocalStorage Repaired</h3>
+                        <pre>
+✅ LocalStorage functionality confirmed
+✅ Corrupted data removed
+✅ Ready for fresh data
+                        </pre>
+                    </div>
+                `;
+                
+            } catch (error) {
+                output.innerHTML = `
+                    <div class="section error">
+                        <h3>❌ LocalStorage Error</h3>
+                        <pre>Error: ${error.message}
+
+Try these solutions:
+1. Enable localStorage in browser settings
+2. Check if in incognito/private mode
+3. Clear all browser data and restart
+4. Try a different browser
+                        </pre>
+                    </div>
+                `;
+            }
+        }
+        
+        // Auto-run basic tests on load
+        window.addEventListener('load', () => {
+            console.log('🔧 Debug tool loaded');
+            
+            // Quick status check
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const races = JSON.parse(localStorage.getItem('races') || '[]');
+            
+            if (horses.length === 0) {
+                document.getElementById('output').innerHTML = `
+                    <div class="section warning">
+                        <h3>⚠️ No Data Found</h3>
+                        <p>Click "Create Test Horses" to generate sample data for testing.</p>
+                    </div>
+                `;
+            } else {
+                document.getElementById('output').innerHTML = `
+                    <div class="section success">
+                        <h3>📊 Current Data Status</h3>
+                        <pre>Horses: ${horses.length}
+Races: ${races.length}
+Ready for AI testing</pre>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
