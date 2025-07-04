@@ -602,36 +602,256 @@
             text-align: center;
         }
 
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .horse-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .ai-predictions {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .augment-recommendation {
-                grid-template-columns: 1fr;
-            }
-            
-            .race-details {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .table-view {
-                font-size: 0.8rem;
-            }
-            
-            .table-view th, 
-            .table-view td {
-                padding: 8px 5px;
-            }
+        /* Breeding Section Styles */
+        .breeding-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .breeding-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .breeding-title h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breeding-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 15px;
+        }
+
+        .breeding-card.best-match {
+            border-left: 4px solid gold;
+        }
+
+        .breeding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .partner-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .compatibility-score {
+            background: var(--success-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        .breeding-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .breeding-empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+        }
+
+        /* Breeding Section Styles */
+        .breeding-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .breeding-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .breeding-title h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breeding-confidence {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 5px 12px;
+            border-radius: 15px;
+        }
+
+        .breeding-recommendations {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .breeding-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .breeding-card.best-match {
+            border-left: 4px solid gold;
+            background: rgba(255, 215, 0, 0.03);
+        }
+
+        .breeding-card.alternative-match {
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .breeding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .partner-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .compatibility-score {
+            background: var(--success-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .breeding-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .breeding-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .breeding-detail .detail-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .breeding-detail .detail-value {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .bloodline-nakamoto { color: var(--nakamoto-color, #FFD700); }
+        .bloodline-szabo { color: var(--szabo-color, #4169E1); }
+        .bloodline-finney { color: var(--finney-color, #DC143C); }
+        .bloodline-buterin { color: var(--buterin-color, #9932CC); }
+
+        .star-prediction {
+            color: var(--warning-color);
+            font-size: 1.1rem;
+        }
+
+        .roi-positive {
+            color: var(--success-color);
+        }
+
+        .foal-traits {
+            margin-bottom: 15px;
+        }
+
+        .foal-traits .traits-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--accent-color);
+        }
+
+        .foal-traits .traits-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .foal-traits .trait-tag {
+            background: rgba(14, 179, 227, 0.1);
+            color: var(--accent-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(14, 179, 227, 0.2);
+        }
+
+        .breeding-advice {
+            background: rgba(255,255,255,0.05);
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .breeding-advice i {
+            color: var(--accent-color);
+            margin-top: 2px;
+        }
+
+        .other-matches-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        .breeding-summary {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .breeding-empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+
+        .breeding-empty-state .text-muted {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -680,11 +900,486 @@
                 this.augments = this.getDefaultAugments();
             }
 
+            // Enhanced ZED Champions Augment System with detailed mechanics and trigger logic
             getDefaultAugments() {
                 return {
-                    CPU: ['None', 'Basic CPU', 'Advanced CPU', 'Elite CPU', 'Legendary CPU'],
-                    RAM: ['None', 'Basic RAM', 'Advanced RAM', 'Elite RAM', 'Legendary RAM'], 
-                    Hydraulic: ['None', 'Basic Hydraulic', 'Advanced Hydraulic', 'Elite Hydraulic', 'Legendary Hydraulic']
+                    CPU: {
+                        'None': { effect: 'No effect', condition: 'Always', strength: 0, trigger: 'automatic' },
+                        'Void C100': { effect: 'Boost of 0.04 throughout the race', condition: 'Entire race', strength: 0.04, trigger: 'automatic' },
+                        'Crimson C': { effect: 'Significant Speed boost in the final sprint', condition: 'Final sprint', strength: 0.08, trigger: 'conditional' },
+                        'GX-Core C': { effect: 'Major Speed boost when 20M behind the leader', condition: '20M behind leader', strength: 0.12, trigger: 'conditional' },
+                        'Darklight 100C': { effect: 'Strong Speed boost at the start of the race', condition: 'Race start', strength: 0.10, trigger: 'automatic' },
+                        'Midnight 100C': { effect: 'Strong Speed boost in the second quarter of the race', condition: 'Second quarter', strength: 0.10, trigger: 'automatic' }
+                    },
+                    RAM: {
+                        'None': { effect: 'No effect', condition: 'Always', strength: 0, trigger: 'automatic' },
+                        'Void R100': { effect: 'Minor Speed boost for the entire race', condition: 'Entire race', strength: 0.02, trigger: 'automatic' },
+                        'Crimson R': { effect: 'Major Speed boost when 7m in front of both adjacent racehorses', condition: '7m ahead of adjacent horses', strength: 0.12, trigger: 'conditional' },
+                        'GX-Core R': { effect: 'Significant Speed boost when passed by an adjacent racehorse', condition: 'When passed by adjacent horse', strength: 0.08, trigger: 'conditional' },
+                        'Darklight 100R': { effect: 'Strong Speed boost in the first quarter of the race', condition: 'First quarter', strength: 0.10, trigger: 'automatic' },
+                        'Midnight 100R': { effect: 'Strong Speed boost in the final quarter of the race', condition: 'Final quarter', strength: 0.10, trigger: 'automatic' }
+                    },
+                    Hydraulic: {
+                        'None': { effect: 'No effect', condition: 'Always', strength: 0, trigger: 'automatic' },
+                        'Void H100': { effect: 'Minor Speed boost for the entire race', condition: 'Entire race', strength: 0.02, trigger: 'automatic' },
+                        'Crimson H': { effect: 'Moderate Speed boost in the Last half of the race', condition: 'Last half', strength: 0.06, trigger: 'automatic' },
+                        'GX-Core H': { effect: 'Significant Speed boost in the final sprint for 5 seconds', condition: 'Final sprint (5s)', strength: 0.08, trigger: 'conditional' },
+                        'Darklight 100H': { effect: 'Moderate Speed boost in the First half of the race', condition: 'First half', strength: 0.06, trigger: 'automatic' },
+                        'Midnight 100H': { effect: 'Massive Speed boost when 6m behind both adjacent racehorses', condition: '6m behind adjacent horses', strength: 0.15, trigger: 'conditional' }
+                    }
+                };
+            }
+
+            // ZED Champions Breeding System - Enhanced prediction logic
+            getBreedingData() {
+                return {
+                    generations: {
+                        1: { breedingCost: 15, inheritanceBonus: 0.95, maxOffspring: 3 },
+                        2: { breedingCost: 12, inheritanceBonus: 0.90, maxOffspring: 3 },
+                        3: { breedingCost: 10, inheritanceBonus: 0.85, maxOffspring: 4 },
+                        4: { breedingCost: 8, inheritanceBonus: 0.80, maxOffspring: 4 },
+                        5: { breedingCost: 6, inheritanceBonus: 0.75, maxOffspring: 5 },
+                        6: { breedingCost: 4, inheritanceBonus: 0.70, maxOffspring: 5 },
+                        7: { breedingCost: 2, inheritanceBonus: 0.65, maxOffspring: 6 },
+                        8: { breedingCost: 1, inheritanceBonus: 0.60, maxOffspring: 6 }
+                    },
+                    starInheritance: {
+                        // Probability matrix for star inheritance (dam/sire average + random variance)
+                        baseInheritance: 0.7, // 70% inherited from parents
+                        variance: 0.3, // 30% random variation
+                        maxStars: 5,
+                        minStars: 0.5
+                    },
+                    compatibilityMatrix: {
+                        // Bloodline compatibility for breeding success
+                        'Nakamoto': { 'Nakamoto': 0.95, 'Szabo': 0.85, 'Finney': 0.90, 'Buterin': 0.80 },
+                        'Szabo': { 'Nakamoto': 0.85, 'Szabo': 0.95, 'Finney': 0.85, 'Buterin': 0.90 },
+                        'Finney': { 'Nakamoto': 0.90, 'Szabo': 0.85, 'Finney': 0.95, 'Buterin': 0.75 },
+                        'Buterin': { 'Nakamoto': 0.80, 'Szabo': 0.90, 'Finney': 0.75, 'Buterin': 0.95 }
+                    }
+                };
+            }
+
+            // Predict optimal breeding pairs for 5-star foals
+            predictBreedingPairs(targetHorse) {
+                const breedingData = this.getBreedingData();
+                const bloodlineData = this.getBloodlineData();
+                
+                // Get all available horses for breeding (opposite gender)
+                const availablePartners = this.horses.filter(horse => 
+                    horse.id !== targetHorse.id && 
+                    horse.gender !== targetHorse.gender &&
+                    (horse.status === 'breeding' || !horse.status)
+                );
+
+                if (availablePartners.length === 0) {
+                    return {
+                        bestPairs: [],
+                        prediction: 'No suitable breeding partners available',
+                        confidence: 0
+                    };
+                }
+
+                // Calculate breeding potential for each partner
+                const breedingAnalysis = availablePartners.map(partner => {
+                    const compatibility = this.calculateBreedingCompatibility(targetHorse, partner, breedingData);
+                    const foalPrediction = this.predictFoalQualities(targetHorse, partner, breedingData);
+                    
+                    return {
+                        partner,
+                        compatibility,
+                        foalPrediction,
+                        overallScore: compatibility.score * 0.4 + foalPrediction.starPotential * 0.6
+                    };
+                }).sort((a, b) => b.overallScore - a.overallScore);
+
+                // Return top 3 breeding recommendations
+                const bestPairs = breedingAnalysis.slice(0, 3);
+                const avgConfidence = bestPairs.reduce((sum, pair) => sum + pair.compatibility.confidence, 0) / bestPairs.length;
+
+                return {
+                    bestPairs,
+                    prediction: this.generateBreedingAdvice(targetHorse, bestPairs[0]),
+                    confidence: avgConfidence
+                };
+            }
+
+            // Calculate breeding compatibility between two horses
+            calculateBreedingCompatibility(horse1, horse2, breedingData) {
+                const bloodlineCompatibility = breedingData.compatibilityMatrix[horse1.bloodline]?.[horse2.bloodline] || 0.7;
+                
+                // Generation compatibility (closer generations = better compatibility)
+                const genDiff = Math.abs((horse1.generation || 5) - (horse2.generation || 5));
+                const genCompatibility = Math.max(0.6, 1 - (genDiff * 0.1));
+                
+                // Star rating compatibility (higher stars = better foals)
+                const avgStars = ((parseFloat(horse1.stars) || 2.5) + (parseFloat(horse2.stars) || 2.5)) / 2;
+                const starCompatibility = avgStars / 5.0;
+                
+                // Racing performance compatibility
+                const horse1Stats = this.calculateHorseStats(horse1.id);
+                const horse2Stats = this.calculateHorseStats(horse2.id);
+                
+                let performanceCompatibility = 0.7; // Default
+                if (horse1Stats && horse2Stats) {
+                    const avgWinRate = (horse1Stats.winRate + horse2Stats.winRate) / 2;
+                    performanceCompatibility = Math.min(1.0, avgWinRate / 25); // 25% win rate = 100% performance score
+                }
+                
+                const overallScore = (
+                    bloodlineCompatibility * 0.3 +
+                    genCompatibility * 0.2 +
+                    starCompatibility * 0.3 +
+                    performanceCompatibility * 0.2
+                );
+                
+                return {
+                    score: overallScore,
+                    confidence: Math.min(95, 60 + (overallScore * 35)),
+                    factors: {
+                        bloodline: bloodlineCompatibility,
+                        generation: genCompatibility,
+                        stars: starCompatibility,
+                        performance: performanceCompatibility
+                    }
+                };
+            }
+
+            // Predict foal qualities from breeding pair
+            predictFoalQualities(dam, sire, breedingData) {
+                const starData = breedingData.starInheritance;
+                
+                // Calculate expected star ratings
+                const damStars = parseFloat(dam.stars) || 2.5;
+                const sireStars = parseFloat(sire.stars) || 2.5;
+                
+                const baseStars = (damStars + sireStars) / 2;
+                const inheritedStars = baseStars * starData.baseInheritance;
+                const randomVariance = (Math.random() - 0.5) * starData.variance * 2;
+                
+                let predictedStars = inheritedStars + randomVariance;
+                predictedStars = Math.max(starData.minStars, Math.min(starData.maxStars, predictedStars));
+                
+                // Breeding cost calculation
+                const damGen = dam.generation || 5;
+                const sireGen = sire.generation || 5;
+                const avgGen = Math.ceil((damGen + sireGen) / 2);
+                const breedingCost = breedingData.generations[avgGen]?.breedingCost || 6;
+                
+                // ROI prediction based on parent performance
+                const damStats = this.calculateHorseStats(dam.id);
+                const sireStats = this.calculateHorseStats(sire.id);
+                
+                let expectedROI = 100; // Default 100% ROI
+                if (damStats && sireStats) {
+                    const avgROI = (damStats.roi + sireStats.roi) / 2;
+                    expectedROI = Math.max(50, avgROI * 0.8); // Foals typically 80% of parent ROI
+                }
+                
+                return {
+                    starPotential: predictedStars,
+                    breedingCost,
+                    expectedROI,
+                    foalGeneration: Math.max(damGen, sireGen) + 1,
+                    bloodlineStrengths: this.combineBloodlineTraits(dam.bloodline, sire.bloodline)
+                };
+            }
+
+            // Combine bloodline traits for foal prediction
+            combineBloodlineTraits(damBloodline, sireBloodline) {
+                const bloodlines = this.getBloodlineData();
+                const damTraits = bloodlines[damBloodline]?.strengths || [];
+                const sireTraits = bloodlines[sireBloodline]?.strengths || [];
+                
+                return [...new Set([...damTraits, ...sireTraits])];
+            }
+
+            // Generate breeding advice text
+            generateBreedingAdvice(horse, bestPair) {
+                if (!bestPair) return 'No suitable breeding partners found.';
+                
+                const partner = bestPair.partner;
+                const foal = bestPair.foalPrediction;
+                
+                return `Breed with ${partner.name} (${partner.bloodline}) for optimal results. Expected ${foal.starPotential.toFixed(1)}-star foal with ${foal.expectedROI.toFixed(0)}% ROI potential. Breeding cost: ${foal.breedingCost} ZED.`;
+            }
+
+            // Enhanced augment recommendation with trigger logic and situational analysis
+            recommendOptimalAugments(horse, stats) {
+                if (!stats || stats.totalRaces < 2) {
+                    // Default recommendations for new horses - conservative approach
+                    return {
+                        CPU: 'None',
+                        RAM: 'None', 
+                        Hydraulic: 'None',
+                        confidence: 60,
+                        reasoning: 'Recommended starting setup for new horses. Race more to unlock advanced predictions.',
+                        situationalAdvice: []
+                    };
+                }
+
+                // Analyze race patterns and performance
+                const horseRaces = this.races.filter(r => r.horseId === horse.id);
+                const augmentStats = this.analyzeAugmentPerformance(horseRaces);
+                const racePatterns = this.analyzeRacePatterns(horseRaces);
+                
+                // Get augment metadata for analysis
+                const augmentData = this.getDefaultAugments();
+                
+                // Calculate optimal augments based on race patterns and historical performance
+                const cpuRec = this.selectOptimalAugment('CPU', racePatterns, augmentStats, augmentData);
+                const ramRec = this.selectOptimalAugment('RAM', racePatterns, augmentStats, augmentData);
+                const hydraulicRec = this.selectOptimalAugment('Hydraulic', racePatterns, augmentStats, augmentData);
+                
+                // Generate situational advice
+                const situationalAdvice = this.generateAugmentAdvice(racePatterns, horse, stats);
+                
+                const confidence = Math.min(95, 50 + (stats.totalRaces * 5));
+
+                return {
+                    CPU: cpuRec.augment,
+                    RAM: ramRec.augment,
+                    Hydraulic: hydraulicRec.augment,
+                    confidence,
+                    reasoning: this.generateAugmentReasoning(cpuRec, ramRec, hydraulicRec, racePatterns),
+                    situationalAdvice,
+                    triggerAnalysis: {
+                        cpu: cpuRec.triggerAnalysis,
+                        ram: ramRec.triggerAnalysis,
+                        hydraulic: hydraulicRec.triggerAnalysis
+                    }
+                };
+            }
+
+            // Analyze race patterns to determine optimal augment strategy
+            analyzeRacePatterns(races) {
+                const patterns = {
+                    averagePosition: 0,
+                    startStrength: 0, // Performance in early race
+                    midStrength: 0,   // Performance in middle race
+                    finishStrength: 0, // Performance in late race
+                    positioningTendency: 'unknown', // front-runner, mid-pack, closer
+                    competitiveRaces: 0, // Races with position <= 3
+                    struggleRaces: 0,    // Races with position > 6
+                    avgFieldSize: 0
+                };
+
+                if (races.length === 0) return patterns;
+
+                // Calculate basic patterns
+                patterns.averagePosition = races.reduce((sum, race) => sum + race.position, 0) / races.length;
+                patterns.competitiveRaces = races.filter(r => r.position <= 3).length;
+                patterns.struggleRaces = races.filter(r => r.position > 6).length;
+
+                // Analyze positioning tendencies (when split data is available)
+                const racesWithSplits = races.filter(r => r.split1 && r.split2);
+                if (racesWithSplits.length > 0) {
+                    let frontRunners = 0;
+                    let closers = 0;
+
+                    racesWithSplits.forEach(race => {
+                        const split1Time = parseFloat(race.split1);
+                        const split2Time = parseFloat(race.split2);
+                        const finishTime = parseFloat(race.finishTime);
+
+                        if (split1Time && split2Time && finishTime) {
+                            const earlyPace = split1Time;
+                            const latePace = finishTime - split2Time;
+                            
+                            if (earlyPace < latePace) frontRunners++;
+                            else if (latePace < earlyPace) closers++;
+                        }
+                    });
+
+                    if (frontRunners > closers) patterns.positioningTendency = 'front-runner';
+                    else if (closers > frontRunners) patterns.positioningTendency = 'closer';
+                    else patterns.positioningTendency = 'mid-pack';
+                }
+
+                return patterns;
+            }
+
+            // Select optimal augment for specific type based on patterns and performance
+            selectOptimalAugment(type, patterns, augmentStats, augmentData) {
+                const availableAugments = Object.keys(augmentData[type]);
+                let bestAugment = 'None';
+                let bestScore = 0;
+                let triggerAnalysis = 'No historical data for this augment type';
+
+                availableAugments.forEach(augment => {
+                    const augmentInfo = augmentData[type][augment];
+                    let score = 0;
+
+                    // Base score from historical performance
+                    if (augmentStats.individual[augment] && augmentStats.individual[augment].races >= 2) {
+                        const winRate = augmentStats.individual[augment].winRate;
+                        const avgPos = augmentStats.individual[augment].avgPosition;
+                        score += winRate * 2 + (8 - avgPos) * 5; // Higher win rate and lower position = better
+                    }
+
+                    // Situational scoring based on race patterns
+                    score += this.calculateSituationalScore(augment, augmentInfo, patterns);
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestAugment = augment;
+                        triggerAnalysis = this.analyzeTriggerEffectiveness(augment, augmentInfo, patterns);
+                    }
+                });
+
+                return {
+                    augment: bestAugment,
+                    score: bestScore,
+                    triggerAnalysis
+                };
+            }
+
+            // Calculate situational score for augment based on race patterns
+            calculateSituationalScore(augment, augmentInfo, patterns) {
+                let score = 0;
+
+                // Analyze trigger compatibility with horse's racing style
+                if (augmentInfo.trigger === 'conditional') {
+                    // Conditional augments work better for horses that often struggle
+                    if (patterns.struggleRaces > patterns.competitiveRaces) {
+                        score += 15; // Struggling horses benefit more from conditional boosts
+                    }
+                } else {
+                    // Automatic augments work better for consistent performers
+                    if (patterns.competitiveRaces > patterns.struggleRaces) {
+                        score += 10; // Consistent horses benefit from reliable boosts
+                    }
+                }
+
+                // Position-based scoring
+                if (patterns.positioningTendency === 'front-runner') {
+                    if (augmentInfo.condition.includes('start') || augmentInfo.condition.includes('first')) {
+                        score += 20;
+                    }
+                } else if (patterns.positioningTendency === 'closer') {
+                    if (augmentInfo.condition.includes('final') || augmentInfo.condition.includes('sprint') || augmentInfo.condition.includes('last')) {
+                        score += 20;
+                    }
+                }
+
+                // Strength-based scoring
+                score += augmentInfo.strength * 100; // Higher strength = better score
+
+                return score;
+            }
+
+            // Analyze trigger effectiveness for augment
+            analyzeTriggerEffectiveness(augment, augmentInfo, patterns) {
+                if (augment === 'None') return 'No augment selected - conservative approach for consistent baseline performance';
+
+                let analysis = `${augment}: ${augmentInfo.effect}. `;
+                
+                if (augmentInfo.trigger === 'automatic') {
+                    analysis += 'Automatic trigger - provides reliable boost throughout race. ';
+                    if (patterns.competitiveRaces > patterns.struggleRaces) {
+                        analysis += 'Good match for consistent performer.';
+                    } else {
+                        analysis += 'May not provide enough situational help.';
+                    }
+                } else {
+                    analysis += 'Conditional trigger - activates based on race situation. ';
+                    if (patterns.struggleRaces > 0) {
+                        analysis += 'Excellent for recovering from difficult positions.';
+                    } else {
+                        analysis += 'May not activate if horse runs well consistently.';
+                    }
+                }
+
+                return analysis;
+            }
+
+            // Generate reasoning for augment selection
+            generateAugmentReasoning(cpuRec, ramRec, hydraulicRec, patterns) {
+                let reasoning = 'Based on ';
+                
+                if (patterns.positioningTendency !== 'unknown') {
+                    reasoning += `${patterns.positioningTendency} racing style and `;
+                }
+                
+                reasoning += `average position of ${patterns.averagePosition.toFixed(1)}, `;
+                
+                if (patterns.competitiveRaces > patterns.struggleRaces) {
+                    reasoning += 'this configuration optimizes consistent competitive performance.';
+                } else {
+                    reasoning += 'this setup focuses on recovery and situational advantages.';
+                }
+
+                return reasoning;
+            }
+
+            // Generate situational advice for augment usage
+            generateAugmentAdvice(patterns, horse, stats) {
+                const advice = [];
+
+                if (patterns.struggleRaces > patterns.competitiveRaces) {
+                    advice.push({
+                        title: 'Defensive Strategy',
+                        text: 'Focus on conditional augments that activate when behind or struggling.',
+                        type: 'strategy'
+                    });
+                }
+
+                if (patterns.positioningTendency === 'front-runner') {
+                    advice.push({
+                        title: 'Front-Runner Advantage',
+                        text: 'Use early-race augments to maximize gate break and early positioning.',
+                        type: 'positioning'
+                    });
+                } else if (patterns.positioningTendency === 'closer') {
+                    advice.push({
+                        title: 'Closing Speed',
+                        text: 'Late-race augments will maximize this horse\'s natural closing ability.',
+                        type: 'positioning'
+                    });
+                }
+
+                if (stats.roi < 0) {
+                    advice.push({
+                        title: 'Profit Focus',
+                        text: 'Consider augments with proven ROI improvement in similar horses.',
+                        type: 'economic'
+                    });
+                }
+
+                return advice;
+            }
+
+            // Get bloodline data for breeding and trait analysis
+            getBloodlineData() {
+                return {
+                    'Nakamoto': {
+                        primaryAttribute: 'Strong start',
+                        traits: ['High strung', 'Nervous', 'Defensive', 'Sensitive', 'Reactive'],
+                        colors: ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'],
+                        strengths: ['Early speed', 'Gate break'],
+                        weaknesses: ['Stamina', 'Late pace']
+                    },
+                    'Szabo': {
+                        primaryAttribute: 'Steady',
+                        traits: ['Calm', 'Focused', 'Professional'],
+                        colors: ['#4169E1', '#0000CD', '#191970', '#4682B4'],
+                        strengths: ['Consistency', 'Pace management'],
+                        weaknesses: ['Explosive speed', 'Sprint finish']
+                    },
+                    'Finney': {
+                        primaryAttribute: 'Strong finish',
+                        traits: ['Determined', 'Stubborn', 'Hungry', 'Defensive'],
+                        colors: ['#8B0000', '#DC143C', '#FF0000', '#B22222'],
+                        strengths: ['Late pace', 'Closing kick'],
+                        weaknesses: ['Early speed', 'Gate break']
+                    },
+                    'Buterin': {
+                        primaryAttribute: 'Unpredictable',
+                        traits: ['Goofy', 'Fun', 'Playful', 'Distracted', 'Restless', 'Wildcard'],
+                        colors: ['#9932CC', '#8A2BE2', '#4B0082', '#6A5ACD'],
+                        strengths: ['Versatility', 'Surprise factor'],
+                        weaknesses: ['Consistency', 'Predictability']
+                    }
                 };
             }
 
@@ -839,12 +1534,18 @@
                         hydraulic: race.hydraulicAugment || 'None'
                     };
                     
-                    // Extract star ratings for this race (legacy tracker comprehensive approach)
+                    // Clean up any fantasy augment names that might still exist
+                    const fantasyAugments = ['Void C100', 'Matrix C200', 'Neural C300', 'Quantum R100', 'Vector R200', 'Flux R300', 'Titan H100', 'Storm H200', 'Lightning H300'];
+                    if (fantasyAugments.includes(augments.cpu)) augments.cpu = 'None';
+                    if (fantasyAugments.includes(augments.ram)) augments.ram = 'None';
+                    if (fantasyAugments.includes(augments.hydraulic)) augments.hydraulic = 'None';
+                    
+                    // Extract star ratings for this race (FIXED per horse, not per race)
                     const stars = {
                         overall: horse.stars || 0,
-                        speed: horse.speedStars || race.speedStar || 0,
-                        sprint: horse.sprintStars || race.sprintStar || 0,
-                        endurance: horse.enduranceStars || race.enduranceStar || 0
+                        speed: race.speedStar || horse.speed_rating || horse.speedStars || 0,
+                        strength: race.sprintStar || horse.sprint_rating || horse.sprintStars || 0, // Strength = Sprint in ZED
+                        stamina: race.enduranceStar || horse.endurance_rating || horse.enduranceStars || 0
                     };
                     
                     // Extract comprehensive performance metrics (legacy tracker format)
@@ -903,75 +1604,6 @@
                 };
             }
 
-            // Enhanced augment performance analysis (legacy tracker methodology)
-            analyzeAugmentPerformance(races) {
-                const augmentStats = {
-                    individual: {},
-                    combinations: {}
-                };
-
-                races.forEach(race => {
-                    // Individual augment tracking
-                    ['cpuAugment', 'ramAugment', 'hydraulicAugment'].forEach(augmentType => {
-                        const augment = race[augmentType];
-                        if (augment && augment !== 'None') {
-                            if (!augmentStats.individual[augment]) {
-                                augmentStats.individual[augment] = { races: 0, wins: 0, totalPosition: 0 };
-                            }
-                            augmentStats.individual[augment].races++;
-                            if (race.position === 1) augmentStats.individual[augment].wins++;
-                            augmentStats.individual[augment].totalPosition += race.position;
-                        }
-                    });
-
-                    // Combination tracking
-                    const combo = `${race.cpuAugment || 'None'}/${race.ramAugment || 'None'}/${race.hydraulicAugment || 'None'}`;
-                    if (!augmentStats.combinations[combo]) {
-                        augmentStats.combinations[combo] = { races: 0, wins: 0, totalPosition: 0 };
-                    }
-                    augmentStats.combinations[combo].races++;
-                    if (race.position === 1) augmentStats.combinations[combo].wins++;
-                    augmentStats.combinations[combo].totalPosition += race.position;
-                });
-
-                return augmentStats;
-            }
-
-            // Enhanced split performance analysis
-            analyzeSplitPerformance(races) {
-                const splitData = {
-                    hasData: false,
-                    avgSplit1: null,
-                    avgSplit2: null,
-                    avgSplit3: null,
-                    avgSplit4: null,
-                    bestSplit1: null,
-                    bestSplit2: null,
-                    consistency: null
-                };
-
-                const racesWithSplits = races.filter(r => r.split1 || r.split2);
-                if (racesWithSplits.length === 0) return splitData;
-
-                splitData.hasData = true;
-
-                // Calculate averages for each split
-                ['split1', 'split2', 'split3', 'split4'].forEach(splitName => {
-                    const validSplits = racesWithSplits
-                        .filter(r => r[splitName] && !isNaN(r[splitName]))
-                        .map(r => parseFloat(r[splitName]));
-                    
-                    if (validSplits.length > 0) {
-                        splitData[`avg${splitName.charAt(0).toUpperCase() + splitName.slice(1)}`] = 
-                            validSplits.reduce((sum, split) => sum + split, 0) / validSplits.length;
-                        splitData[`best${splitName.charAt(0).toUpperCase() + splitName.slice(1)}`] = 
-                            Math.min(...validSplits);
-                    }
-                });
-
-                return splitData;
-            }
-
             getRecentForm(races) {
                 // Get last 5 races, sorted by date
                 const recent = races
@@ -1016,9 +1648,9 @@
                 if (!stats || stats.totalRaces < 2) {
                     // Default recommendations for new horses - use None as default
                     return {
-                        CPU: this.augments.CPU[0] || 'None',
-                        RAM: this.augments.RAM[0] || 'None', 
-                        Hydraulic: this.augments.Hydraulic[0] || 'None',
+                        CPU: Object.keys(this.augments.CPU)[0] || 'None',
+                        RAM: Object.keys(this.augments.RAM)[0] || 'None', 
+                        Hydraulic: Object.keys(this.augments.Hydraulic)[0] || 'None',
                         confidence: 60
                     };
                 }
@@ -1028,9 +1660,9 @@
                 const augmentStats = this.analyzeAugmentPerformance(horseRaces);
 
                 // Find best performing augments
-                const bestCPU = this.findBestAugment(augmentStats, 'CPU') || this.augments.CPU[0];
-                const bestRAM = this.findBestAugment(augmentStats, 'RAM') || this.augments.RAM[0];
-                const bestHydraulic = this.findBestAugment(augmentStats, 'Hydraulic') || this.augments.Hydraulic[0];
+                const bestCPU = this.findBestAugment(augmentStats, 'CPU') || Object.keys(this.augments.CPU)[0];
+                const bestRAM = this.findBestAugment(augmentStats, 'RAM') || Object.keys(this.augments.RAM)[0];
+                const bestHydraulic = this.findBestAugment(augmentStats, 'Hydraulic') || Object.keys(this.augments.Hydraulic)[0];
 
                 const confidence = Math.min(95, 50 + (stats.totalRaces * 5));
 
@@ -1077,8 +1709,42 @@
                 return augmentStats;
             }
 
+            // Add missing split performance analysis method
+            analyzeSplitPerformance(races) {
+                const splitData = {
+                    hasData: false,
+                    avgSplit1: null,
+                    avgSplit2: null,
+                    avgSplit3: null,
+                    avgSplit4: null,
+                    bestSplit1: null,
+                    bestSplit2: null,
+                    consistency: null
+                };
+
+                const racesWithSplits = races.filter(r => r.split1 || r.split2);
+                if (racesWithSplits.length === 0) return splitData;
+
+                splitData.hasData = true;
+
+                // Calculate averages for each split
+                ['split1', 'split2', 'split3', 'split4'].forEach(splitName => {
+                    const validSplits = racesWithSplits
+                        .filter(r => r[splitName] && !isNaN(r[splitName]))
+                        .map(r => parseFloat(r[splitName]));
+                    if (validSplits.length > 0) {
+                        splitData[`avg${splitName.charAt(0).toUpperCase() + splitName.slice(1)}`] = 
+                            validSplits.reduce((sum, split) => sum + split, 0) / validSplits.length;
+                        splitData[`best${splitName.charAt(0).toUpperCase() + splitName.slice(1)}`] = 
+                            Math.min(...validSplits);
+                    }
+                });
+
+                return splitData;
+            }
+
             findBestAugment(augmentStats, type) {
-                const typeAugments = this.augments[type] || [];
+                const typeAugments = Object.keys(this.augments[type] || {});
                 let bestAugment = null;
                 let bestScore = -1;
 
@@ -1328,8 +1994,7 @@
                                         <div class="race-entry position-${race.position <= 3 ? race.position : 'other'}">
                                             <div class="race-header">
                                                 <div>
-                                                    <span class="race-name">${race.raceName}</span>
-                                                    <span class="race-date">${race.formattedDate}</span>
+                                                    <span class="race-name">${race.raceName}</span                                                    <span class="race-date">${race.formattedDate}</span>
                                                 </div>
                                                 <div class="race-position">${race.position}</div>
                                             </div>
@@ -1440,6 +2105,8 @@
                             </div>
                         `}
 
+                        ${this.generateBreedingSection(horse, stats)}
+
                         <div class="action-buttons">
                             <button class="btn btn-primary" onclick="viewHorseDetails('${horse.id}')">
                                 <i class="fas fa-chart-line"></i> View Analytics
@@ -1480,6 +2147,117 @@
                 container.innerHTML = cards;
                 noDataDiv.style.display = 'none';
             }
+
+            // Generate breeding prediction section HTML
+                generateBreedingSection(horse, stats) {
+                    // Skip breeding section for geldings or if not eligible
+                    if (horse.gender === 'Gelding' || horse.status === 'retired') {
+                        return '';
+                    }
+    
+                    const breedingPrediction = this.predictBreedingPairs(horse);
+                    
+                    if (breedingPrediction.bestPairs.length === 0) {
+                        return `
+                            <div class="breeding-section">
+                                <div class="breeding-title">
+                                    <h4><i class="fas fa-heart"></i> Breeding Potential</h4>
+                                </div>
+                                <div class="breeding-empty-state">
+                                    <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 10px;"></i>
+                                    <p>No suitable breeding partners found in stable.</p>
+                                    <p class="text-muted">Import more horses to see breeding recommendations.</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+    
+                    const topPair = breedingPrediction.bestPairs[0];
+                    const foalPrediction = topPair.foalPrediction;
+    
+                    return `
+                        <div class="breeding-section">
+                            <div class="breeding-title">
+                                <h4><i class="fas fa-heart"></i> Breeding Potential</h4>
+                                <div class="breeding-confidence">
+                                    Confidence: ${Math.round(breedingPrediction.confidence)}%
+                                </div>
+                            </div>
+                            
+                            <div class="breeding-recommendations">
+                                <div class="breeding-card best-match">
+                                    <div class="breeding-header">
+                                        <span class="partner-name">
+                                            <i class="fas fa-crown" style="color: gold;"></i>
+                                            Best Match: ${topPair.partner.name}
+                                        </span>
+                                        <span class="compatibility-score">
+                                            ${Math.round(topPair.compatibility.score * 100)}% Compatible
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="breeding-details">
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Partner Bloodline</span>
+                                            <span class="detail-value bloodline-${topPair.partner.bloodline.toLowerCase()}">${topPair.partner.bloodline}</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Partner Stars</span>
+                                            <span class="detail-value">${topPair.partner.stars || 'N/A'}</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Expected Foal Stars</span>
+                                            <span class="detail-value star-prediction">${foalPrediction.starPotential.toFixed(1)} ⭐</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Breeding Cost</span>
+                                            <span class="detail-value">${foalPrediction.breedingCost} ZED</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Expected ROI</span>
+                                            <span class="detail-value roi-positive">${foalPrediction.expectedROI.toFixed(0)}%</span>
+                                        </div>
+                                        <div class="breeding-detail">
+                                            <span class="detail-label">Foal Generation</span>
+                                            <span class="detail-value">Gen ${foalPrediction.foalGeneration}</span>
+                                        </div>
+                                    </div>
+    
+                                    <div class="foal-traits">
+                                        <div class="traits-title">Predicted Foal Strengths:</div>
+                                        <div class="traits-list">
+                                            ${foalPrediction.bloodlineStrengths.map(strength => `
+                                                <span class="trait-tag">${strength}</span>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+    
+                                    <div class="breeding-advice">
+                                        <i class="fas fa-lightbulb"></i>
+                                        ${breedingPrediction.prediction}
+                                    </div>
+                                </div>
+    
+                                ${breedingPrediction.bestPairs.length > 1 ? `
+                                    <div class="other-matches">
+                                        <div class="other-matches-title">Other Good Matches:</div>
+                                        ${breedingPrediction.bestPairs.slice(1, 3).map(pair => `
+                                            <div class="breeding-card alternative-match">
+                                                <div class="breeding-header">
+                                                    <span class="partner-name">${pair.partner.name}</span>
+                                                    <span class="compatibility-score">${Math.round(pair.compatibility.score * 100)}%</span>
+                                                </div>
+                                                <div class="breeding-summary">
+                                                    ${pair.partner.bloodline} • ${pair.foalPrediction.starPotential.toFixed(1)}⭐ foal • ${pair.foalPrediction.breedingCost} ZED
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
 
             init() {
                 this.loadData();

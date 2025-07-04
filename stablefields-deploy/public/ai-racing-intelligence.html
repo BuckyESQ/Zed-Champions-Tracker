@@ -1648,9 +1648,9 @@
                 if (!stats || stats.totalRaces < 2) {
                     // Default recommendations for new horses - use None as default
                     return {
-                        CPU: this.augments.CPU[0] || 'None',
-                        RAM: this.augments.RAM[0] || 'None', 
-                        Hydraulic: this.augments.Hydraulic[0] || 'None',
+                        CPU: Object.keys(this.augments.CPU)[0] || 'None',
+                        RAM: Object.keys(this.augments.RAM)[0] || 'None', 
+                        Hydraulic: Object.keys(this.augments.Hydraulic)[0] || 'None',
                         confidence: 60
                     };
                 }
@@ -1660,9 +1660,9 @@
                 const augmentStats = this.analyzeAugmentPerformance(horseRaces);
 
                 // Find best performing augments
-                const bestCPU = this.findBestAugment(augmentStats, 'CPU') || this.augments.CPU[0];
-                const bestRAM = this.findBestAugment(augmentStats, 'RAM') || this.augments.RAM[0];
-                const bestHydraulic = this.findBestAugment(augmentStats, 'Hydraulic') || this.augments.Hydraulic[0];
+                const bestCPU = this.findBestAugment(augmentStats, 'CPU') || Object.keys(this.augments.CPU)[0];
+                const bestRAM = this.findBestAugment(augmentStats, 'RAM') || Object.keys(this.augments.RAM)[0];
+                const bestHydraulic = this.findBestAugment(augmentStats, 'Hydraulic') || Object.keys(this.augments.Hydraulic)[0];
 
                 const confidence = Math.min(95, 50 + (stats.totalRaces * 5));
 
@@ -1744,7 +1744,7 @@
             }
 
             findBestAugment(augmentStats, type) {
-                const typeAugments = this.augments[type] || [];
+                const typeAugments = Object.keys(this.augments[type] || {});
                 let bestAugment = null;
                 let bestScore = -1;
 
