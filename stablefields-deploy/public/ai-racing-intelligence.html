@@ -1709,6 +1709,40 @@
                 return augmentStats;
             }
 
+            // Add missing split performance analysis method
+            analyzeSplitPerformance(races) {
+                const splitData = {
+                    hasData: false,
+                    avgSplit1: null,
+                    avgSplit2: null,
+                    avgSplit3: null,
+                    avgSplit4: null,
+                    bestSplit1: null,
+                    bestSplit2: null,
+                    consistency: null
+                };
+
+                const racesWithSplits = races.filter(r => r.split1 || r.split2);
+                if (racesWithSplits.length === 0) return splitData;
+
+                splitData.hasData = true;
+
+                // Calculate averages for each split
+                ['split1', 'split2', 'split3', 'split4'].forEach(splitName => {
+                    const validSplits = racesWithSplits
+                        .filter(r => r[splitName] && !isNaN(r[splitName]))
+                        .map(r => parseFloat(r[splitName]));
+                    if (validSplits.length > 0) {
+                        splitData[`avg${splitName.charAt(0).toUpperCase() + splitName.slice(1)}`] = 
+                            validSplits.reduce((sum, split) => sum + split, 0) / validSplits.length;
+                        splitData[`best${splitName.charAt(0).toUpperCase() + splitName.slice(1)}`] = 
+                            Math.min(...validSplits);
+                    }
+                });
+
+                return splitData;
+            }
+
             findBestAugment(augmentStats, type) {
                 const typeAugments = this.augments[type] || [];
                 let bestAugment = null;
