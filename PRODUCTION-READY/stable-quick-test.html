@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏇 Stable Quick Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .test-section { background: #333; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        button { padding: 10px 20px; margin: 10px; background: #03dac6; color: black; border: none; border-radius: 4px; cursor: pointer; }
+        .log { background: #000; padding: 10px; border-radius: 4px; font-family: monospace; margin: 10px 0; max-height: 300px; overflow-y: auto; }
+        .success { color: #4ecdc4; }
+        .error { color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <h1>🏇 Stable Quick Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Import & Display</h2>
+        <button onclick="addTestHorses()">🚀 Add Test Horses</button>
+        <button onclick="checkStorage()">📦 Check Storage</button>
+        <button onclick="openStableTracker()">🏇 Open Stable Tracker</button>
+        <button onclick="clearStorage()">🗑️ Clear Storage</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Debug Log</h2>
+        <div id="debug-log" class="log"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('debug-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function addTestHorses() {
+            const testHorses = [
+                {
+                    id: "1001",
+                    name: "Lightning Strike",
+                    bloodline: "Nakamoto",
+                    generation: 1,
+                    gender: "Stallion",
+                    speed_rating: 85,
+                    endurance_rating: 78,
+                    total_races: 25,
+                    win_percentage: 64.2,
+                    total_earnings: 15450,
+                    imported_at: new Date().toISOString()
+                },
+                {
+                    id: "1002", 
+                    name: "Thunder Bolt",
+                    bloodline: "Finney",
+                    generation: 2,
+                    gender: "Mare",
+                    speed_rating: 82,
+                    endurance_rating: 85,
+                    total_races: 18,
+                    win_percentage: 55.6,
+                    total_earnings: 12300,
+                    imported_at: new Date().toISOString()
+                },
+                {
+                    id: "1003",
+                    name: "Storm Chaser",
+                    bloodline: "Szabo", 
+                    generation: 3,
+                    gender: "Colt",
+                    speed_rating: 88,
+                    endurance_rating: 80,
+                    total_races: 12,
+                    win_percentage: 75.0,
+                    total_earnings: 18900,
+                    imported_at: new Date().toISOString()
+                }
+            ];
+
+            localStorage.setItem('horses', JSON.stringify(testHorses));
+            log(`✅ Added ${testHorses.length} test horses to localStorage`, 'success');
+        }
+
+        function checkStorage() {
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            log(`📦 Found ${horses.length} horses in storage:`);
+            horses.forEach((horse, i) => {
+                log(`  ${i+1}. ${horse.name} (${horse.bloodline}, Gen ${horse.generation})`);
+            });
+        }
+
+        function openStableTracker() {
+            window.open('/public/stablefields-tracker.html', '_blank');
+            log('🏇 Opened Stable Tracker in new tab');
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('horses');
+            log('🗑️ Cleared localStorage', 'success');
+        }
+
+        // Auto-check storage on load
+        window.addEventListener('load', checkStorage);
+    </script>
+</body>
+</html>

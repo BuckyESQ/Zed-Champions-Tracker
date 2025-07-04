@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 ZedSight API Alternative Discovery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #03dac6;
+        }
+        .discovery {
+            background: #2d4a2d;
+            border-left-color: #4CAF50;
+        }
+        .test-button {
+            background: #03dac6;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .test-button:hover {
+            background: #02b8a3;
+        }
+        .results {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .warning { color: #ff9800; }
+        .info { color: #03dac6; }
+        h1 { color: #03dac6; }
+        h2 { color: #ffd700; }
+        input {
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px;
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 ZedSight API Alternative Discovery</h1>
+    <p><strong>New Strategy:</strong> Instead of fixing ZED Champions API, let's see if ZedSight can provide all the data we need!</p>
+    
+    <div class="section">
+        <h2>💡 The ZedSight Hypothesis</h2>
+        <p>Since ZedSight.com can display complete horse data with augments and links to ZED Champions, they might have:</p>
+        <ul>
+            <li>🔍 <strong>User lookup endpoints</strong> - Search by wallet address or username</li>
+            <li>🐎 <strong>Complete horse databases</strong> - All horses with full stats and history</li>
+            <li>🏁 <strong>Race and breeding data</strong> - Without needing ZED Champions API</li>
+            <li>📊 <strong>Real-time updates</strong> - Synced with ZED Champions</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🧪 ZedSight API Endpoint Discovery</h2>
+        <button class="test-button" onclick="discoverEndpoints()">Discover All ZedSight Endpoints</button>
+        <button class="test-button" onclick="testUserLookup()">Test User/Wallet Lookup</button>
+        <button class="test-button" onclick="testHorseDatabase()">Test Complete Horse Database</button>
+        <div id="discovery-results" class="results"></div>
+    </div>
+
+    <div class="section">
+        <h2>🔍 User Data Search</h2>
+        <input type="text" id="wallet-address" placeholder="Enter wallet address or username">
+        <br>
+        <button class="test-button" onclick="searchUserData()">Search User's Horses</button>
+        <div id="user-results" class="results"></div>
+    </div>
+
+    <div class="section">
+        <h2>🐎 Horse Data Test</h2>
+        <input type="text" id="horse-search" placeholder="Enter horse name" value="Lightning">
+        <br>
+        <button class="test-button" onclick="testCompleteHorseData()">Get Complete Horse Data</button>
+        <div id="horse-results" class="results"></div>
+    </div>
+
+    <div class="section">
+        <h2>🏆 Alternative Import Strategy</h2>
+        <p>If ZedSight has comprehensive data, we could:</p>
+        <ol>
+            <li>🔍 <strong>Search by user/wallet</strong> - Instead of authenticated API calls</li>
+            <li>📥 <strong>Import via search</strong> - Let users search and select their horses</li>
+            <li>🔄 <strong>Sync with ZedSight</strong> - Use their database as primary source</li>
+            <li>⚡ <strong>No authentication needed</strong> - Public APIs only</li>
+        </ol>
+        <button class="test-button" onclick="testAlternativeImport()">Test Alternative Import Method</button>
+        <div id="import-results" class="results"></div>
+    </div>
+
+    <script>
+        const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
+        
+        function log(section, message, type = 'info') {
+            const element = document.getElementById(section + '-results');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            console.log(`[${section}] ${message}`);
+        }
+
+        function clearResults(section) {
+            document.getElementById(section + '-results').innerHTML = '';
+        }
+
+        async function discoverEndpoints() {
+            clearResults('discovery');
+            log('discovery', '🔍 Discovering ZedSight API endpoints...', 'info');
+            
+            const possibleEndpoints = [
+                '/api/search-horse',
+                '/api/horse-history', 
+                '/api/user',
+                '/api/users',
+                '/api/wallet',
+                '/api/stable',
+                '/api/owner',
+                '/api/horses',
+                '/api/horses/owner',
+                '/api/search-user',
+                '/api/search-owner',
+                '/api/player',
+                '/api/account',
+                '/api/profile',
+                '/api/racing-horses',
+                '/api/breeding-horses',
+                '/api/horse-list',
+                '/api/stable-horses',
+                '/api/augment-combinations',
+                '/api/field-averages',
+                '/api/global-averages',
+                '/api/scheduled-race',
+                '/health',
+                '/status',
+                '/api',
+                '/endpoints'
+            ];
+
+            let workingEndpoints = [];
+
+            for (const endpoint of possibleEndpoints) {
+                try {
+                    const url = ZEDSIGHT_API + endpoint;
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        log('discovery', `✅ FOUND: ${endpoint} (Status: ${response.status})`, 'success');
+                        workingEndpoints.push(endpoint);
+                        
+                        try {
+                            const data = await response.json();
+                            log('discovery', `   Data type: ${typeof data}, keys: ${Object.keys(data).join(', ')}`, 'info');
+                        } catch (e) {
+                            log('discovery', `   Response type: text/html or other`, 'info');
+                        }
+                    } else if (response.status === 400 || response.status === 422) {
+                        log('discovery', `⚠️ EXISTS (needs params): ${endpoint} (Status: ${response.status})`, 'warning');
+                        workingEndpoints.push(endpoint + ' (needs params)');
+                    }
+                } catch (error) {
+                    // Silent for 404s and network errors
+                }
+            }
+
+            log('discovery', `\n🎯 SUMMARY: Found ${workingEndpoints.length} working endpoints:`, 'success');
+            workingEndpoints.forEach(ep => log('discovery', `   - ${ep}`, 'success'));
+        }
+
+        async function testUserLookup() {
+            clearResults('discovery');
+            log('discovery', '👤 Testing user lookup methods...', 'info');
+            
+            const userEndpoints = [
+                '/api/user?wallet=0x123',
+                '/api/user?address=0x123', 
+                '/api/user?id=123',
+                '/api/users/123',
+                '/api/wallet/0x123',
+                '/api/owner?wallet=0x123',
+                '/api/horses?owner=0x123',
+                '/api/search-owner?wallet=0x123',
+                '/api/stable?owner=0x123'
+            ];
+
+            for (const endpoint of userEndpoints) {
+                try {
+                    const url = ZEDSIGHT_API + endpoint;
+                    const response = await fetch(url);
+                    
+                    log('discovery', `Testing ${endpoint}: ${response.status}`, response.ok ? 'success' : 'info');
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        log('discovery', `✅ USER ENDPOINT FOUND: ${endpoint}`, 'success');
+                        log('discovery', `   Response: ${JSON.stringify(data, null, 2).substring(0, 200)}...`, 'success');
+                    }
+                } catch (error) {
+                    // Silent for expected failures
+                }
+            }
+        }
+
+        async function testHorseDatabase() {
+            clearResults('discovery');
+            log('discovery', '🐎 Testing horse database access...', 'info');
+            
+            try {
+                // Test the known working endpoint
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=Lightning`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('discovery', '✅ Horse search is working!', 'success');
+                    log('discovery', `Response structure: ${JSON.stringify(data, null, 2)}`, 'info');
+                    
+                    if (data.horses && data.horses.length > 0) {
+                        const horse = data.horses[0];
+                        log('discovery', '🎯 Sample horse data:', 'success');
+                        log('discovery', `   ID: ${horse.id}`, 'info');
+                        log('discovery', `   Name: ${horse.name}`, 'info');
+                        log('discovery', `   Owner: ${horse.owner || 'N/A'}`, 'info');
+                        log('discovery', `   Available fields: ${Object.keys(horse).join(', ')}`, 'info');
+                        
+                        // Test detailed horse data
+                        log('discovery', '\n🔍 Testing detailed horse data...', 'info');
+                        const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
+                        
+                        if (detailResponse.ok) {
+                            const detailData = await detailResponse.json();
+                            log('discovery', '✅ Detailed horse data available!', 'success');
+                            log('discovery', `   Detail fields: ${Object.keys(detailData).join(', ')}`, 'info');
+                            
+                            if (detailData.owner) {
+                                log('discovery', `🎯 OWNER INFO FOUND: ${detailData.owner}`, 'success');
+                            }
+                        }
+                    }
+                } else {
+                    log('discovery', `❌ Horse search failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log('discovery', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function searchUserData() {
+            const searchTerm = document.getElementById('wallet-address').value.trim();
+            clearResults('user');
+            
+            if (!searchTerm) {
+                log('user', '❌ Please enter a wallet address or username', 'error');
+                return;
+            }
+            
+            log('user', `🔍 Searching for user: ${searchTerm}`, 'info');
+            
+            // Try different search approaches
+            const searchMethods = [
+                `${ZEDSIGHT_API}/api/horses?owner=${encodeURIComponent(searchTerm)}`,
+                `${ZEDSIGHT_API}/api/search-horse?owner=${encodeURIComponent(searchTerm)}`,
+                `${ZEDSIGHT_API}/api/user?wallet=${encodeURIComponent(searchTerm)}`,
+                `${ZEDSIGHT_API}/api/stable?owner=${encodeURIComponent(searchTerm)}`
+            ];
+
+            for (const url of searchMethods) {
+                try {
+                    log('user', `Testing: ${url.replace(ZEDSIGHT_API, '')}`, 'info');
+                    
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        log('user', `✅ SUCCESS! Found data via: ${url.replace(ZEDSIGHT_API, '')}`, 'success');
+                        log('user', `Response: ${JSON.stringify(data, null, 2)}`, 'success');
+                        return; // Stop on first success
+                    } else {
+                        log('user', `   Status: ${response.status}`, 'warning');
+                    }
+                } catch (error) {
+                    log('user', `   Error: ${error.message}`, 'error');
+                }
+            }
+            
+            log('user', '❌ No user data found with any method', 'error');
+        }
+
+        async function testCompleteHorseData() {
+            const horseName = document.getElementById('horse-search').value.trim();
+            clearResults('horse');
+            
+            log('horse', `🐎 Testing complete horse data for: ${horseName}`, 'info');
+            
+            try {
+                // Step 1: Search for horse
+                const searchResponse = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(horseName)}`);
+                
+                if (!searchResponse.ok) {
+                    log('horse', `❌ Search failed: ${searchResponse.status}`, 'error');
+                    return;
+                }
+                
+                const searchData = await searchResponse.json();
+                log('horse', `✅ Search successful! Found ${searchData.horses?.length || 0} horses`, 'success');
+                
+                if (searchData.horses && searchData.horses.length > 0) {
+                    const horse = searchData.horses[0];
+                    log('horse', `🎯 Testing horse: ${horse.name} (ID: ${horse.id})`, 'info');
+                    
+                    // Step 2: Get complete history with augments
+                    const historyResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
+                    
+                    if (historyResponse.ok) {
+                        const historyData = await historyResponse.json();
+                        log('horse', '✅ Complete horse history retrieved!', 'success');
+                        
+                        // Analyze what data we have
+                        const fields = Object.keys(historyData);
+                        log('horse', `📊 Available data fields: ${fields.join(', ')}`, 'info');
+                        
+                        if (historyData.owner) {
+                            log('horse', `👤 Owner: ${historyData.owner}`, 'success');
+                        }
+                        
+                        if (historyData.races) {
+                            log('horse', `🏁 Race count: ${historyData.races.length}`, 'success');
+                        }
+                        
+                        if (historyData.breeding) {
+                            log('horse', `🧬 Breeding data: Available`, 'success');
+                        }
+                        
+                        if (historyData.stats) {
+                            log('horse', `📈 Stats: ${JSON.stringify(historyData.stats)}`, 'success');
+                        }
+                        
+                        log('horse', `\n🎯 FULL DATA SAMPLE:`, 'info');
+                        log('horse', JSON.stringify(historyData, null, 2).substring(0, 1000) + '...', 'info');
+                        
+                    } else {
+                        log('horse', `❌ History request failed: ${historyResponse.status}`, 'error');
+                    }
+                } else {
+                    log('horse', '❌ No horses found with that name', 'warning');
+                }
+                
+            } catch (error) {
+                log('horse', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testAlternativeImport() {
+            clearResults('import');
+            log('import', '🚀 Testing alternative import strategy...', 'info');
+            
+            log('import', '💡 ALTERNATIVE IMPORT CONCEPT:', 'info');
+            log('import', '1. Instead of authenticated API calls to ZED Champions...', 'info');
+            log('import', '2. Use ZedSight search to find horses by owner/name', 'info');
+            log('import', '3. Get complete data including augments and race history', 'info');
+            log('import', '4. No authentication required!', 'info');
+            
+            // Test the concept with a sample search
+            try {
+                log('import', '\n🧪 PROOF OF CONCEPT TEST:', 'info');
+                log('import', 'Searching for horses with name containing "Lightning"...', 'info');
+                
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=Lightning`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('import', `✅ Found ${data.horses?.length || 0} horses`, 'success');
+                    
+                    if (data.horses && data.horses.length > 0) {
+                        const horse = data.horses[0];
+                        
+                        // Get full details
+                        const detailResponse = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horse.id}&augments=true`);
+                        
+                        if (detailResponse.ok) {
+                            const details = await detailResponse.json();
+                            
+                            log('import', '\n🎯 IMPORT SUCCESS SIMULATION:', 'success');
+                            log('import', `   Horse: ${horse.name}`, 'success');
+                            log('import', `   ID: ${horse.id}`, 'success');
+                            log('import', `   Owner: ${details.owner || 'Available in detail'}`, 'success');
+                            log('import', `   Race count: ${details.races?.length || 'Available'}`, 'success');
+                            log('import', `   Breeding data: ${details.breeding ? 'Available' : 'Check detail structure'}`, 'success');
+                            log('import', `   Stats: ${details.stats ? 'Available' : 'Check detail structure'}`, 'success');
+                            
+                            log('import', '\n💡 IMPLEMENTATION STRATEGY:', 'warning');
+                            log('import', '1. Add "Search & Import" feature to StableFields', 'warning');
+                            log('import', '2. Let users search by horse name, owner wallet, or username', 'warning');
+                            log('import', '3. Display results and let them select horses to import', 'warning');
+                            log('import', '4. Use ZedSight as primary data source', 'warning');
+                            log('import', '5. No need for ZED Champions API authentication!', 'warning');
+                        }
+                    }
+                } else {
+                    log('import', `❌ Proof of concept failed: ${response.status}`, 'error');
+                }
+                
+            } catch (error) {
+                log('import', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-start discovery
+        window.onload = function() {
+            log('discovery', '🚀 ZedSight Alternative Investigation Started', 'info');
+            log('discovery', 'This tool will help us discover if ZedSight can replace ZED Champions API entirely!', 'info');
+        };
+    </script>
+</body>
+</html>
