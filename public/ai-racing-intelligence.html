@@ -1012,67 +1012,187 @@
                 return Math.max(5, Math.min(85, probability));
             }
 
-            // Recommend optimal augments based on horse performance
             recommendAugments(horse, stats) {
                 if (!stats || stats.totalRaces < 2) {
+                    // Default recommendations for new horses - use None as default
                     return {
-                        cpu: { name: this.augments.CPU[0], confidence: 0.3, reason: "Insufficient race data" },
-                        ram: { name: this.augments.RAM[0], confidence: 0.3, reason: "Insufficient race data" },
-                        hydraulic: { name: this.augments.Hydraulic[0], confidence: 0.3, reason: "Insufficient race data" }
+                        CPU: this.augments.CPU[0] || 'None',
+                        RAM: this.augments.RAM[0] || 'None', 
+                        Hydraulic: this.augments.Hydraulic[0] || 'None',
+                        confidence: 60
                     };
                 }
 
-                const horseRaces = sampleRaceData.filter(r => r.horseId === horse.id);
+                // Analyze augment performance for this horse
+                const horseRaces = this.races.filter(r => r.horseId === horse.id);
                 const augmentStats = this.analyzeAugmentPerformance(horseRaces);
 
+                // Find best performing augments
                 const bestCPU = this.findBestAugment(augmentStats, 'CPU') || this.augments.CPU[0];
                 const bestRAM = this.findBestAugment(augmentStats, 'RAM') || this.augments.RAM[0];
                 const bestHydraulic = this.findBestAugment(augmentStats, 'Hydraulic') || this.augments.Hydraulic[0];
 
+                const confidence = Math.min(95, 50 + (stats.totalRaces * 5));
+
                 return {
-                    cpu: { 
-                        name: bestCPU, 
-                        confidence: this.calculateConfidence(augmentStats, bestCPU),
-                        reason: this.getAugmentReason(bestCPU, augmentStats, horse)
-                    },
-                    ram: { 
-                        name: bestRAM, 
-                        confidence: this.calculateConfidence(augmentStats, bestRAM),
-                        reason: this.getAugmentReason(bestRAM, augmentStats, horse)
-                    },
-                    hydraulic: { 
-                        name: bestHydraulic, 
-                        confidence: this.calculateConfidence(augmentStats, bestHydraulic),
-                        reason: this.getAugmentReason(bestHydraulic, augmentStats, horse)
-                    }
+                    CPU: bestCPU,
+                    RAM: bestRAM,
+                    Hydraulic: bestHydraulic,
+                    confidence
                 };
             }
 
-            // Calculate confidence level for augment recommendation
-            calculateConfidence(augmentStats, augmentName) {
-                if (!augmentStats.individual[augmentName]) return 0.3;
-                
-                const stats = augmentStats.individual[augmentName];
-                const sampleSize = Math.min(stats.races / 10, 1);
-                const performance = stats.wins / stats.races;
-                
-                return Math.min(0.95, 0.3 + (sampleSize * 0.4) + (performance * 0.3));
+            analyzeAugmentPerformance(races) {
+                const augmentStats = {};
+
+                races.forEach(race => {
+                    ['cpuAugment', 'ramAugment', 'hydraulicAugment'].forEach(augmentType => {
+                        const augmentName = race[augmentType];
+                        if (augmentName && augmentName !== 'None') {
+                            if (!augmentStats[augmentName]) {
+                                augmentStats[augmentName] = {
+                                    races: 0,
+                                    wins: 0,
+                                    totalPosition: 0,
+                                    zedChange: 0
+                                };
+                            }
+                            
+                            augmentStats[augmentName].races++;
+                            if (race.position === 1) augmentStats[augmentName].wins++;
+                            augmentStats[augmentName].totalPosition += race.position;
+                            augmentStats[augmentName].zedChange += parseFloat(race.zedChange) || 0;
+                        }
+                    });
+                });
+
+                // Calculate win rates and average positions
+                Object.keys(augmentStats).forEach(augment => {
+                    const stats = augmentStats[augment];
+                    stats.winRate = (stats.wins / stats.races) * 100;
+                    stats.avgPosition = stats.totalPosition / stats.races;
+                    stats.avgZedPerRace = stats.zedChange / stats.races;
+                });
+
+                return augmentStats;
             }
 
-            // Get reason for augment recommendation
-            getAugmentReason(augmentName, augmentStats, horse) {
-                if (!augmentStats.individual[augmentName]) {
-                    return "Recommended based on bloodline and class";
+            findBestAugment(augmentStats, type) {
+                const typeAugments = this.augments[type] || [];
+                let bestAugment = null;
+                let bestScore = -1;
+
+                typeAugments.forEach(augment => {
+                    if (augmentStats[augment] && augmentStats[augment].races >= 2) {
+                        // Score based on win rate and average ZED per race
+                        const score = augmentStats[augment].winRate + (augmentStats[augment].avgZedPerRace / 100);
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestAugment = augment;
+                        }
+                    }
+                });
+
+                return bestAugment;
+            }
+
+            calculateExpectedValue(winProbability, avgOdds) {
+                if (!avgOdds || avgOdds <= 0) return 0;
+                
+                const winProb = winProbability / 100;
+                const expectedReturn = (winProb * avgOdds) - 1; // Subtract 1 for the initial bet
+                return expectedReturn * 100; // Convert to percentage
+            }
+
+            calculateReadinessScore(horse, stats) {
+                let score = 50; // Base score
+
+                if (stats) {
+                    // Adjust based on recent performance
+                    if (stats.recentForm.length > 0) {
+                        const recentAvg = stats.recentForm.reduce((sum, pos) => sum + pos, 0) / stats.recentForm.length;
+                        score += (4 - recentAvg) * 10; // Better recent positions = higher score
+                    }
+
+                    // Adjust based on experience
+                    score += Math.min(20, stats.totalRaces * 2);
+
+                    // Adjust based on ROI
+                    if (stats.roi > 0) score += 15;
+                    else if (stats.roi < -500) score -= 15;
                 }
 
-                const stats = augmentStats.individual[augmentName];
-                const winRate = (stats.wins / stats.races * 100).toFixed(1);
-                
-                return `${winRate}% win rate over ${stats.races} races`;
+                // Star rating adjustment
+                if (horse.stars) {
+                    score += (parseFloat(horse.stars) - 3) * 5;
+                }
+
+                return Math.max(10, Math.min(100, score));
             }
 
-            // Main analysis method - analyzes a horse and provides comprehensive insights
-            analyzeHorse(horse) {
+            generateRaceInsights(horse, stats, predictions) {
+                const insights = [];
+
+                if (stats) {
+                    // Recent form insight
+                    if (stats.recentForm.length >= 3) {
+                        const improving = stats.recentForm.slice(0, 3).every((pos, i, arr) => 
+                            i === 0 || pos <= arr[i-1]
+                        );
+                        if (improving) {
+                            insights.push({
+                                title: 'Improving Form',
+                                text: 'This horse has been improving in recent races. Consider increasing bet size.',
+                                type: 'positive'
+                            });
+                        }
+                    }
+
+                    // Win rate insight
+                    if (stats.winRate > 25) {
+                        insights.push({
+                            title: 'Strong Performer',
+                            text: `Excellent ${stats.winRate.toFixed(1)}% win rate over ${stats.totalRaces} races.`,
+                            type: 'positive'
+                        });
+                    } else if (stats.winRate < 10 && stats.totalRaces > 5) {
+                        insights.push({
+                            title: 'Struggling Form',
+                            text: 'Low win rate suggests this horse may need rest or different strategy.',
+                            type: 'warning'
+                        });
+                    }
+
+                    // ROI insight
+                    if (stats.roi > 200) {
+                        insights.push({
+                            title: 'Profitable Runner',
+                            text: `Strong ROI of ${stats.roi.toFixed(0)} ZED per race. This horse pays well.`,
+                            type: 'positive'
+                        });
+                    }
+                }
+
+                // Bloodline insight
+                const bloodlineInsights = {
+                    'Nakamoto': 'Nakamoto horses tend to perform well in competitive fields.',
+                    'Szabo': 'Szabo bloodline shows consistent performance across race types.',
+                    'Finney': 'Finney horses often excel in longer distance races.',
+                    'Buterin': 'Buterin bloodline demonstrates versatility in various conditions.'
+                };
+
+                if (bloodlineInsights[horse.bloodline]) {
+                    insights.push({
+                        title: 'Bloodline Advantage',
+                        text: bloodlineInsights[horse.bloodline],
+                        type: 'info'
+                    });
+                }
+
+                return insights;
+            }
+
+            generateRacingCard(horse) {
                 const stats = this.calculateHorseStats(horse.id);
                 const winProbability = this.calculateWinProbability(horse, stats);
                 const augmentRec = this.recommendAugments(horse, stats);
@@ -1091,97 +1211,339 @@
                 return {
                     horse,
                     stats,
-                    predictions: {
-                        ...predictions,
-                        insights
-                    }
+                    predictions,
+                    insights
                 };
-           }
+            }
 
-            // Render all racing cards for available horses
+            renderRacingCard(cardData) {
+                const { horse, stats, predictions, insights } = cardData;
+
+                const getInitials = (name) => {
+                    return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
+                };
+
+                const formatNumber = (num, decimals = 1) => {
+                    if (num === null || num === undefined) return 'N/A';
+                    return Number(num).toFixed(decimals);
+                };
+
+                const getConfidenceColor = (confidence) => {
+                    if (confidence >= 80) return 'var(--success-color)';
+                    if (confidence >= 60) return 'var(--warning-color)';
+                    return 'var(--error-color)';
+                };
+
+                return `
+                    <div class="racing-card">
+                        <div class="horse-header">
+                            <div class="horse-info">
+                                <div class="horse-avatar" style="background: linear-gradient(45deg, ${horse.color || '#2e86c1'}, #3498db)">
+                                    ${getInitials(horse.name)}
+                                </div>
+                                <div class="horse-details">
+                                    <h3>${horse.name}</h3>
+                                    <div class="horse-meta">
+                                        <span><i class="fas fa-dna"></i> ${horse.bloodline}</span>
+                                        <span><i class="fas fa-star"></i> ${formatNumber(horse.stars)} stars</span>
+                                        <span><i class="fas fa-venus-mars"></i> ${horse.gender}</span>
+                                        ${stats ? `<span><i class="fas fa-flag-checkered"></i> ${stats.totalRaces} races</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ai-predictions">
+                            <div class="prediction-card win-probability">
+                                <div class="prediction-value">${formatNumber(predictions.winProbability)}%</div>
+                                <div class="prediction-label">Win Probability</div>
+                            </div>
+                            <div class="prediction-card expected-value">
+                                <div class="prediction-value">${predictions.expectedValue > 0 ? '+' : ''}${formatNumber(predictions.expectedValue)}%</div>
+                                <div class="prediction-label">Expected Value</div>
+                            </div>
+                            <div class="prediction-card readiness-score">
+                                <div class="prediction-value">${formatNumber(predictions.readinessScore, 0)}</div>
+                                <div class="prediction-label">Readiness Score</div>
+                            </div>
+                            ${stats ? `
+                                <div class="prediction-card">
+                                    <div class="prediction-value" style="color: var(--text-color)">${formatNumber(stats.winRate)}%</div>
+                                    <div class="prediction-label">Historical Win Rate</div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="recommendation-section">
+                            <div class="recommendation-title">
+                                <i class="fas fa-cogs"></i>
+                                Optimal Augment Configuration
+                            </div>
+                            <div class="augment-recommendation">
+                                <div class="augment-slot">
+                                    <div class="augment-type">CPU</div>
+                                    <div class="augment-name">${predictions.augmentRec.CPU}</div>
+                                </div>
+                                <div class="augment-slot">
+                                    <div class="augment-type">RAM</div>
+                                    <div class="augment-name">${predictions.augmentRec.RAM}</div>
+                                </div>
+                                <div class="augment-slot">
+                                    <div class="augment-type">Hydraulic</div>
+                                    <div class="augment-name">${predictions.augmentRec.Hydraulic}</div>
+                                </div>
+                            </div>
+                            <div class="confidence-indicator">
+                                <div class="confidence-bar" style="width: ${predictions.augmentRec.confidence}%; background: ${getConfidenceColor(predictions.augmentRec.confidence)}"></div>
+                            </div>
+                            <div style="text-align: center; margin-top: 5px; font-size: 0.8rem; color: var(--text-muted);">
+                                Confidence: ${predictions.augmentRec.confidence}%
+                            </div>
+                        </div>
+
+                        ${insights.length > 0 ? `
+                            <div class="race-insights">
+                                ${insights.map(insight => `
+                                    <div class="insight-card">
+                                        <div class="insight-title">${insight.title}</div>
+                                        <div class="insight-text">${insight.text}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${stats && stats.detailedRaces && stats.detailedRaces.length > 0 ? `
+                            <div class="race-history-section">
+                                <div class="race-history-title">
+                                    <h4><i class="fas fa-history"></i> Race History</h4>
+                                    <div class="view-toggle">
+                                        <span class="toggle-btn active" onclick="toggleRaceView('${horse.id}', 'timeline')">Timeline</span>
+                                        <span class="toggle-btn" onclick="toggleRaceView('${horse.id}', 'table')">Table</span>
+                                        <span class="toggle-btn" onclick="toggleRaceView('${horse.id}', 'compact')">Compact</span>
+                                    </div>
+                                </div>
+                                
+                                <div id="race-timeline-${horse.id}" class="race-timeline">
+                                    ${stats.detailedRaces.map(race => `
+                                        <div class="race-entry position-${race.position <= 3 ? race.position : 'other'}">
+                                            <div class="race-header">
+                                                <div>
+                                                    <span class="race-name">${race.raceName}</span>
+                                                    <span class="race-date">${race.formattedDate}</span>
+                                                </div>
+                                                <div class="race-position">${race.position}</div>
+                                            </div>
+                                            <div class="race-details">
+                                                <div class="race-detail">
+                                                    <span class="detail-label">Track</span>
+                                                    <span class="detail-value">${race.performance.track}</span>
+                                                </div>
+                                                <div class="race-detail">
+                                                    <span class="detail-label">Distance</span>
+                                                    <span class="detail-value">${race.performance.distance}</span>
+                                                </div>
+                                                <div class="race-detail">
+                                                    <span class="detail-label">Gate</span>
+                                                    <span class="detail-value">${race.performance.gate}</span>
+                                                </div>
+                                                <div class="race-detail">
+                                                    <span class="detail-label">Odds</span>
+                                                    <span class="detail-value">${race.performance.odds}</span>
+                                                </div>
+                                                ${race.timeData.finishTime ? `
+                                                <div class="race-detail">
+                                                    <span class="detail-label">Finish Time</span>
+                                                    <span class="detail-value">${race.timeData.finishTime}s</span>
+                                                </div>` : ''}
+                                                <div class="race-detail">
+                                                    <span class="detail-label">ZED Change</span>
+                                                    <span class="detail-value" style="color: ${parseFloat(race.performance.zedChange) >= 0 ? 'var(--success-color)' : 'var(--error-color)'}">
+                                                        ${parseFloat(race.performance.zedChange) >= 0 ? '+' : ''}${race.performance.zedChange}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="race-performance">
+                                                <div class="race-detail">
+                                                    <div class="detail-label">Speed Star</div>
+                                                    <div class="race-stats-bar speed-bar">
+                                                        <div class="stats-bar-value" style="width: ${(race.stars.speed / 10) * 100}%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="race-detail">
+                                                    <div class="detail-label">Strength Star</div>
+                                                    <div class="race-stats-bar strength-bar">
+                                                        <div class="stats-bar-value" style="width: ${(race.stars.strength / 10) * 100}%"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="race-detail">
+                                                    <div class="detail-label">Stamina Star</div>
+                                                    <div class="race-stats-bar stamina-bar">
+                                                        <div class="stats-bar-value" style="width: ${(race.stars.stamina / 10) * 100}%"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="race-augments">
+                                                <div class="race-augment augment-cpu">
+                                                    <i class="fas fa-microchip"></i> ${race.augments.cpu}
+                                                </div>
+                                                <div class="race-augment augment-ram">
+                                                    <i class="fas fa-memory"></i> ${race.augments.ram}
+                                                </div>
+                                                <div class="race-augment augment-hydraulic">
+                                                    <i class="fas fa-tachometer-alt"></i> ${race.augments.hydraulic}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                
+                                <table id="race-table-${horse.id}" class="table-view">
+                                    <thead>
+                                        <tr>
+                                            <th class="position-cell">Pos</th>
+                                            <th>Race</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Odds</th>
+                                            <th>ZED</th>
+                                            <th>Augments</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${stats.detailedRaces.map(race => `
+                                            <tr class="position-${race.position <= 3 ? race.position : 'other'}">
+                                                <td class="position-cell">${race.position}</td>
+                                                <td>${race.raceName}</td>
+                                                <td>${race.formattedDate}</td>
+                                                <td>${race.timeData.finishTime || 'N/A'}</td>
+                                                <td>${race.performance.odds}</td>
+                                                <td style="color: ${parseFloat(race.performance.zedChange) >= 0 ? 'var(--success-color)' : 'var(--error-color)'}">
+                                                    ${parseFloat(race.performance.zedChange) >= 0 ? '+' : ''}${race.performance.zedChange}
+                                                </td>
+                                                <td>${race.augments.cpu.replace(' ', '')}, ${race.augments.ram.replace(' ', '')}, ${race.augments.hydraulic.replace(' ', '')}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ` : `
+                            <div class="race-history-section">
+                                <div class="race-history-title">
+                                    <h4><i class="fas fa-history"></i> Race History</h4>
+                                </div>
+                                <div class="race-empty-state">
+                                    <i class="fas fa-calendar-times" style="font-size: 2rem; opacity: 0.5; margin-bottom: 10px;"></i>
+                                    <p>No race history available for this horse.</p>
+                                </div>
+                            </div>
+                        `}
+
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="viewHorseDetails('${horse.id}')">
+                                <i class="fas fa-chart-line"></i> View Analytics
+                            </button>
+                            <button class="btn btn-secondary" onclick="recordRace('${horse.id}')">
+                                <i class="fas fa-plus"></i> Record Race
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
             renderAllRacingCards() {
                 const container = document.getElementById('racing-cards-container');
-                if (!container) {
-                    console.warn('Racing cards container not found');
+                const noDataDiv = document.getElementById('no-data');
+
+                if (!this.horses || this.horses.length === 0) {
+                    container.innerHTML = '';
+                    noDataDiv.style.display = 'block';
                     return;
                 }
 
-                // Clear existing content
-                container.innerHTML = '';
+                // Filter to racing horses only
+                const racingHorses = this.horses.filter(h => h.status === 'racing' || !h.status);
 
-                // Get sample horses for demonstration
-                const sampleHorses = this.getSampleHorses();
-                
-                if (sampleHorses.length === 0) {
-                    container.innerHTML = '<div class="no-data">No horse data available. Loading sample data...</div>';
+                if (racingHorses.length === 0) {
+                    container.innerHTML = '<div class="no-data"><h3>No Racing Horses Found</h3><p>Add some horses with "racing" status to see AI predictions.</p></div>';
+                    noDataDiv.style.display = 'none';
                     return;
                 }
 
-                // Generate cards for each horse
-                sampleHorses.forEach(horse => {
-                    try {
-                        const cardData = this.generateRacingCard(horse);
-                        const cardHTML = this.renderRacingCard(cardData);
-                        container.innerHTML += cardHTML;
-                    } catch (error) {
-                        console.error('Error generating card for horse:', horse.name, error);
-                    }
-                });
+                // Generate racing cards
+                const cards = racingHorses.map(horse => {
+                    const cardData = this.generateRacingCard(horse);
+                    return this.renderRacingCard(cardData);
+                }).join('');
+
+                container.innerHTML = cards;
+                noDataDiv.style.display = 'none';
             }
 
-            // Get sample horses for demonstration
-            getSampleHorses() {
-                return [
-                    {
-                        id: 1,
-                        name: "Thunder Strike",
-                        bloodline: "Nakamoto",
-                        class: 5,
-                        stars: 4,
-                        breeding: "Elite"
-                    },
-                    {
-                        id: 2,
-                        name: "Lightning Bolt",
-                        bloodline: "Buterin",
-                        class: 4,
-                        stars: 3,
-                        breeding: "Rare"
-                    },
-                    {
-                        id: 3,
-                        name: "Storm Runner",
-                        bloodline: "Finney",
-                        class: 4,
-                        stars: 5,
-                        breeding: "Legendary"
-                    }
-                ];
+            init() {
+                this.loadData();
+                this.renderAllRacingCards();
             }
         }
 
-        // Initialize and load data
-        const aiRacing = new AIRacingIntelligence();
-        aiRacing.loadData();
+        // Global functions for buttons
+        function viewHorseDetails(horseId) {
+            // Navigate to the main tracker with horse details
+            window.location.href = `/public/stablefields-tracker.html?horse=${horseId}`;
+        }
 
-        // For debugging: Analyze a specific horse by ID
-        window.analyzeHorseById = (horseId) => {
-            const horse = aiRacing.horses.find(h => h.id === horseId);
-            if (!horse) {
-                console.log('Horse not found:', horseId);
-                return;
-            }
+        function recordRace(horseId) {
+            // Navigate to the main tracker's racing tab
+            window.location.href = `/public/stablefields-tracker.html?tab=racing&horse=${horseId}`;
+        }
+        
+        function toggleRaceView(horseId, viewType) {
+            // Get all elements for this horse
+            const timelineView = document.getElementById(`race-timeline-${horseId}`);
+            const tableView = document.getElementById(`race-table-${horseId}`);
+            const toggleButtons = document.querySelectorAll(`.view-toggle .toggle-btn`);
             
-            const analysis = aiRacing.analyzeHorse(horse);
-            console.log('Horse Analysis:', JSON.stringify(analysis, null, 2));
+            // Reset all buttons
+            toggleButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Find the button that was clicked and activate it
+            const clickedButton = Array.from(toggleButtons).find(btn => 
+                btn.textContent.toLowerCase() === viewType
+            );
+            if (clickedButton) clickedButton.classList.add('active');
+            
+            // Apply the correct view
+            if (viewType === 'timeline') {
+                if (timelineView) {
+                    timelineView.style.display = 'block';
+                    timelineView.classList.remove('compact-view');
+                }
+                if (tableView) tableView.style.display = 'none';
+            } else if (viewType === 'table') {
+                if (timelineView) timelineView.style.display = 'none';
+                if (tableView) tableView.style.display = 'table';
+            } else if (viewType === 'compact') {
+                if (timelineView) {
+                    timelineView.style.display = 'block';
+                    timelineView.classList.add('compact-view');
+                }
+                if (tableView) tableView.style.display = 'none';
+            }
         }
 
-        // Example: Analyze a horse with ID 1 (replace with actual ID)
-        window.analyzeHorseById(1);
-
-        // Render all racing cards on page load
+        // Initialize the AI Racing Intelligence system
         document.addEventListener('DOMContentLoaded', () => {
-            aiRacing.renderAllRacingCards();
+            const aiEngine = new AIRacingIntelligence();
+            aiEngine.init();
+
+            // Refresh data every 30 seconds if the page is visible
+            setInterval(() => {
+                if (!document.hidden) {
+                    aiEngine.loadData();
+                    aiEngine.renderAllRacingCards();
+                }
+            }, 30000);
         });
     </script>
 </body>
