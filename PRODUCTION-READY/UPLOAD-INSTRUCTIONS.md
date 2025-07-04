@@ -1,22 +1,45 @@
-# 🚀 StableFields.com Production Upload Instructions
+# 🚀 Production Deployment Guide
 
-## ✅ ESSENTIAL FILES TO UPLOAD (Core Application):
+## ✅ Core Application Files
 
-### **REQUIRED FILES - Upload These:**
-1. **index.html** - Landing page with auto-redirect
-2. **stablefields-tracker.html** - Main tracker application (167KB)
-3. **ai-racing-intelligence.html** - AI Racing Intelligence (101KB) 
-4. **app.js** - Core JavaScript functionality (27KB)
-5. **search-import.html** - Import wizard
-6. **favicon.ico** - Site icon (2KB)
+Upload these essential files to your web server:
 
-### **RECOMMENDED TOOLS - Upload These for Full Features:**
-7. **quick-access.html** - Dashboard for easy navigation
-8. **emergency-access.html** - Emergency access page
-9. **horse-diagnostic.html** - Horse data diagnostic tool  
-10. **ai-test.html** - AI testing with sample data
+1. **stablefields-tracker.html** - Main application
+2. **ai-racing-intelligence.html** - AI Racing Intelligence engine
+3. **app.js** - Core JavaScript functionality
+4. **search-import.html** - Horse import tool
+5. **quick-access.html** - Navigation dashboard
+6. **emergency-access.html** - Backup access
+7. **horse-diagnostic.html** - Diagnostic tools
+8. **verify-fixes.html** - System verification
+9. **ai-test.html** - AI testing with sample data
+10. **index.html** - Landing page (if needed)
+11. **favicon.ico** - Site icon
 
-## 📂 UPLOAD TO STABLEFIELDS.COM ROOT:
+## 🌐 Deployment Options
+
+### Static Hosting (Recommended)
+- GitHub Pages
+- Netlify
+- Vercel
+- Any web server with static file support
+
+### Domain Setup
+- Upload all files to your domain's root directory
+- Ensure all paths are relative (already configured)
+- No special server configuration required
+
+## � Post-Deployment
+
+1. Access your domain
+2. Test main tracker functionality
+3. Verify AI Racing Intelligence works
+4. Import test horses and record sample races
+5. Confirm all navigation links work
+
+## ✅ Production Ready
+
+All files are optimized and tested for production deployment.
 
 Simply upload all the **REQUIRED FILES** to your website's root directory:
 - `https://stablefields.com/index.html` (landing page)
