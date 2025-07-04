@@ -3217,7 +3217,31 @@
 
         // Dashboard Functions
         function loadDashboard() {
-            // Implementation for loading dashboard data
+            console.log('📊 Loading dashboard...');
+            const horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            const races = JSON.parse(localStorage.getItem('races') || '[]');
+            
+            // Calculate dashboard stats
+            const totalHorses = horses.length;
+            const totalRaces = races.length;
+            const totalWins = races.filter(r => r.position === 1).length;
+            const winRate = totalRaces > 0 ? ((totalWins / totalRaces) * 100).toFixed(1) : 0;
+            
+            // Calculate total earnings from races
+            const totalEarnings = races.reduce((sum, race) => sum + (race.zedChange || 0), 0);
+            
+            // Update dashboard elements
+            const totalHorsesEl = document.getElementById('total-horses');
+            const totalRacesEl = document.getElementById('total-races');
+            const winRateEl = document.getElementById('win-rate');
+            const totalEarningsEl = document.getElementById('total-earnings');
+            
+            if (totalHorsesEl) totalHorsesEl.textContent = totalHorses;
+            if (totalRacesEl) totalRacesEl.textContent = totalRaces;
+            if (winRateEl) winRateEl.textContent = `${winRate}%`;
+            if (totalEarningsEl) totalEarningsEl.textContent = `${totalEarnings >= 0 ? '+' : ''}${Math.round(totalEarnings)} ZED`;
+            
+            console.log(`📊 Dashboard loaded: ${totalHorses} horses, ${totalRaces} races, ${winRate}% win rate`);
         }
 
         function refreshDashboard() {

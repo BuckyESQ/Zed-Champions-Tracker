@@ -853,6 +853,15 @@
             opacity: 0.8;
             margin-top: 5px;
         }
+
+        .star-rating-display {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
     </style>
 </head>
 <body>
@@ -2030,21 +2039,21 @@
                                             
                                             <div class="race-performance">
                                                 <div class="race-detail">
-                                                    <div class="detail-label">Speed Star</div>
-                                                    <div class="race-stats-bar speed-bar">
-                                                        <div class="stats-bar-value" style="width: ${(race.stars.speed / 10) * 100}%"></div>
+                                                    <div class="detail-label">Speed Rating</div>
+                                                    <div class="star-rating-display">
+                                                        ${(race.stars.speed || race.stars.speedStar || horse.speed_rating || 3).toFixed(1)} ⭐
                                                     </div>
                                                 </div>
                                                 <div class="race-detail">
-                                                    <div class="detail-label">Strength Star</div>
-                                                    <div class="race-stats-bar strength-bar">
-                                                        <div class="stats-bar-value" style="width: ${(race.stars.strength / 10) * 100}%"></div>
+                                                    <div class="detail-label">Sprint Rating</div>
+                                                    <div class="star-rating-display">
+                                                        ${(race.stars.sprint || race.stars.sprintStar || horse.sprint_rating || 3).toFixed(1)} ⭐
                                                     </div>
                                                 </div>
                                                 <div class="race-detail">
-                                                    <div class="detail-label">Stamina Star</div>
-                                                    <div class="race-stats-bar stamina-bar">
-                                                        <div class="stats-bar-value" style="width: ${(race.stars.stamina / 10) * 100}%"></div>
+                                                    <div class="detail-label">Endurance Rating</div>
+                                                    <div class="star-rating-display">
+                                                        ${(race.stars.endurance || race.stars.enduranceStar || horse.endurance_rating || 3).toFixed(1)} ⭐
                                                     </div>
                                                 </div>
                                             </div>

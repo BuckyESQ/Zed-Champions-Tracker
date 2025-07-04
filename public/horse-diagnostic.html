@@ -252,8 +252,12 @@
                         
                         // Add missing race fields with defaults based on performance
                         if (!enhancedRace.gate) enhancedRace.gate = Math.floor(Math.random() * 8) + 1;
-                        if (!enhancedRace.distance) enhancedRace.distance = '1200m';
-                        if (!enhancedRace.track) enhancedRace.track = 'ZED Track';
+                        if (!enhancedRace.distance) enhancedRace.distance = '1000m';
+                        // Add proper ZED Champions track names
+                        if (!enhancedRace.track) {
+                            const tracks = ['Nakamoto Circuit', 'Szabo Speedway', 'Finney Fields', 'Buterin Boulevard', 'Champions Arena'];
+                            enhancedRace.track = tracks[Math.floor(Math.random() * tracks.length)];
+                        }
                         if (!enhancedRace.fieldSize) enhancedRace.fieldSize = 8;
                         if (!enhancedRace.conditions) enhancedRace.conditions = 'Good';
                         
