@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "name": "stablefields-zed-tracker",
+  "builds": [
+    {
+      "src": "PRODUCTION-READY/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/PRODUCTION-READY/index.html"
+    },
+    {
+      "src": "/stablefields-tracker.html",
+      "dest": "/PRODUCTION-READY/stablefields-tracker.html"
+    },
+    {
+      "src": "/ai-racing-intelligence.html", 
+      "dest": "/PRODUCTION-READY/ai-racing-intelligence.html"
+    },
+    {
+      "src": "/search-import.html",
+      "dest": "/PRODUCTION-READY/search-import.html"
+    },
+    {
+      "src": "/quick-access.html",
+      "dest": "/PRODUCTION-READY/quick-access.html"
+    },
+    {
+      "src": "/app.js",
+      "dest": "/PRODUCTION-READY/app.js"
+    },
+    {
+      "src": "/zed-data-model.js",
+      "dest": "/PRODUCTION-READY/zed-data-model.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/PRODUCTION-READY/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+}
