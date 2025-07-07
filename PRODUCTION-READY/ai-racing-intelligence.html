@@ -912,6 +912,33 @@
                 this.augments = this.getDefaultAugments();
             }
 
+            // Generate visual star display instead of text
+            generateStarDisplay(rating) {
+                const stars = Math.max(0, Math.min(5, rating)); // Clamp between 0-5
+                const fullStars = Math.floor(stars);
+                const hasHalfStar = (stars - fullStars) >= 0.5;
+                
+                let starHTML = '';
+                
+                // Full stars
+                for (let i = 0; i < fullStars; i++) {
+                    starHTML += '<i class="fas fa-star" style="color: #FFD700;"></i>';
+                }
+                
+                // Half star
+                if (hasHalfStar) {
+                    starHTML += '<i class="fas fa-star-half-alt" style="color: #FFD700;"></i>';
+                }
+                
+                // Empty stars
+                const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                for (let i = 0; i < emptyStars; i++) {
+                    starHTML += '<i class="far fa-star" style="color: #666;"></i>';
+                }
+                
+                return `${starHTML} <span style="margin-left: 8px; color: var(--accent-color); font-weight: 600;">${stars.toFixed(1)}</span>`;
+            }
+
             // Enhanced ZED Champions Augment System with detailed mechanics and trigger logic
             getDefaultAugments() {
                 return {
@@ -1677,13 +1704,8 @@
 
             recommendAugments(horse, stats) {
                 if (!stats || stats.totalRaces < 2) {
-                    // Default recommendations for new horses - use None as default
-                    return {
-                        CPU: Object.keys(this.augments.CPU)[0] || 'None',
-                        RAM: Object.keys(this.augments.RAM)[0] || 'None', 
-                        Hydraulic: Object.keys(this.augments.Hydraulic)[0] || 'None',
-                        confidence: 60
-                    };
+                    // Intelligent default recommendations based on horse characteristics
+                    return this.getDefaultAugmentRecommendations(horse);
                 }
 
                 // Analyze augment performance for this horse
@@ -1691,9 +1713,9 @@
                 const augmentStats = this.analyzeAugmentPerformance(horseRaces);
 
                 // Find best performing augments
-                const bestCPU = this.findBestAugment(augmentStats, 'CPU') || Object.keys(this.augments.CPU)[0];
-                const bestRAM = this.findBestAugment(augmentStats, 'RAM') || Object.keys(this.augments.RAM)[0];
-                const bestHydraulic = this.findBestAugment(augmentStats, 'Hydraulic') || Object.keys(this.augments.Hydraulic)[0];
+                const bestCPU = this.findBestAugment(augmentStats, 'CPU') || this.getDefaultAugmentRecommendations(horse).CPU;
+                const bestRAM = this.findBestAugment(augmentStats, 'RAM') || this.getDefaultAugmentRecommendations(horse).RAM;
+                const bestHydraulic = this.findBestAugment(augmentStats, 'Hydraulic') || this.getDefaultAugmentRecommendations(horse).Hydraulic;
 
                 const confidence = Math.min(95, 50 + (stats.totalRaces * 5));
 
@@ -1703,6 +1725,52 @@
                     Hydraulic: bestHydraulic,
                     confidence
                 };
+            }
+
+            // Smart default augment recommendations based on horse characteristics
+            getDefaultAugmentRecommendations(horse) {
+                const speed = parseFloat(horse.speed_rating || 3);
+                const sprint = parseFloat(horse.sprint_rating || 3);
+                const endurance = parseFloat(horse.endurance_rating || 3);
+                const bloodline = horse.bloodline || 'NAKAMOTO';
+                
+                let recommendations = {
+                    CPU: 'Void C100',
+                    RAM: 'Void R100', 
+                    Hydraulic: 'Void H100',
+                    confidence: 75
+                };
+
+                // Bloodline-specific recommendations
+                if (bloodline === 'NAKAMOTO') {
+                    recommendations.CPU = speed >= 4 ? 'Crimson C' : 'Darklight 100C';
+                    recommendations.confidence = 80;
+                } else if (bloodline === 'SZABO') {
+                    recommendations.RAM = sprint >= 4 ? 'Crimson R' : 'Midnight 100R';
+                    recommendations.confidence = 80;
+                } else if (bloodline === 'FINNEY') {
+                    recommendations.Hydraulic = endurance >= 4 ? 'Crimson H' : 'Darklight 100H';
+                    recommendations.confidence = 80;
+                } else if (bloodline === 'BUTERIN') {
+                    recommendations.CPU = 'GX-Core C';
+                    recommendations.confidence = 75;
+                }
+
+                // High-performing horses get premium augments
+                const avgRating = (speed + sprint + endurance) / 3;
+                if (avgRating >= 4.5) {
+                    recommendations.CPU = 'Crimson C';
+                    recommendations.RAM = 'Crimson R';
+                    recommendations.Hydraulic = 'Crimson H';
+                    recommendations.confidence = 85;
+                } else if (avgRating >= 4.0) {
+                    recommendations.CPU = 'GX-Core C';
+                    recommendations.RAM = 'GX-Core R';
+                    recommendations.Hydraulic = 'GX-Core H';
+                    recommendations.confidence = 80;
+                }
+
+                return recommendations;
             }
 
             analyzeAugmentPerformance(races) {
@@ -1944,7 +2012,7 @@
                                     <h3>${horse.name}</h3>
                                     <div class="horse-meta">
                                         <span><i class="fas fa-dna"></i> ${horse.bloodline}</span>
-                                        <span><i class="fas fa-star"></i> ${formatNumber((parseFloat(horse.speed_rating || 3) + parseFloat(horse.sprint_rating || 3) + parseFloat(horse.endurance_rating || 3)) / 3)} stars</span>
+                                        <span class="star-display">${this.generateStarDisplay((parseFloat(horse.speed_rating || 3) + parseFloat(horse.sprint_rating || 3) + parseFloat(horse.endurance_rating || 3)) / 3)}</span>
                                         <span><i class="fas fa-venus-mars"></i> ${horse.gender}</span>
                                         ${stats ? `<span><i class="fas fa-flag-checkered"></i> ${stats.totalRaces} races</span>` : ''}
                                     </div>
@@ -2130,8 +2198,14 @@
                                     <h4><i class="fas fa-history"></i> Race History</h4>
                                 </div>
                                 <div class="race-empty-state">
-                                    <i class="fas fa-calendar-times" style="font-size: 2rem; opacity: 0.5; margin-bottom: 10px;"></i>
-                                    <p>No race history available for this horse.</p>
+                                    <i class="fas fa-plus-circle" style="font-size: 2rem; opacity: 0.5; margin-bottom: 10px; color: var(--accent-color);"></i>
+                                    <p><strong>Ready to race!</strong></p>
+                                    <p style="color: var(--text-muted); font-size: 0.9rem;">Record your first race to unlock advanced analytics and personalized augment recommendations.</p>
+                                    <div style="margin-top: 15px;">
+                                        <button class="btn btn-primary" onclick="recordFirstRace('${horse.id}')" style="font-size: 0.9rem; padding: 8px 16px;">
+                                            <i class="fas fa-plus"></i> Record First Race
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         `}
@@ -2305,6 +2379,11 @@
         function recordRace(horseId) {
             // Navigate to the main tracker's racing tab
             window.location.href = `stablefields-tracker.html?tab=racing&horse=${horseId}`;
+        }
+
+        function recordFirstRace(horseId) {
+            // Navigate to the main tracker to record the first race
+            window.location.href = `stablefields-tracker.html?tab=racing&horse=${horseId}&first=true`;
         }
         
         function toggleRaceView(horseId, viewType) {
