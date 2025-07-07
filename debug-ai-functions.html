@@ -545,29 +545,60 @@ Possible reasons:
                     'Nakamoto Memorial', 'Lightning Sprint', 'Elite Challenge', 'Future Stakes'
                 ];
                 const tracks = ['Luna City', 'Genesis Valley', 'Neo Tokyo', 'Cyber Circuit', 'Digital Downs'];
+                const distances = ['1000m', '1200m', '1400m', '1600m', '1800m'];
+                const augmentOptions = {
+                    cpu: ['Crimson C', 'GX-Core C', 'Void C100', 'Darklight 100C', 'Midnight C'],
+                    ram: ['Crimson R', 'GX-Core R', 'Void R100', 'Midnight 100R', 'Darklight R'],
+                    hydraulic: ['Crimson H', 'GX-Core H', 'Void H100', 'Darklight 100H', 'Midnight H']
+                };
                 
                 for (let i = 0; i < 8; i++) {
                     const position = Math.floor(Math.random() * 8) + 1;
                     const baseTime = 62 + Math.random() * 6; // 62-68 seconds
+                    const split1 = (baseTime * 0.25).toFixed(2);
+                    const split2 = (baseTime * 0.5).toFixed(2);
+                    const odds = (2 + Math.random() * 6).toFixed(1);
+                    const zedChange = position <= 3 ? (150 - position * 30) : -(10 + Math.random() * 40);
+                    const track = tracks[Math.floor(Math.random() * tracks.length)];
+                    const distance = distances[Math.floor(Math.random() * distances.length)];
                     
                     newRaces.push({
                         id: `red-nova-race-${i + 1}`,
                         horseId: redNova.id,
                         position: position,
                         finishTime: baseTime.toFixed(2),
-                        split1: (baseTime * 0.25).toFixed(2),
-                        split2: (baseTime * 0.5).toFixed(2),
-                        split3: (baseTime * 0.75).toFixed(2),
-                        odds: (2 + Math.random() * 6).toFixed(1),
-                        zedChange: position <= 3 ? (150 - position * 30) : -(10 + Math.random() * 40),
+                        split1: split1,
+                        split2: split2,
+                        odds: odds,
+                        zedChange: zedChange.toFixed(0),
                         ratingChange: position <= 3 ? (30 - position * 5) : -(5 + Math.random() * 10),
-                        cpuAugment: ['Crimson C', 'GX-Core C', 'Void C100', 'Darklight 100C'][Math.floor(Math.random() * 4)],
-                        ramAugment: ['Crimson R', 'GX-Core R', 'Void R100', 'Midnight 100R'][Math.floor(Math.random() * 4)],
-                        hydraulicAugment: ['Crimson H', 'GX-Core H', 'Void H100', 'Darklight 100H'][Math.floor(Math.random() * 4)],
+                        cpuAugment: augmentOptions.cpu[Math.floor(Math.random() * augmentOptions.cpu.length)],
+                        ramAugment: augmentOptions.ram[Math.floor(Math.random() * augmentOptions.ram.length)],
+                        hydraulicAugment: augmentOptions.hydraulic[Math.floor(Math.random() * augmentOptions.hydraulic.length)],
                         date: new Date(Date.now() - (i * 7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
                         raceName: raceNames[Math.floor(Math.random() * raceNames.length)],
-                        track: tracks[Math.floor(Math.random() * tracks.length)],
-                        distance: ['1000m', '1200m', '1400m', '1600m'][Math.floor(Math.random() * 4)]
+                        name: raceNames[Math.floor(Math.random() * raceNames.length)],
+                        track: track,
+                        distance: distance,
+                        formattedDate: new Date(Date.now() - (i * 7 * 24 * 60 * 60 * 1000)).toLocaleDateString(),
+                        // ZED Champions data structure
+                        performance: {
+                            track: track,
+                            distance: distance,
+                            gate: Math.floor(Math.random() * 12) + 1,
+                            odds: odds,
+                            zedChange: zedChange.toFixed(0)
+                        },
+                        timeData: {
+                            finishTime: baseTime.toFixed(2),
+                            split1: split1,
+                            split2: split2
+                        },
+                        augments: {
+                            cpu: augmentOptions.cpu[Math.floor(Math.random() * augmentOptions.cpu.length)],
+                            ram: augmentOptions.ram[Math.floor(Math.random() * augmentOptions.ram.length)],
+                            hydraulic: augmentOptions.hydraulic[Math.floor(Math.random() * augmentOptions.hydraulic.length)]
+                        }
                     });
                 }
                 

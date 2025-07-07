@@ -605,71 +605,295 @@
             text-align: center;
         }
 
-        /* Breeding Section Styles */
-        .breeding-section {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+        /* Enhanced Race History Section */
+        .race-history-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
         }
-
-        .breeding-title {
+        
+        .race-history-title {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
-
-        .breeding-title h4 {
-            font-size: 1.1rem;
+        
+        .race-history-title h4 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1.3rem;
             font-weight: 600;
+        }
+        
+        .view-toggle {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 4px;
         }
-
-        .breeding-card {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-btn.active {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .race-timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 20px;
+        }
+        
+        .race-entry {
+            position: relative;
             padding: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 15px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--border-color);
         }
-
-        .breeding-card.best-match {
-            border-left: 4px solid gold;
+        
+        .race-entry:last-child {
+            margin-bottom: 0;
         }
-
-        .breeding-header {
+        
+        .race-entry::before {
+            content: '';
+            position: absolute;
+            left: -29px;
+            top: 20px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+        }
+        
+        .race-entry.position-1 {
+            border-left-color: gold;
+        }
+        
+        .race-entry.position-1::before {
+            background: gold;
+            border-color: gold;
+        }
+        
+        .race-entry.position-2 {
+            border-left-color: silver;
+        }
+        
+        .race-entry.position-2::before {
+            background: silver;
+            border-color: silver;
+        }
+        
+        .race-entry.position-3 {
+            border-left-color: #cd7f32;
+        }
+        
+        .race-entry.position-3::before {
+            background: #cd7f32;
+            border-color: #cd7f32;
+        }
+        
+        .race-entry.position-other::before {
+            background: var(--surface-color);
+        }
+        
+        .race-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-
-        .partner-name {
+        
+        .race-name {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+        
+        .race-date {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        .race-position {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
             font-weight: 600;
             font-size: 1.1rem;
         }
-
-        .compatibility-score {
-            background: var(--success-color);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.85rem;
+        
+        .position-1 .race-position {
+            background: rgba(255, 215, 0, 0.2);
+            color: gold;
+            border: 2px solid gold;
         }
-
-        .breeding-details {
+        
+        .position-2 .race-position {
+            background: rgba(192, 192, 192, 0.2);
+            color: silver;
+            border: 2px solid silver;
+        }
+        
+        .position-3 .race-position {
+            background: rgba(205, 127, 50, 0.2);
+            color: #cd7f32;
+            border: 2px solid #cd7f32;
+        }
+        
+        .position-other .race-position {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            border: 2px solid var(--border-color);
+        }
+        
+        .race-details {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 15px;
         }
-
-        .breeding-empty-state {
-            text-align: center;
-            padding: 30px 20px;
+        
+        .race-detail {
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 0.75rem;
             color: var(--text-muted);
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .race-augments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .race-augment {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .augment-cpu {
+            background: rgba(255, 100, 100, 0.2);
+            color: #ff6464;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+        
+        .augment-ram {
+            background: rgba(100, 255, 100, 0.2);
+            color: #64ff64;
+            border: 1px solid rgba(100, 255, 100, 0.3);
+        }
+        
+        .augment-hydraulic {
+            background: rgba(100, 100, 255, 0.2);
+            color: #6464ff;
+            border: 1px solid rgba(100, 100, 255, 0.3);
+        }
+        
+        .race-stats-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .stats-bar-value {
+            width: 40px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .speed-bar .stats-bar-value {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff9999 100%);
+        }
+        
+        .strength-bar .stats-bar-value {
+            background: linear-gradient(90deg, #4ecdc4 0%, #7fdbda 100%);
+        }
+        
+        .stamina-bar .stats-bar-value {
+            background: linear-gradient(90deg, #45b7d1 0%, #78c9e3 100%);
+        }
+        
+        .race-performance {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .compact-view .race-details,
+        .compact-view .race-augments {
+            display: none;
+        }
+        
+        .race-empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+        
+        .table-view {
+            display: none;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .table-view th, 
+        .table-view td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .table-view th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+        
+        .table-view .position-cell {
+            width: 50px;
+            text-align: center;
         }
 
         /* Breeding Section Styles */
@@ -2095,37 +2319,58 @@
                                         <div class="race-entry position-${race.position <= 3 ? race.position : 'other'}">
                                             <div class="race-header">
                                                 <div>
-                                                    <span class="race-name">${race.raceName}</span                                                    <span class="race-date">${race.formattedDate}</span>
+                                                    <span class="race-name">${race.raceName || race.name || 'Unknown Race'}</span>
+                                                    <span class="race-date">${race.formattedDate || race.date || 'Unknown Date'}</span>
                                                 </div>
-                                                <div class="race-position">${race.position}</div>
+                                                <div class="race-position">${race.position || 'N/A'}</div>
                                             </div>
                                             <div class="race-details">
                                                 <div class="race-detail">
                                                     <span class="detail-label">Track</span>
-                                                    <span class="detail-value">${race.performance.track}</span>
+                                                    <span class="detail-value">${race.performance?.track || race.track || 'Unknown'}</span>
+                                                </div>
+                                                <div class="race-detail">
+                                                    <span class="detail-label">Distance</span>
+                                                    <span class="detail-value">${race.performance?.distance || race.distance || 'Unknown'}</span>
                                                 </div>
                                                 <div class="race-detail">
                                                     <span class="detail-label">Gate</span>
-                                                    <span class="detail-value">${race.performance.gate}</span>
+                                                    <span class="detail-value">${race.performance?.gate || race.gate || 'N/A'}</span>
                                                 </div>
                                                 <div class="race-detail">
                                                     <span class="detail-label">Odds</span>
-                                                    <span class="detail-value">${race.performance.odds}</span>
+                                                    <span class="detail-value">${race.performance?.odds || race.odds || 'N/A'}</span>
                                                 </div>
-                                                ${race.timeData.finishTime ? `
+                                                ${race.timeData?.finishTime || race.finishTime ? `
                                                 <div class="race-detail">
                                                     <span class="detail-label">Finish Time</span>
-                                                    <span class="detail-value">${race.timeData.finishTime}s</span>
+                                                    <span class="detail-value">${race.timeData?.finishTime || race.finishTime}s</span>
+                                                </div>` : ''}
+                                                ${race.timeData?.split1 || race.split1 ? `
+                                                <div class="race-detail">
+                                                    <span class="detail-label">Split 1</span>
+                                                    <span class="detail-value">${race.timeData?.split1 || race.split1}s</span>
+                                                </div>` : ''}
+                                                ${race.timeData?.split2 || race.split2 ? `
+                                                <div class="race-detail">
+                                                    <span class="detail-label">Split 2</span>
+                                                    <span class="detail-value">${race.timeData?.split2 || race.split2}s</span>
                                                 </div>` : ''}
                                                 <div class="race-detail">
                                                     <span class="detail-label">ZED Change</span>
-                                                    <span class="detail-value" style="color: ${parseFloat(race.performance.zedChange) >= 0 ? 'var(--success-color)' : 'var(--error-color)'}">
-                                                        ${parseFloat(race.performance.zedChange) >= 0 ? '+' : ''}${race.performance.zedChange}
+                                                    <span class="detail-value" style="color: ${parseFloat(race.performance?.zedChange || race.zedChange || 0) >= 0 ? 'var(--success-color)' : 'var(--error-color)'}">
+                                                        ${parseFloat(race.performance?.zedChange || race.zedChange || 0) >= 0 ? '+' : ''}${race.performance?.zedChange || race.zedChange || 0}
                                                     </span>
                                                 </div>
                                             </div>
                                             
                                             <div class="race-performance">
+                                                <div class="race-detail">
+                                                    <div class="detail-label">Horse Star Rating</div>
+                                                    <div class="star-rating-display">
+                                                        ${(horse.stars || horse.overall_rating || 3).toFixed(1)} ⭐
+                                                    </div>
+                                                </div>
                                                 <div class="race-detail">
                                                     <div class="detail-label">Speed Rating</div>
                                                     <div class="star-rating-display">
@@ -2148,13 +2393,13 @@
                                             
                                             <div class="race-augments">
                                                 <div class="race-augment augment-cpu">
-                                                    <i class="fas fa-microchip"></i> ${race.augments.cpu || 'None'}
+                                                    <i class="fas fa-microchip"></i> ${race.augments?.cpu || race.cpuAugment || 'None'}
                                                 </div>
                                                 <div class="race-augment augment-ram">
-                                                    <i class="fas fa-memory"></i> ${race.augments.ram || 'None'}
+                                                    <i class="fas fa-memory"></i> ${race.augments?.ram || race.ramAugment || 'None'}
                                                 </div>
                                                 <div class="race-augment augment-hydraulic">
-                                                    <i class="fas fa-tachometer-alt"></i> ${race.augments.hydraulic || 'None'}
+                                                    <i class="fas fa-tachometer-alt"></i> ${race.augments?.hydraulic || race.hydraulicAugment || 'None'}
                                                 </div>
                                             </div>
                                         </div>
@@ -2168,7 +2413,10 @@
                                             <th>Race</th>
                                             <th>Date</th>
                                             <th>Track</th>
+                                            <th>Distance</th>
                                             <th>Time</th>
+                                            <th>Split 1</th>
+                                            <th>Split 2</th>
                                             <th>Odds</th>
                                             <th>ZED</th>
                                             <th>Augments</th>
@@ -2177,16 +2425,23 @@
                                     <tbody>
                                         ${stats.detailedRaces.map(race => `
                                             <tr class="position-${race.position <= 3 ? race.position : 'other'}">
-                                                <td class="position-cell">${race.position}</td>
-                                                <td>${race.raceName}</td>
-                                                <td>${race.formattedDate}</td>
-                                                <td>${race.performance.track}</td>
-                                                <td>${race.timeData.finishTime || 'N/A'}</td>
-                                                <td>${race.performance.odds}</td>
-                                                <td style="color: ${parseFloat(race.performance.zedChange) >= 0 ? 'var(--success-color)' : 'var(--error-color)'}">
-                                                    ${parseFloat(race.performance.zedChange) >= 0 ? '+' : ''}${race.performance.zedChange}
+                                                <td class="position-cell">${race.position || 'N/A'}</td>
+                                                <td>${race.raceName || race.name || 'Unknown Race'}</td>
+                                                <td>${race.formattedDate || race.date || 'Unknown Date'}</td>
+                                                <td>${race.performance?.track || race.track || 'Unknown'}</td>
+                                                <td>${race.performance?.distance || race.distance || 'Unknown'}</td>
+                                                <td>${race.timeData?.finishTime || race.finishTime || 'N/A'}</td>
+                                                <td>${race.timeData?.split1 || race.split1 || 'N/A'}</td>
+                                                <td>${race.timeData?.split2 || race.split2 || 'N/A'}</td>
+                                                <td>${race.performance?.odds || race.odds || 'N/A'}</td>
+                                                <td style="color: ${parseFloat(race.performance?.zedChange || race.zedChange || 0) >= 0 ? 'var(--success-color)' : 'var(--error-color)'}">
+                                                    ${parseFloat(race.performance?.zedChange || race.zedChange || 0) >= 0 ? '+' : ''}${race.performance?.zedChange || race.zedChange || 0}
                                                 </td>
-                                                <td>${(race.augments.cpu || 'None').replace(' ', '')}, ${(race.augments.ram || 'None').replace(' ', '')}, ${(race.augments.hydraulic || 'None').replace(' ', '')}</td>
+                                                <td>
+                                                    ${(race.augments?.cpu || race.cpuAugment || 'None')}, 
+                                                    ${(race.augments?.ram || race.ramAugment || 'None')}, 
+                                                    ${(race.augments?.hydraulic || race.hydraulicAugment || 'None')}
+                                                </td>
                                             </tr>
                                         `).join('')}
                                     </tbody>
@@ -2262,106 +2517,8 @@
     
                     const breedingPrediction = this.predictBreedingPairs(horse);
                     
-                    if (breedingPrediction.bestPairs.length === 0) {
-                        return `
-                            <div class="breeding-section">
-                                <div class="breeding-title">
-                                    <h4><i class="fas fa-heart"></i> Breeding Potential</h4>
-                                </div>
-                                <div class="breeding-empty-state">
-                                    <i class="fas fa-search" style="font-size: 2rem; opacity: 0.5; margin-bottom: 10px;"></i>
-                                    <p>No suitable breeding partners found in stable.</p>
-                                    <p class="text-muted">Import more horses to see breeding recommendations.</p>
-                                </div>
-                            </div>
-                        `;
-                    }
-    
-                    const topPair = breedingPrediction.bestPairs[0];
-                    const foalPrediction = topPair.foalPrediction;
-    
-                    return `
-                        <div class="breeding-section">
-                            <div class="breeding-title">
-                                <h4><i class="fas fa-heart"></i> Breeding Potential</h4>
-                                <div class="breeding-confidence">
-                                    Confidence: ${Math.round(breedingPrediction.confidence)}%
-                                </div>
-                            </div>
-                            
-                            <div class="breeding-recommendations">
-                                <div class="breeding-card best-match">
-                                    <div class="breeding-header">
-                                        <span class="partner-name">
-                                            <i class="fas fa-crown" style="color: gold;"></i>
-                                            Best Match: ${topPair.partner.name}
-                                        </span>
-                                        <span class="compatibility-score">
-                                            ${Math.round(topPair.compatibility.score * 100)}% Compatible
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="breeding-details">
-                                        <div class="breeding-detail">
-                                            <span class="detail-label">Partner Bloodline</span>
-                                            <span class="detail-value bloodline-${topPair.partner.bloodline.toLowerCase()}">${topPair.partner.bloodline}</span>
-                                        </div>
-                                        <div class="breeding-detail">
-                                            <span class="detail-label">Partner Stars</span>
-                                            <span class="detail-value">${topPair.partner.stars || 'N/A'}</span>
-                                        </div>
-                                        <div class="breeding-detail">
-                                            <span class="detail-label">Expected Foal Stars</span>
-                                            <span class="detail-value star-prediction">${foalPrediction.starPotential.toFixed(1)} ⭐</span>
-                                        </div>
-                                        <div class="breeding-detail">
-                                            <span class="detail-label">Breeding Cost</span>
-                                            <span class="detail-value">${foalPrediction.breedingCost} ZED</span>
-                                        </div>
-                                        <div class="breeding-detail">
-                                            <span class="detail-label">Expected ROI</span>
-                                            <span class="detail-value roi-positive">${foalPrediction.expectedROI.toFixed(0)}%</span>
-                                        </div>
-                                        <div class="breeding-detail">
-                                            <span class="detail-label">Foal Generation</span>
-                                            <span class="detail-value">Gen ${foalPrediction.foalGeneration}</span>
-                                        </div>
-                                    </div>
-    
-                                    <div class="foal-traits">
-                                        <div class="traits-title">Predicted Foal Strengths:</div>
-                                        <div class="traits-list">
-                                            ${foalPrediction.bloodlineStrengths.map(strength => `
-                                                <span class="trait-tag">${strength}</span>
-                                            `).join('')}
-                                        </div>
-                                    </div>
-    
-                                    <div class="breeding-advice">
-                                        <i class="fas fa-lightbulb"></i>
-                                        ${breedingPrediction.prediction}
-                                    </div>
-                                </div>
-    
-                                ${breedingPrediction.bestPairs.length > 1 ? `
-                                    <div class="other-matches">
-                                        <div class="other-matches-title">Other Good Matches:</div>
-                                        ${breedingPrediction.bestPairs.slice(1, 3).map(pair => `
-                                            <div class="breeding-card alternative-match">
-                                                <div class="breeding-header">
-                                                    <span class="partner-name">${pair.partner.name}</span>
-                                                    <span class="compatibility-score">${Math.round(pair.compatibility.score * 100)}%</span>
-                                                </div>
-                                                <div class="breeding-summary">
-                                                    ${pair.partner.bloodline} • ${pair.foalPrediction.starPotential.toFixed(1)}⭐ foal • ${pair.foalPrediction.breedingCost} ZED
-                                                </div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `;
+                    // Breeding section removed - moved to separate Breeding tab
+                    return '';
                 }
 
             init() {
