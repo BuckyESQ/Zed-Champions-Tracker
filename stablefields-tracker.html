@@ -4485,27 +4485,94 @@
                         </div>
                     </div>
                     
-                    ${horse.races ? `
+                    ${horse.races && horse.races.length > 0 ? `
                         <div style="margin-top: 2rem;">
-                            <h3>Recent Race History</h3>
-                            <div style="max-height: 300px; overflow-y: auto;">
-                                ${horse.races.slice(0, 10).map(race => `
-                                    <div style="
-                                        background: var(--bg-card); padding: 1rem; margin: 0.5rem 0;
-                                        border-radius: 6px; border-left: 4px solid var(--primary);
-                                    ">
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span><strong>Position:</strong> ${race.position || race.finish_position || 'N/A'}</span>
-                                            <span>${race.date ? new Date(race.date).toLocaleDateString() : 'Unknown Date'}</span>
-                                        </div>
-                                        ${race.track ? `<div><strong>Track:</strong> ${race.track}</div>` : ''}
-                                        ${race.distance ? `<div><strong>Distance:</strong> ${race.distance}m</div>` : ''}
-                                        ${race.finish_time && typeof race.finish_time === 'number' ? `<div><strong>Time:</strong> ${race.finish_time.toFixed(2)}s</div>` : race.finish_time ? `<div><strong>Time:</strong> ${race.finish_time}</div>` : ''}
-                                    </div>
-                                `).join('')}
+                            <h3>Race History (${horse.races.length} races)</h3>
+                            <div style="max-height: 400px; overflow-y: auto; overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                    <thead style="background: var(--bg-secondary); position: sticky; top: 0;">
+                                        <tr>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: left;">Race Name</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Date</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Pos</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: left;">Track</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Distance</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Time</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Split 1</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Split 2</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Split 3</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Split 4</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Odds</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">ZED +/-</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">MM +/-</th>
+                                            <th style="padding: 8px; border: 1px solid var(--border); text-align: center;">Augments (C/R/H)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${horse.races.map(race => `
+                                            <tr style="border-bottom: 1px solid var(--border);">
+                                                <td style="padding: 6px; border: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                                    ${race.raceName || race.race_name || race.name || 'Unknown Race'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center; white-space: nowrap;">
+                                                    ${race.date ? new Date(race.date).toLocaleDateString() : race.formattedDate || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center; font-weight: bold; color: ${(race.position || race.finish_position) <= 3 ? 'var(--success)' : 'var(--text-secondary)'};">
+                                                    ${race.position || race.finish_position || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); white-space: nowrap;">
+                                                    ${race.track || race.performance?.track || 'Unknown'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center;">
+                                                    ${race.distance || race.performance?.distance || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center;">
+                                                    ${race.finish_time || race.finishTime || race.timeData?.finishTime || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center;">
+                                                    ${race.split1 || race.timeData?.split1 || race.splits?.[0] || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center;">
+                                                    ${race.split2 || race.timeData?.split2 || race.splits?.[1] || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center;">
+                                                    ${race.split3 || race.timeData?.split3 || race.splits?.[2] || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center;">
+                                                    ${race.split4 || race.timeData?.split4 || race.splits?.[3] || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center;">
+                                                    ${race.odds || race.performance?.odds || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center; color: ${parseFloat(race.zedChange || race.zed_change || race.performance?.zedChange || 0) >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">
+                                                    ${race.zedChange || race.zed_change || race.performance?.zedChange || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center; color: ${parseFloat(race.ratingChange || race.rating_change || race.mmChange || 0) >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                                                    ${race.ratingChange || race.rating_change || race.mmChange || 'N/A'}
+                                                </td>
+                                                <td style="padding: 6px; border: 1px solid var(--border); text-align: center; font-size: 0.8rem;">
+                                                    ${[
+                                                        race.cpuAugment || race.cpu_augment || race.augments?.cpu || 'None',
+                                                        race.ramAugment || race.ram_augment || race.augments?.ram || 'None', 
+                                                        race.hydraulicAugment || race.hydraulic_augment || race.augments?.hydraulic || 'None'
+                                                    ].join(' / ')}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
-                    ` : ''}
+                    ` : `
+                        <div style="margin-top: 2rem;">
+                            <h3>Race History</h3>
+                            <div style="background: var(--bg-card); padding: 2rem; text-align: center; border-radius: 8px; border: 2px dashed var(--border);">
+                                <i class="fas fa-flag-checkered" style="font-size: 2rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
+                                <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">No race history available</p>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Import race data from ZedSight.com or record races manually to see detailed performance analytics</p>
+                            </div>
+                        </div>
+                    `}
                     
                     ${horse.augment_combinations ? `
                         <div style="margin-top: 2rem;">

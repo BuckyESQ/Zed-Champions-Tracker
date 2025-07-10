@@ -538,49 +538,86 @@ Possible reasons:
                     return;
                 }
                 
-                // Generate realistic race data for Red Nova
+                // Generate ZedSight-compatible race data
                 const newRaces = [];
                 const raceNames = [
-                    'Luna Championship', 'Genesis Cup', 'Digital Derby', 'Cyber Stakes',
-                    'Nakamoto Memorial', 'Lightning Sprint', 'Elite Challenge', 'Future Stakes'
+                    'Luna Championship Stakes', 'Genesis Elite Cup', 'Digital Derby Classic', 'Cyber Championship Stakes',
+                    'Nakamoto Memorial Race', 'Lightning Sprint Stakes', 'Elite Challenge Cup', 'Future Champions Stakes',
+                    'Quantum Qualifier Stakes', 'Blockchain Breeders Cup', 'Neural Network Stakes', 'Finney Memorial'
                 ];
-                const tracks = ['Luna City', 'Genesis Valley', 'Neo Tokyo', 'Cyber Circuit', 'Digital Downs'];
+                const tracks = ['Luna City', 'Genesis Valley', 'Neo Tokyo', 'Cyber Circuit', 'Digital Downs', 'Quantum Fields'];
                 const distances = ['1000m', '1200m', '1400m', '1600m', '1800m'];
                 const augmentOptions = {
-                    cpu: ['Crimson C', 'GX-Core C', 'Void C100', 'Darklight 100C', 'Midnight C'],
-                    ram: ['Crimson R', 'GX-Core R', 'Void R100', 'Midnight 100R', 'Darklight R'],
-                    hydraulic: ['Crimson H', 'GX-Core H', 'Void H100', 'Darklight 100H', 'Midnight H']
+                    cpu: ['Crimson C', 'GX-Core C', 'Void C100', 'Darklight 100C', 'Midnight C', 'None'],
+                    ram: ['Crimson R', 'GX-Core R', 'Void R100', 'Midnight 100R', 'Darklight R', 'None'],
+                    hydraulic: ['Crimson H', 'GX-Core H', 'Void H100', 'Darklight 100H', 'Midnight H', 'None']
                 };
                 
-                for (let i = 0; i < 8; i++) {
-                    const position = Math.floor(Math.random() * 8) + 1;
-                    const baseTime = 62 + Math.random() * 6; // 62-68 seconds
-                    const split1 = (baseTime * 0.25).toFixed(2);
-                    const split2 = (baseTime * 0.5).toFixed(2);
-                    const odds = (2 + Math.random() * 6).toFixed(1);
-                    const zedChange = position <= 3 ? (150 - position * 30) : -(10 + Math.random() * 40);
+                for (let i = 0; i < 12; i++) {
+                    const position = Math.floor(Math.random() * 12) + 1;
+                    const baseTime = 40 + Math.random() * 8; // 40-48 seconds
+                    const split1 = (baseTime * 0.22).toFixed(2); // First quarter
+                    const split2 = (baseTime * 0.45).toFixed(2); // Half way
+                    const split3 = (baseTime * 0.70).toFixed(2); // Three quarters
+                    const split4 = baseTime.toFixed(2); // Full time
+                    const odds = (1.5 + Math.random() * 8).toFixed(1);
+                    const zedChange = position <= 3 ? (200 - position * 50) : -(20 + Math.random() * 60);
+                    const mmChange = position <= 3 ? (30 - position * 8) : -(5 + Math.random() * 15);
                     const track = tracks[Math.floor(Math.random() * tracks.length)];
                     const distance = distances[Math.floor(Math.random() * distances.length)];
+                    const raceDate = new Date(Date.now() - (i * 5 * 24 * 60 * 60 * 1000)); // Every 5 days
                     
-                    newRaces.push({
-                        id: `red-nova-race-${i + 1}`,
+                    // Create complete ZedSight-compatible race record
+                    const race = {
+                        // Primary identifiers
+                        id: `red-nova-race-${Date.now()}-${i}`,
                         horseId: redNova.id,
-                        position: position,
-                        finishTime: baseTime.toFixed(2),
-                        split1: split1,
-                        split2: split2,
-                        odds: odds,
-                        zedChange: zedChange.toFixed(0),
-                        ratingChange: position <= 3 ? (30 - position * 5) : -(5 + Math.random() * 10),
-                        cpuAugment: augmentOptions.cpu[Math.floor(Math.random() * augmentOptions.cpu.length)],
-                        ramAugment: augmentOptions.ram[Math.floor(Math.random() * augmentOptions.ram.length)],
-                        hydraulicAugment: augmentOptions.hydraulic[Math.floor(Math.random() * augmentOptions.hydraulic.length)],
-                        date: new Date(Date.now() - (i * 7 * 24 * 60 * 60 * 1000)).toISOString().split('T')[0],
-                        raceName: raceNames[Math.floor(Math.random() * raceNames.length)],
-                        name: raceNames[Math.floor(Math.random() * raceNames.length)],
+                        
+                        // Race details (ZedSight format)
+                        raceName: raceNames[i] || `ZED Race ${i + 1}`,
+                        race_name: raceNames[i] || `ZED Race ${i + 1}`,
+                        name: raceNames[i] || `ZED Race ${i + 1}`,
+                        
+                        // Track & conditions
                         track: track,
                         distance: distance,
-                        formattedDate: new Date(Date.now() - (i * 7 * 24 * 60 * 60 * 1000)).toLocaleDateString(),
+                        gate: Math.floor(Math.random() * 12) + 1,
+                        
+                        // Performance data
+                        position: position,
+                        finish_position: position,
+                        finishTime: split4,
+                        finish_time: split4,
+                        time: split4,
+                        
+                        // Split times (essential for ZedSight compatibility)
+                        split1: split1,
+                        split2: split2, 
+                        split3: split3,
+                        split4: split4,
+                        splits: [split1, split2, split3, split4],
+                        
+                        // Financial data
+                        odds: odds,
+                        zedChange: zedChange.toFixed(0),
+                        zed_change: zedChange.toFixed(0),
+                        ratingChange: mmChange.toFixed(0),
+                        rating_change: mmChange.toFixed(0),
+                        mmChange: mmChange.toFixed(0),
+                        
+                        // Augments (real ZED augment names)
+                        cpuAugment: augmentOptions.cpu[Math.floor(Math.random() * augmentOptions.cpu.length)],
+                        cpu_augment: augmentOptions.cpu[Math.floor(Math.random() * augmentOptions.cpu.length)],
+                        ramAugment: augmentOptions.ram[Math.floor(Math.random() * augmentOptions.ram.length)],
+                        ram_augment: augmentOptions.ram[Math.floor(Math.random() * augmentOptions.ram.length)],
+                        hydraulicAugment: augmentOptions.hydraulic[Math.floor(Math.random() * augmentOptions.hydraulic.length)],
+                        hydraulic_augment: augmentOptions.hydraulic[Math.floor(Math.random() * augmentOptions.hydraulic.length)],
+                        
+                        // Date formats
+                        date: raceDate.toISOString().split('T')[0],
+                        raceDate: raceDate.toISOString(),
+                        formattedDate: raceDate.toLocaleDateString(),
+                        
                         // ZED Champions data structure
                         performance: {
                             track: track,
@@ -590,33 +627,70 @@ Possible reasons:
                             zedChange: zedChange.toFixed(0)
                         },
                         timeData: {
-                            finishTime: baseTime.toFixed(2),
+                            finishTime: split4,
                             split1: split1,
-                            split2: split2
+                            split2: split2,
+                            split3: split3,
+                            split4: split4
                         },
                         augments: {
                             cpu: augmentOptions.cpu[Math.floor(Math.random() * augmentOptions.cpu.length)],
                             ram: augmentOptions.ram[Math.floor(Math.random() * augmentOptions.ram.length)],
                             hydraulic: augmentOptions.hydraulic[Math.floor(Math.random() * augmentOptions.hydraulic.length)]
                         }
-                    });
+                    };
+                    
+                    newRaces.push(race);
                 }
                 
-                // Add to existing races
+                // Update Red Nova with race history
+                redNova.races = newRaces;
+                redNova.total_races = newRaces.length;
+                redNova.last_race_date = newRaces[0].date;
+                
+                // Calculate performance stats
+                const wins = newRaces.filter(r => r.position === 1).length;
+                const places = newRaces.filter(r => r.position <= 2).length;
+                const shows = newRaces.filter(r => r.position <= 3).length;
+                
+                redNova.wins = wins;
+                redNova.places = places;
+                redNova.shows = shows;
+                redNova.win_percentage = (wins / newRaces.length * 100).toFixed(1);
+                redNova.avg_position = (newRaces.reduce((sum, r) => sum + r.position, 0) / newRaces.length).toFixed(1);
+                redNova.best_finish_time = Math.min(...newRaces.map(r => parseFloat(r.finishTime))).toFixed(2);
+                
+                // Update horses and races in storage
+                const updatedHorses = horses.map(h => h.id === redNova.id ? redNova : h);
                 const allRaces = [...races, ...newRaces];
+                
+                localStorage.setItem('horses', JSON.stringify(updatedHorses));
                 localStorage.setItem('races', JSON.stringify(allRaces));
                 
                 output.innerHTML = `
                     <div class="section success">
-                        <h3>✅ Red Nova Enhanced!</h3>
+                        <h3>✅ Red Nova Enhanced with ZedSight-Compatible Data!</h3>
                         <pre>
-🏇 Added ${newRaces.length} races to Red Nova's history:
-- Real race names (${raceNames.slice(0,3).join(', ')}, etc.)
-- Proper ZED augments (Crimson C, GX-Core R, etc.)
-- Realistic split times and performance data
-- Win/place/show results with ZED changes
+🏇 Added ${newRaces.length} complete race records to Red Nova:
 
-🎯 Now go back to AI Intelligence to see the full power!
+📊 Race Statistics:
+- Total Races: ${newRaces.length}
+- Wins: ${wins} (${redNova.win_percentage}%)
+- Places: ${places}, Shows: ${shows}
+- Best Time: ${redNova.best_finish_time}s
+- Avg Position: ${redNova.avg_position}
+
+📈 Data Fields Added (ZedSight Compatible):
+✅ Race Names: ${raceNames.slice(0,3).join(', ')}, etc.
+✅ Split Times: Quarter mile splits for all races
+✅ Track Data: ${tracks.join(', ')}
+✅ Distance Variety: ${distances.join(', ')}
+✅ Real Augments: Crimson, GX-Core, Void, Darklight, Midnight
+✅ ZED Changes: Win/loss financial tracking
+✅ MM Changes: Matchmaking progression
+✅ Odds: Realistic betting odds
+
+🎯 Perfect for AI Intelligence and predictive modeling!
                         </pre>
                     </div>
                 `;
