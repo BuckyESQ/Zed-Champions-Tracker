@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StableFields ZED Champions Tracker - LIVE</title>
-    <meta name="description" content="Complete ZED Champions horse tracking with Bearer Token import">
+    <meta name="description" content="Live ZED Champions horse tracking with Bearer Token import functionality">
     <link rel="icon" href="data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2303dac6' stroke-width='2'%3E%3Cpolyline points='2,14 6,8 10,10 14,4'/%3E%3C/svg%3E">
     
     <!-- External Dependencies -->
@@ -46,1339 +46,1745 @@
             overflow-x: hidden;
         }
 
-        /* Live Testing Banner */
-        .live-banner {
-            background: linear-gradient(90deg, var(--warning), var(--accent));
-            color: var(--dark);
-            text-align: center;
-            padding: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
         .app-container {
             display: flex;
-            min-height: calc(100vh - 40px);
+            min-height: 100vh;
         }
 
-        /* Copy all the CSS from FIXED-stablefields-tracker.html */
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left: 4px solid #00d4aa;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🏇 StableFields</h1>
-        <p>ZED Champions Tracker Pro</p>
-        <div class="spinner"></div>
-        <p>Redirecting to the full application...</p>
-        <a href="stablefields-tracker.html" class="redirect-link">
-            Click here if not redirected automatically
-        </a>
-    </div>
 
-    <script>
-        // Auto-redirect after 2 seconds
-        setTimeout(() => {
-            window.location.href = 'stablefields-tracker.html';
-        }, 2000);
-    </script>
-</body>
-</html>
-    
-    <style>
-        /* Theme Colors and Variables */
-        :root {
-            --primary-color: #2e86c1;
-            --secondary-color: #3498db;
-            --accent-color: #0EB3E3;
-            --background-color: #1a1a1a;
-            --text-color: #f0f0f0;
-            --muted-text: #8e9ea9;
-            --border-color: #444;
-            --success-color: #4CAF50;
-            --error-color: #F44336;
-            --warning-color: #FFC107;
-            --tab-bg: #2c3e50;
-            --tab-active-bg: #34495e;
-            --section-bg: rgba(45, 52, 54, 0.8);
-        }
-        
-        /* Base Styles */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        
-        h1, h2, h3, h4 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-        
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        /* Layout Components */
-        .section {
-            background-color: var(--section-bg);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            border: 1px solid #3a3a3a;
-        }
-        
-        .button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .button:hover {
-            background-color: var(--secondary-color);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .button:active {
-            transform: translateY(0);
-        }
-        
-        /* Tab Navigation */
-        .tab-buttons {
+        .logo {
             display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-bottom: 20px;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary);
         }
-        
-        .tab-button {
-            background-color: var(--tab-bg);
-            border: none;
-            color: var(--text-color);
-            padding: 12px 20px;
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
             cursor: pointer;
-            border-radius: 4px 4px 0 0;
-            transition: all 0.2s;
-            font-weight: 500;
-            letter-spacing: 0.5px;
         }
-        
-        .tab-button:hover {
-            background-color: var(--tab-active-bg);
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary);
+            color: var(--bg-primary);
+            transform: translateX(4px);
         }
-        
-        .tab-button.active {
-            background-color: var(--primary-color);
-            color: white;
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            background: var(--bg-primary);
         }
-        
+
         .tab-content {
             display: none;
         }
-        
+
         .tab-content.active {
             display: block;
             animation: fadeIn 0.3s ease;
         }
-        
-        /* Form Elements */
-        input, select, textarea {
-            background-color: rgba(255,255,255,0.1);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 10px 12px;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px rgba(14, 179, 227, 0.15);
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
         }
-        
-        textarea {
-            min-height: 80px;
-            resize: vertical;
+
+        .page-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--muted-text);
-            font-size: 14px;
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
         }
-        
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
-        
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            background-color: rgba(0,0,0,0.15);
-            border-radius: 4px;
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
             overflow: hidden;
         }
-        
-        th {
-            text-align: left;
-            background-color: var(--tab-bg);
-            color: var(--secondary-color);
-            padding: 12px 8px;
-            font-size: 14px;
-            font-weight: 500;
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
-        td {
-            padding: 10px 8px;
-            border-bottom: 1px solid var(--border-color);
+
+        /* Horse Cards */
+        .horses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
         }
-        
-        tbody tr:hover {
-            background-color: rgba(255,255,255,0.05);
+
+        .horse-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
-        
-        /* Welcome Banner */
-        #welcome-banner {
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(14, 179, 227, 0.1) 100%);
-            padding: 20px;
+
+        .horse-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary);
+        }
+
+        .horse-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .horse-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .horse-bloodline {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .horse-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quick-stat {
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(0, 212, 170, 0.1);
             border-radius: 8px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(46, 134, 193, 0.3);
+            border: 1px solid rgba(0, 212, 170, 0.2);
         }
-        
-        #welcome-banner h2 {
-            margin-top: 0;
+
+        .quick-stat-value {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
         }
-        
-        #welcome-banner a {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 500;
+
+        .quick-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        #welcome-banner a:hover {
-            text-decoration: underline;
+
+        /* Race History */
+        .race-history-summary {
+            background: rgba(108, 92, 231, 0.1);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
         }
-        
-        /* Import Status */
-        .import-status {
-            padding: 12px;
-            margin-top: 10px;
+
+        .race-history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .race-history-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .recent-races {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .recent-race {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .race-position {
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 0.75rem;
         }
-        
-        /* Emergency Reset */
-        #emergency-reset-btn {
+
+        .position-1 { background: #f39c12; color: white; }
+        .position-2 { background: #95a5a6; color: white; }
+        .position-3 { background: #cd7f32; color: white; }
+        .position-other { background: var(--bg-secondary); color: var(--text-secondary); }
+
+        /* Modal */
+        .modal {
+            display: none;
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 12px;
-            background-color: #ff5722;
-            color: white;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
             border: none;
-            border-radius: 4px;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
             cursor: pointer;
-            font-size: 12px;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
         }
-        
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: white;
         }
-        
-        /* Responsive Adjustments */
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .table th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 1rem 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(64, 64, 64, 0.3);
+            font-size: 0.9rem;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 212, 170, 0.05);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--border);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Filters */
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
             }
-            
-            .tab-button {
-                padding: 8px 15px;
-                font-size: 14px;
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
             }
-            
-            .form-grid {
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .horses-grid {
                 grid-template-columns: 1fr;
             }
-            
-            table {
-                font-size: 14px;
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
+
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Additional Racing Form Styles */
+        .racing-form {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .racing-form h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .augment-select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .success-message {
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid rgba(0, 184, 148, 0.3);
+            color: var(--success);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .error-message {
+            background: rgba(232, 67, 147, 0.1);
+            border: 1px solid rgba(232, 67, 147, 0.3);
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
         }
     </style>
 </head>
 <body>
-    <div id="welcome-banner" class="section">
-        <h2>Welcome to StableFields ZED Champions Tracker</h2>
-        <p>This tool helps you track your ZED Champions horses, races, breeding, and more. Get started by entering your data or importing directly from the ZED Champions API.</p>
-        <p><a href="#tab-content-import" onclick="activateTab('import'); return false;">Go to Import Tab</a> to quickly import your horses from ZED Champions.</p>
+    <!-- Live Testing Banner -->
+    <div style="background: linear-gradient(90deg, #fdcb6e, #fd79a8); color: #2d3436; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.9rem;">
+        🚀 LIVE TESTING - Bearer Token Import Functionality Active
+    </div>
+    
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-horse-head"></i>
+                StableFields
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link active" onclick="showTab('my-stable')">
+                            <i class="fas fa-home"></i> My Stable
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showTab('horse-search')">
+                            <i class="fas fa-search"></i> Horse Search
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="showTab('race-tracker')">
+                            <i class="fas fa-flag-checkered"></i> Race Tracker
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- My Stable Tab -->
+            <div id="my-stable" class="tab-content active">
+                <div class="header">
+                    <h1 class="page-title">My Stable</h1>
+                    <div>
+                        <button class="btn btn-primary" onclick="showAddHorseForm()">
+                            <i class="fas fa-plus"></i> Add Horse
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportStableData()">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stable Statistics -->
+                <div id="stable-stats" class="stats-grid" style="display: none;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-horses">0</div>
+                        <div class="stat-label">Total Horses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-races">0</div>
+                        <div class="stat-label">Total Races</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avg-rating">0</div>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-winnings">$0</div>
+                        <div class="stat-label">Total Winnings</div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div id="stable-filters" class="filters" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">Search</label>
+                        <input type="text" class="form-input" id="search-filter" placeholder="Search horses..." onkeyup="filterStable()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bloodline</label>
+                        <select class="form-input" id="bloodline-filter" onchange="filterStable()">
+                            <option value="">All Bloodlines</option>
+                            <option value="Nakamoto">Nakamoto</option>
+                            <option value="Szabo">Szabo</option>
+                            <option value="Finney">Finney</option>
+                            <option value="Buterin">Buterin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select class="form-input" id="gender-filter" onchange="filterStable()">
+                            <option value="">All Genders</option>
+                            <option value="Stallion">Stallion</option>
+                            <option value="Mare">Mare</option>
+                            <option value="Gelding">Gelding</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Generation</label>
+                        <select class="form-input" id="generation-filter" onchange="filterStable()">
+                            <option value="">All Generations</option>
+                            <option value="1">Genesis</option>
+                            <option value="2">Second</option>
+                            <option value="3">Third</option>
+                            <option value="4">Fourth</option>
+                            <option value="5+">Fifth+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Horses Grid -->
+                <div id="stable-horses-grid" class="horses-grid" style="display: none;"></div>
+
+                <!-- Empty State -->
+                <div id="empty-stable" class="empty-state">
+                    <i class="fas fa-horse-head"></i>
+                    <h3>Your stable is empty</h3>
+                    <p>Add horses to start tracking their performance and race history.</p>
+                    <button class="btn btn-primary" onclick="showAddHorseForm()" style="margin-top: 1rem;">
+                        <i class="fas fa-plus"></i> Add Your First Horse
+                    </button>
+                </div>
+            </div>
+
+            <!-- Horse Search Tab -->
+            <div id="horse-search" class="tab-content">
+                <div class="header">
+                    <h1 class="page-title">Horse Search & Import</h1>
+                </div>
+
+                <!-- Bearer Token Setup -->
+                <div class="card" style="margin-bottom: 2rem; border-left: 4px solid var(--warning);">
+                    <h3><i class="fas fa-key"></i> ZED Champions Import Setup</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Enter your Bearer Token to import real horse data from ZED Champions
+                    </p>
+                    <div class="form-group">
+                        <label class="form-label">Bearer Token</label>
+                        <input type="password" class="form-input" id="bearer-token" placeholder="Enter your ZED Champions Bearer Token">
+                        <button class="btn btn-secondary" onclick="saveBearerToken()" style="margin-top: 0.5rem;">
+                            <i class="fas fa-save"></i> Save Token
+                        </button>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 1rem;">
+                        <p><strong>How to get your Bearer Token:</strong></p>
+                        <ol>
+                            <li>Open ZED Champions in your browser</li>
+                            <li>Press F12 to open Developer Tools</li>
+                            <li>Go to Network tab</li>
+                            <li>Refresh the page</li>
+                            <li>Look for requests with "Authorization: Bearer" header</li>
+                            <li>Copy the token value (without "Bearer " prefix)</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Horse Search with Import -->
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3><i class="fas fa-search"></i> Search & Import Horses</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Search for horses and import their complete race history and breeding data
+                    </p>
+                    <div class="form-group">
+                        <label class="form-label">Horse Search</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="text" class="form-input" id="horse-search-input" placeholder="Enter horse name or ID">
+                            <button class="btn btn-primary" onclick="searchHorsesZedSight()">
+                                <i class="fas fa-search"></i> Search ZED
+                            </button>
+                            <button class="btn btn-secondary" onclick="importMyStable()">
+                                <i class="fas fa-download"></i> Import My Stable
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search Results -->
+                    <div id="search-results" style="display: none; margin-top: 2rem;">
+                        <h4>Search Results</h4>
+                        <div id="search-horses-grid" class="horses-grid"></div>
+                        <div style="margin-top: 1rem; display: none;" id="import-controls">
+                            <button class="btn btn-primary" onclick="importSelectedHorses()" id="import-btn">
+                                <i class="fas fa-plus"></i> Import Selected Horses
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Manual Horse Entry</h3>
+                    <p>Enter horse details manually to add to your stable.</p>
+                    
+                    <form id="manual-horse-form" class="form-grid" style="margin-top: 2rem;">
+                        <div class="form-group">
+                            <label class="form-label">Horse Name</label>
+                            <input type="text" class="form-input" id="manual-horse-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Horse ID</label>
+                            <input type="text" class="form-input" id="manual-horse-id" placeholder="Optional unique identifier">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bloodline</label>
+                            <select class="form-input" id="manual-bloodline" required>
+                                <option value="">Select Bloodline</option>
+                                <option value="Nakamoto">Nakamoto</option>
+                                <option value="Szabo">Szabo</option>
+                                <option value="Finney">Finney</option>
+                                <option value="Buterin">Buterin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Gender</label>
+                            <select class="form-input" id="manual-gender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Stallion">Stallion</option>
+                                <option value="Mare">Mare</option>
+                                <option value="Gelding">Gelding</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Generation</label>
+                            <input type="number" class="form-input" id="manual-generation" min="1" max="20" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Overall Stars</label>
+                            <input type="number" class="form-input" id="manual-overall-stars" step="0.1" min="0" max="5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Speed Rating</label>
+                            <input type="number" class="form-input" id="manual-speed-rating" step="0.1" min="0" max="5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sprint Rating</label>
+                            <input type="number" class="form-input" id="manual-sprint-rating" step="0.1" min="0" max="5">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Endurance Rating</label>
+                            <input type="number" class="form-input" id="manual-endurance-rating" step="0.1" min="0" max="5">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add to Stable
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Race Tracker Tab -->
+            <div id="race-tracker" class="tab-content">
+                <div class="header">
+                    <h1 class="page-title">Race Tracker</h1>
+                </div>
+
+                <div class="racing-form">
+                    <h3>Record Race Result</h3>
+                    
+                    <form id="race-form" class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Select Horse</label>
+                            <select class="form-input" id="race-horse-select" required>
+                                <option value="">Select a horse from your stable</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Race Name</label>
+                            <input type="text" class="form-input" id="race-name" placeholder="Optional race name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Race Date</label>
+                            <input type="date" class="form-input" id="race-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Track</label>
+                            <input type="text" class="form-input" id="race-track" placeholder="Track name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Distance</label>
+                            <select class="form-input" id="race-distance">
+                                <option value="">Select Distance</option>
+                                <option value="1000m">1000m</option>
+                                <option value="1200m">1200m</option>
+                                <option value="1400m">1400m</option>
+                                <option value="1600m">1600m</option>
+                                <option value="1800m">1800m</option>
+                                <option value="2000m">2000m</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Position</label>
+                            <input type="number" class="form-input" id="race-position" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Split 1 (0-250m)</label>
+                            <input type="number" class="form-input" id="race-split1" step="0.01" placeholder="Seconds">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Split 2 (250-500m)</label>
+                            <input type="number" class="form-input" id="race-split2" step="0.01" placeholder="Seconds">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Split 3 (500-750m)</label>
+                            <input type="number" class="form-input" id="race-split3" step="0.01" placeholder="Seconds">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Split 4 (750-1000m)</label>
+                            <input type="number" class="form-input" id="race-split4" step="0.01" placeholder="Seconds">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Finish Time</label>
+                            <input type="number" class="form-input" id="race-finish-time" step="0.01" placeholder="Total seconds">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Odds</label>
+                            <input type="number" class="form-input" id="race-odds" step="0.1" min="1.0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ZED Won/Lost</label>
+                            <input type="number" class="form-input" id="race-zed-change" step="1" placeholder="e.g., 1200, -350">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">MM Change</label>
+                            <input type="number" class="form-input" id="race-mm-change" step="1" placeholder="e.g., 15, -8">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">CPU Augment</label>
+                            <select class="augment-select" id="race-cpu-augment">
+                                <option value="None">None</option>
+                                <option value="Crimson C">Crimson C</option>
+                                <option value="GX-Core C">GX-Core C</option>
+                                <option value="Void C100">Void C100</option>
+                                <option value="Darklight 100C">Darklight 100C</option>
+                                <option value="Midnight C">Midnight C</option>
+                                <option value="Azure C">Azure C</option>
+                                <option value="Phoenix C">Phoenix C</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">RAM Augment</label>
+                            <select class="augment-select" id="race-ram-augment">
+                                <option value="None">None</option>
+                                <option value="Crimson R">Crimson R</option>
+                                <option value="GX-Core R">GX-Core R</option>
+                                <option value="Void R100">Void R100</option>
+                                <option value="Darklight R">Darklight R</option>
+                                <option value="Midnight 100R">Midnight 100R</option>
+                                <option value="Azure R">Azure R</option>
+                                <option value="Phoenix R">Phoenix R</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hydraulic Augment</label>
+                            <select class="augment-select" id="race-hydraulic-augment">
+                                <option value="None">None</option>
+                                <option value="Crimson H">Crimson H</option>
+                                <option value="GX-Core H">GX-Core H</option>
+                                <option value="Void H100">Void H100</option>
+                                <option value="Darklight 100H">Darklight 100H</option>
+                                <option value="Midnight H">Midnight H</option>
+                                <option value="Azure H">Azure H</option>
+                                <option value="Phoenix H">Phoenix H</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-flag-checkered"></i> Record Race
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recent Races -->
+                <div class="card" style="margin-top: 2rem;">
+                    <h3>Recent Races</h3>
+                    <div id="recent-races-container">
+                        <p class="text-secondary">No races recorded yet.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <h1>ZED Champions Tracker</h1>
-    
-    <div id="tab-buttons" class="tab-buttons">
-        <button class="tab-button" data-tab="racing">Racing</button>
-        <button class="tab-button" data-tab="breeding">Breeding</button>
-        <button class="tab-button" data-tab="transactions">Transactions</button>
-        <button class="tab-button" data-tab="import">Import</button>
-        <button class="tab-button" data-tab="races">Races</button> <!-- New Races tab -->
-    </div>
-    
-    <div id="tab-content">
-        <!-- Racing Tab Content -->
-        <div id="tab-content-racing" class="tab-content">
-            <div class="section">
-                <h2>Racing Horses</h2>
-                <p>Manage your racing horses and track their performance.</p>
-                
-                <table id="horses-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Bloodline</th>
-                            <th>Gender</th>
-                            <th>Rating ⭐</th>
-                            <th>ID</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="horses-table-body">
-                        <!-- Racing horses will be displayed here -->
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                                No racing horses found. Import horses from the Import tab.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <!-- Horse Details Modal -->
+    <div id="horse-details-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-horse-name">Horse Details</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-        </div>
-        
-        <!-- Breeding Tab Content -->
-        <div id="tab-content-breeding" class="tab-content">
-            <div class="section">
-                <h2>Breeding Horses</h2>
-                <p>Manage your breeding horses and track breeding operations.</p>
-                
-                <table id="breeding-horses-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Bloodline</th>
-                            <th>Gender</th>
-                            <th>Rating ⭐</th>
-                            <th>ID</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="breeding-horses-table-body">
-                        <!-- Breeding horses will be displayed here -->
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                                No breeding horses found. Import horses from the Import tab.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div id="horse-details-content">
+                <!-- Horse details will be populated here -->
             </div>
-        </div>
-        
-        <!-- Transactions Tab Content -->
-        <div id="tab-content-transactions" class="tab-content">
-            <div class="section">
-                <h2>Transactions</h2>
-                <p>Track your financial transactions related to horses.</p>
-                
-                <table id="transactions-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Horse</th>
-                            <th>Amount</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactions-table-body">
-                        <!-- Transactions will be displayed here -->
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: var(--muted-text);">
-                                No transactions recorded yet.
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Import Tab Content -->
-        <div id="tab-content-import" class="tab-content">
-            <div id="api-import-container" class="section">
-                <h2>ZED Champions API Authentication</h2>
-                <p>Enter your API token to import horses directly from ZED Champions.</p>
-                
-                <div style="margin-top: 15px;">
-                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
-                        <textarea id="zed-api-token" placeholder="Enter your ZED Champions API Bearer token" 
-                            style="height: 60px; padding: 10px;"></textarea>
-                        <button id="save-api-token-btn" class="button">Save Token</button>
-                    </div>
-                    
-                    <div style="display: flex; gap: 10px; margin-top: 15px; align-items: center;">
-                        <button id="test-api-connection-btn" class="button">Test Connection</button>
-                        <div id="test-api-connection-status" style="flex: 1;"></div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                    <h3>Import Horses</h3>
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button id="import-racing-stable-btn" class="button">Import Racing Stable</button>
-                        <button id="import-breeding-stable-btn" class="button">Import Breeding Stable</button>
-                    </div>
-                    <div id="import-status" class="import-status"></div>
-                    
-                    <h4>Import Single Horse</h4>
-                    <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
-                        <div>
-                            <label for="zed-horse-id">Horse ID or URL:</label>
-                            <input type="text" id="zed-horse-id" placeholder="Enter horse ID or full URL from ZED Champions">
-                            <p style="margin-top: 5px; font-size: 12px; color: #8e9ea9;">
-                                Example formats:
-                                <br>- Full URL: https://app.zedchampions.com/horse/96b9b9c8-45a5-4cf7-bb9f-3812e6bf59ad
-                                <br>- ID only: 96b9b9c8-45a5-4cf7-bb9f-3812e6bf59ad
-                            </p>
-                        </div>
-                        <div style="display: flex; gap: 10px; align-items: flex-end;">
-                            <div>
-                                <label for="import-horse-type">Import As:</label>
-                                <select id="import-horse-type">
-                                    <option value="racing">Racing Horse</option>
-                                    <option value="breeding">Breeding Horse</option>
-                                </select>
-                            </div>
-                            <button id="import-single-horse-btn" class="button">Import Horse</button>
-                            <button id="import-horse-with-races-btn" class="button">Import Horse + Race History</button>
-                        </div>
-                        <div id="single-import-status" class="import-status"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                <h3>Debug Tools</h3>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button id="debug-check-token" class="button">Check Token</button>
-                    <button id="debug-test-api" class="button">Test API</button>
-                    <button id="debug-log-storage" class="button">Log Storage</button>
-                </div>
-                <div id="debug-output" class="import-status" style="background-color: #2c3e50; font-family: monospace; white-space: pre-wrap;"></div>
-            </div>
-        </div>
-        
-        <!-- Races Tab Content - New Section -->
-        <div id="tab-content-races" class="tab-content">
-            <div class="section">
-                <h2>Race History</h2>
-                <p>View detailed race history for selected horse.</p>
-                
-                <div id="horse-selector" class="form-grid">
-                  <div>
-                    <label for="race-history-horse">Select Horse:</label>
-                    <select id="race-history-horse">
-                      <option value="">-- Select Horse --</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <table id="race-history-table">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Position</th>
-                      <th>Time</th>
-                      <th>Distance</th>
-                      <th>Class</th>
-                      <th>Prize</th>
-                    </tr>
-                  </thead>
-                  <tbody id="race-history-table-body">
-                    <tr>
-                      <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                        Select a horse to view race history.
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-        </div>
-
-        <!-- Augments Tab Content - New Section -->
-        <div id="tab-content-augments" class="tab-content">
-          <div class="section">
-            <h2>Augment Performance</h2>
-            <p>View and analyze augment combinations and their performance.</p>
-            
-            <div id="horse-selector" class="form-grid">
-              <div>
-                <label for="augment-horse">Select Horse:</label>
-                <select id="augment-horse">
-                  <option value="">-- Select Horse --</option>
-                </select>
-              </div>
-            </div>
-            
-            <div id="augment-chart-container" style="height: 400px; margin-top: 20px;">
-              <canvas id="augment-chart"></canvas>
-            </div>
-            
-            <table id="augment-combinations-table" style="margin-top: 20px;">
-              <thead>
-                <tr>
-                  <th>CPU Slot</th>
-                  <th>RAM Slot</th>
-                  <th>Hydraulic Slot</th>
-                  <th>Avg Position</th>
-                  <th>Win %</th>
-                  <th>Races</th>
-                </tr>
-              </thead>
-              <tbody id="augment-combinations-tbody">
-                <tr>
-                  <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                    Select a horse to view augment combinations.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
     </div>
-    
-    <!-- Emergency reset button -->
-    <button id="emergency-reset-btn">
-        Reset App Data
-    </button>
-    
-    <!-- Script References -->
-    <script src="app.js"></script>
 
     <script>
-        // Emergency reset functionality
-        document.getElementById('emergency-reset-btn').addEventListener('click', function() {
-            if (confirm('This will reset ALL application data. Continue?')) {
-                localStorage.clear();
-                window.location.reload();
-            }
-        });
+        // Global Variables
+        let horses = [];
+        let races = [];
         
-        // Table rendering
+        // Initialize App
         document.addEventListener('DOMContentLoaded', function() {
-            // Render racing horses table
-            function renderRacingHorses() {
-                const tbody = document.getElementById('horses-table-body');
-                if (!tbody) return;
-                
-                const horses = window.horses || [];
-                
-                if (horses.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                                No racing horses found. Import horses from the Import tab.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                // Sort horses by name
-                const sortedHorses = [...horses].sort((a, b) => a.name.localeCompare(b.name));
-                
-                tbody.innerHTML = '';
-                sortedHorses.forEach(horse => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${horse.name}</td>
-                        <td>${horse.bloodline || 'Unknown'}</td>
-                        <td>${horse.gender || 'Unknown'}</td>
-                        <td>${horse.stars || '0'} ⭐</td>
-                        <td>${horse.zedId || 'N/A'}</td>
-                        <td>
-                            <button class="button" onclick="alert('View details for ${horse.name}')">View</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-            
-            // Render breeding horses table
-            function renderBreedingHorses() {
-                const tbody = document.getElementById('breeding-horses-table-body');
-                if (!tbody) return;
-                
-                const horses = window.breedingHorses || [];
-                
-                if (horses.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                                No breeding horses found. Import horses from the Import tab.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                // Sort horses by name
-                const sortedHorses = [...horses].sort((a, b) => a.name.localeCompare(b.name));
-                
-                tbody.innerHTML = '';
-                sortedHorses.forEach(horse => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${horse.name}</td>
-                        <td>${horse.bloodline || 'Unknown'}</td>
-                        <td>${horse.gender || 'Unknown'}</td>
-                        <td>${horse.stars || '0'} ⭐</td>
-                        <td>${horse.zedId || 'N/A'}</td>
-                        <td>
-                            <button class="button" onclick="alert('View details for ${horse.name}')">View</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-            
-            // Render transactions table
-            function renderTransactions() {
-                const tbody = document.getElementById('transactions-table-body');
-                if (!tbody) return;
-                
-                const transactions = window.transactions || [];
-                
-                if (transactions.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: var(--muted-text);">
-                                No transactions recorded yet.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-                
-                // Sort transactions by date (newest first)
-                const sortedTransactions = [...transactions].sort((a, b) => 
-                    new Date(b.date) - new Date(a.date));
-                
-                tbody.innerHTML = '';
-                sortedTransactions.forEach(transaction => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${new Date(transaction.date).toLocaleDateString()}</td>
-                        <td>${transaction.type}</td>
-                        <td>${transaction.horseName || 'N/A'}</td>
-                        <td>$${transaction.amount.toFixed(2)}</td>
-                        <td>
-                            <button class="button" onclick="alert('Edit transaction')">Edit</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-            
-            // Render race history table
-            function renderRaceHistory() {
-                const tbody = document.getElementById('race-history-table-body');
-                const horseSelect = document.getElementById('race-history-horse');
-                if (!tbody || !horseSelect) return;
-                
-                const horseId = horseSelect.value;
-                const raceHistory = window.raceHistories ? window.raceHistories[horseId] : [];
-                
-                if (raceHistory && raceHistory.length > 0) {
-                    // Sort race history by date (newest first)
-                    raceHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
-                }
-                
-                tbody.innerHTML = '';
-                if (raceHistory.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                                No race history found for this horse.
-                            </td>
-                        </tr>
-                    `;
-                } else {
-                    raceHistory.forEach(race => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${new Date(race.date).toLocaleDateString()}</td>
-                            <td>${race.position || 'N/A'}</td>
-                            <td>${race.time || 'N/A'}</td>
-                            <td>${race.distance || 'N/A'}</td>
-                            <td>${race.class || 'N/A'}</td>
-                            <td>$${race.prize ? race.prize.toFixed(2) : 'N/A'}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                }
-            }
-            
-            // Render augment data
-            function renderAugmentData() {
-                const horseSelect = document.getElementById('augment-horse');
-                const horseId = horseSelect.value;
-                
-                if (!horseId) return;
-                
-                // Find the horse
-                const allHorses = [...(window.horses || []), ...(window.breedingHorses || [])];
-                const horse = allHorses.find(h => h.id === horseId);
-                
-                if (!horse || !horse.races || horse.races.length === 0) {
-                  document.getElementById('augment-combinations-tbody').innerHTML = `
-                    <tr>
-                      <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                        No race history with augment data found for this horse.
-                      </td>
-                    </tr>
-                  `;
-                  
-                  // Destroy existing chart
-                  const existingChart = Chart.getChart('augment-chart');
-                  if (existingChart) {
-                    existingChart.destroy();
-                  }
-                  
-                  return;
-                }
-                
-                // Process augment combinations
-                const combinations = processAugmentCombinations(horse.races);
-                
-                // Render the table
-                renderAugmentTable(combinations);
-                
-                // Render the chart
-                renderAugmentChart(combinations);
-              }
-              
-              // Function to process augment combinations
-              function processAugmentCombinations(races) {
-                // Group races by augment combination
-                const combinationMap = {};
-                
-                races.forEach(race => {
-                  if (!race.augments) return;
-                  
-                  // Create key from augments
-                  const cpuAugment = race.augments[0] || '-';
-                  const ramAugment = race.augments[1] || '-';
-                  const hydraulicAugment = race.augments[2] || '-';
-                  const key = `${cpuAugment}|${ramAugment}|${hydraulicAugment}`;
-                  
-                  if (!combinationMap[key]) {
-                    combinationMap[key] = {
-                      cpu: cpuAugment,
-                      ram: ramAugment,
-                      hydraulic: hydraulicAugment,
-                      positions: [],
-                      races: 0,
-                      wins: 0
-                    };
-                  }
-                  
-                  combinationMap[key].positions.push(parseInt(race.position));
-                  combinationMap[key].races++;
-                  if (parseInt(race.position) === 1) {
-                    combinationMap[key].wins++;
-                  }
-                });
-                
-                // Calculate averages and convert to array
-                return Object.values(combinationMap).map(combo => {
-                  const avgPosition = combo.positions.reduce((sum, pos) => sum + pos, 0) / combo.positions.length;
-                  const winPercentage = (combo.wins / combo.races) * 100;
-                  
-                  return {
-                    ...combo,
-                    avgPosition: avgPosition.toFixed(2),
-                    winPercentage: winPercentage.toFixed(1)
-                  };
-                }).sort((a, b) => a.avgPosition - b.avgPosition);
-              }
-              
-              // Function to render the augment table
-              function renderAugmentTable(combinations) {
-                const tbody = document.getElementById('augment-combinations-tbody');
-                if (!tbody) return;
-                
-                if (combinations.length === 0) {
-                  tbody.innerHTML = `
-                    <tr>
-                      <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                        No augment combinations found.
-                      </td>
-                    </tr>
-                  `;
-                  return;
-                }
-                
-                tbody.innerHTML = '';
-                combinations.forEach(combo => {
-                  const row = document.createElement('tr');
-                  
-                  // Determine CSS classes for augments
-                  const getCssClass = (augment) => {
-                    if (!augment || augment === '-') return 'augment-empty';
-                    if (augment.includes('GX')) return 'augment-gx';
-                    if (augment.includes('Crimson')) return 'augment-crimson';
-                    if (augment.includes('Midnight')) return 'augment-midnight';
-                    if (augment.includes('Darklight')) return 'augment-darklight';
-                    if (augment.includes('Void')) return 'augment-void';
-                    return '';
-                  };
-                  
-                  row.innerHTML = `
-                    <td><span class="${getCssClass(combo.cpu)}">${combo.cpu}</span></td>
-                    <td><span class="${getCssClass(combo.ram)}">${combo.ram}</span></td>
-                    <td><span class="${getCssClass(combo.hydraulic)}">${combo.hydraulic}</span></td>
-                    <td>${combo.avgPosition}</td>
-                    <td>${combo.winPercentage}%</td>
-                    <td>${combo.races}</td>
-                  `;
-                  
-                  tbody.appendChild(row);
-                });
-              }
-              
-              // Function to render the augment chart
-              function renderAugmentChart(combinations) {
-                // Destroy existing chart
-                const existingChart = Chart.getChart('augment-chart');
-                if (existingChart) {
-                  existingChart.destroy();
-                }
-                
-                if (combinations.length === 0) return;
-                
-                // Prepare chart data
-                const chartData = {
-                  labels: combinations.map(c => {
-                    let label = '';
-                    if (c.cpu && c.cpu !== '-') label += c.cpu;
-                    if (c.ram && c.ram !== '-') label += label ? ` + ${c.ram}` : c.ram;
-                    if (c.hydraulic && c.hydraulic !== '-') label += label ? ` + ${c.hydraulic}` : c.hydraulic;
-                    return label || 'No Augments';
-                  }),
-                  datasets: [
-                    {
-                      label: 'Average Position',
-                      data: combinations.map(c => parseFloat(c.avgPosition)),
-                      backgroundColor: combinations.map(c => {
-                        // Lower (better) positions get greener colors
-                        const avgPos = parseFloat(c.avgPosition);
-                        if (avgPos <= 2) return 'rgba(76, 175, 80, 0.8)'; // Green
-                        if (avgPos <= 3) return 'rgba(139, 195, 74, 0.8)'; // Light green
-                        if (avgPos <= 4) return 'rgba(255, 235, 59, 0.8)'; // Yellow
-                        if (avgPos <= 5) return 'rgba(255, 152, 0, 0.8)'; // Orange
-                        return 'rgba(244, 67, 54, 0.8)'; // Red
-                      }),
-                      borderWidth: 1
-                    },
-                    {
-                      label: 'Races',
-                      data: combinations.map(c => c.races),
-                      type: 'line',
-                      fill: false,
-                      borderColor: 'rgba(54, 162, 235, 1)',
-                      tension: 0.1,
-                      yAxisID: 'y1'
-                    }
-                  ]
-                };
-                
-                // Create the chart
-                const ctx = document.getElementById('augment-chart').getContext('2d');
-                new Chart(ctx, {
-                  type: 'bar',
-                  data: chartData,
-                  options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y', // Horizontal bar chart
-                    scales: {
-                      y: {
-                        beginAtZero: false
-                      },
-                      y1: {
-                        position: 'right',
-                        grid: {
-                          drawOnChartArea: false
-                        }
-                      }
-                    },
-                    plugins: {
-                      tooltip: {
-                        callbacks: {
-                          label: function(context) {
-                            const datasetLabel = context.dataset.label || '';
-                            const value = context.raw;
-                            if (datasetLabel === 'Average Position') {
-                              return `Avg Position: ${value}`;
-                            } else if (datasetLabel === 'Races') {
-                              return `Races: ${value}`;
-                            }
-                            return `${datasetLabel}: ${value}`;
-                          }
-                        }
-                      }
-                    }
-                  }
-                });
-              }
+            loadData();
+            updateRaceHorseSelect();
+            loadStable();
         });
-        
-        document.getElementById('debug-check-token').addEventListener('click', function() {
-            const token = localStorage.getItem('zedAuthToken');
-            const output = document.getElementById('debug-output');
+
+        // Data Management
+        function loadData() {
+            horses = JSON.parse(localStorage.getItem('horses') || '[]');
+            races = JSON.parse(localStorage.getItem('races') || '[]');
+            console.log(`Loaded ${horses.length} horses and ${races.length} races`);
+        }
+
+        function saveData() {
+            localStorage.setItem('horses', JSON.stringify(horses));
+            localStorage.setItem('races', JSON.stringify(races));
+        }
+
+        // Navigation
+        function showTab(tabId) {
+            // Remove active from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
             
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active to clicked nav link
+            event.target.classList.add('active');
+        }
+
+        // Horse Management
+        function addHorseManually(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const horseData = {
+                id: formData.get('horse-id') || generateHorseId(),
+                name: formData.get('horse-name'),
+                bloodline: formData.get('bloodline'),
+                gender: formData.get('gender'),
+                generation: parseInt(formData.get('generation')),
+                overall_stars: parseFloat(formData.get('overall-stars')) || 0,
+                speed_rating: parseFloat(formData.get('speed-rating')) || 0,
+                sprint_rating: parseFloat(formData.get('sprint-rating')) || 0,
+                endurance_rating: parseFloat(formData.get('endurance-rating')) || 0,
+                dateAdded: new Date().toISOString(),
+                races: [],
+                total_races: 0,
+                wins: 0,
+                win_percentage: 0
+            };
+
+            // Check for duplicates
+            if (horses.find(h => h.id === horseData.id)) {
+                showMessage('Horse with this ID already exists!', 'error');
+                return;
+            }
+
+            horses.push(horseData);
+            saveData();
+            event.target.reset();
+            loadStable();
+            updateRaceHorseSelect();
+            showMessage('Horse added successfully!', 'success');
+        }
+
+        function generateHorseId() {
+            return 'horse-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Manual Horse Form Setup
+        document.getElementById('manual-horse-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const horseData = {
+                id: document.getElementById('manual-horse-id').value || generateHorseId(),
+                name: document.getElementById('manual-horse-name').value,
+                bloodline: document.getElementById('manual-bloodline').value,
+                gender: document.getElementById('manual-gender').value,
+                generation: parseInt(document.getElementById('manual-generation').value),
+                overall_stars: parseFloat(document.getElementById('manual-overall-stars').value) || 0,
+                speed_rating: parseFloat(document.getElementById('manual-speed-rating').value) || 0,
+                sprint_rating: parseFloat(document.getElementById('manual-sprint-rating').value) || 0,
+                endurance_rating: parseFloat(document.getElementById('manual-endurance-rating').value) || 0,
+                dateAdded: new Date().toISOString(),
+                races: [],
+                total_races: 0,
+                wins: 0,
+                win_percentage: 0
+            };
+
+            // Check for duplicates
+            if (horses.find(h => h.id === horseData.id)) {
+                showMessage('Horse with this ID already exists!', 'error');
+                return;
+            }
+
+            horses.push(horseData);
+            saveData();
+            this.reset();
+            loadStable();
+            updateRaceHorseSelect();
+            showMessage('Horse added successfully!', 'success');
+        });
+
+        // Stable Management
+        function loadStable() {
+            updateStableStats();
+            displayStableHorses(horses);
+            
+            const stableCount = document.getElementById('stable-count');
+            if (stableCount) {
+                stableCount.textContent = horses.length;
+            }
+
+            // Show/hide sections based on horse count
+            const emptyState = document.getElementById('empty-stable');
+            const stableStats = document.getElementById('stable-stats');
+            const stableFilters = document.getElementById('stable-filters');
+            const horsesGrid = document.getElementById('stable-horses-grid');
+
+            if (horses.length === 0) {
+                emptyState.style.display = 'block';
+                stableStats.style.display = 'none';
+                stableFilters.style.display = 'none';
+                horsesGrid.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                stableStats.style.display = 'grid';
+                stableFilters.style.display = 'grid';
+                horsesGrid.style.display = 'grid';
+            }
+        }
+
+        function updateStableStats() {
+            const totalHorses = horses.length;
+            const totalRaces = horses.reduce((sum, h) => sum + (h.total_races || 0), 0);
+            const avgRating = totalHorses > 0 ? 
+                (horses.reduce((sum, h) => sum + (h.speed_rating || 0), 0) / totalHorses).toFixed(1) : 0;
+            const totalWinnings = races.reduce((sum, r) => sum + (r.zedChange || 0), 0);
+
+            document.getElementById('total-horses').textContent = totalHorses;
+            document.getElementById('total-races').textContent = totalRaces;
+            document.getElementById('avg-rating').textContent = avgRating;
+            document.getElementById('total-winnings').textContent = `$${totalWinnings.toLocaleString()}`;
+        }
+
+        function displayStableHorses(horsesToShow) {
+            const horsesGrid = document.getElementById('stable-horses-grid');
+            if (!horsesGrid) return;
+
+            horsesGrid.innerHTML = horsesToShow.map(horse => createHorseCard(horse)).join('');
+        }
+
+        function createHorseCard(horse) {
+            const horseRaces = races.filter(r => r.horseId === horse.id) || horse.races || [];
+            const recentRaces = horseRaces.slice(0, 3);
+            const wins = horseRaces.filter(r => r.position === 1).length;
+            const winPercentage = horseRaces.length > 0 ? ((wins / horseRaces.length) * 100).toFixed(1) : 0;
+
+            return `
+                <div class="horse-card">
+                    <div class="horse-header">
+                        <div>
+                            <div class="horse-name">${horse.name}</div>
+                            <div class="horse-bloodline">
+                                <i class="fas fa-certificate"></i>
+                                ${horse.bloodline} • Gen ${horse.generation} • ${horse.gender}
+                            </div>
+                        </div>
+                        <div class="horse-actions">
+                            <button class="btn btn-secondary" onclick="viewHorseDetails('${horse.id}')" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-danger" onclick="removeHorse('${horse.id}')" title="Remove Horse">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="quick-stats">
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.overall_stars || horse.speed_rating || 'N/A'}</span>
+                            <div class="quick-stat-label">Overall</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.speed_rating || 'N/A'}</span>
+                            <div class="quick-stat-label">Speed</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.sprint_rating || 'N/A'}</span>
+                            <div class="quick-stat-label">Sprint</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.endurance_rating || 'N/A'}</span>
+                            <div class="quick-stat-label">Endurance</div>
+                        </div>
+                    </div>
+
+                    <div class="race-history-summary">
+                        <div class="race-history-header">
+                            <span class="race-history-title">Race History</span>
+                            <span style="color: var(--text-secondary); font-size: 0.85rem;">
+                                ${horseRaces.length} races • ${winPercentage}% win rate
+                            </span>
+                        </div>
+                        
+                        ${recentRaces.length > 0 ? `
+                            <div class="recent-races">
+                                ${recentRaces.map(race => `
+                                    <div class="recent-race">
+                                        <span>${race.raceName || race.name || 'Unknown Race'}</span>
+                                        <span class="race-position position-${race.position <= 3 ? race.position : 'other'}">
+                                            ${getPositionText(race.position)}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+                                No race history available
+                            </p>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getPositionText(position) {
+            if (position === 1) return '1st';
+            if (position === 2) return '2nd';
+            if (position === 3) return '3rd';
+            return `${position}th`;
+        }
+
+        // Horse Details Modal
+        function viewHorseDetails(horseId) {
+            const horse = horses.find(h => h.id === horseId);
+            if (!horse) return;
+
+            const horseRaces = races.filter(r => r.horseId === horseId) || horse.races || [];
+            
+            document.getElementById('modal-horse-name').textContent = horse.name;
+            
+            const content = document.getElementById('horse-details-content');
+            content.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                    <div class="card">
+                        <h3>Basic Information</h3>
+                        <p><strong>Name:</strong> ${horse.name}</p>
+                        <p><strong>Bloodline:</strong> ${horse.bloodline}</p>
+                        <p><strong>Gender:</strong> ${horse.gender}</p>
+                        <p><strong>Generation:</strong> ${horse.generation}</p>
+                        <p><strong>Date Added:</strong> ${new Date(horse.dateAdded).toLocaleDateString()}</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Ratings</h3>
+                        <p><strong>Overall Stars:</strong> ${horse.overall_stars || 'N/A'}</p>
+                        <p><strong>Speed Rating:</strong> ${horse.speed_rating || 'N/A'}</p>
+                        <p><strong>Sprint Rating:</strong> ${horse.sprint_rating || 'N/A'}</p>
+                        <p><strong>Endurance Rating:</strong> ${horse.endurance_rating || 'N/A'}</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Race History (${horseRaces.length} races)</h3>
+                    ${horseRaces.length > 0 ? `
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Race Name</th>
+                                    <th>Track</th>
+                                    <th>Distance</th>
+                                    <th>Position</th>
+                                    <th>Time</th>
+                                    <th>Split 1</th>
+                                    <th>Split 2</th>
+                                    <th>Split 3</th>
+                                    <th>Split 4</th>
+                                    <th>Odds</th>
+                                    <th>ZED +/-</th>
+                                    <th>MM +/-</th>
+                                    <th>Augments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${horseRaces.map(race => `
+                                    <tr>
+                                        <td>${race.date ? new Date(race.date).toLocaleDateString() : 'N/A'}</td>
+                                        <td>${race.raceName || race.name || 'Unknown'}</td>
+                                        <td>${race.track || 'N/A'}</td>
+                                        <td>${race.distance || 'N/A'}</td>
+                                        <td>
+                                            <span class="race-position position-${race.position <= 3 ? race.position : 'other'}">
+                                                ${getPositionText(race.position)}
+                                            </span>
+                                        </td>
+                                        <td>${race.finishTime || race.finish_time || race.time || 'N/A'}</td>
+                                        <td>${race.split1 || 'N/A'}</td>
+                                        <td>${race.split2 || 'N/A'}</td>
+                                        <td>${race.split3 || 'N/A'}</td>
+                                        <td>${race.split4 || 'N/A'}</td>
+                                        <td>${race.odds || 'N/A'}</td>
+                                        <td style="color: ${(race.zedChange || 0) >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                                            ${race.zedChange || race.zed_change || 'N/A'}
+                                        </td>
+                                        <td style="color: ${(race.ratingChange || race.mmChange || 0) >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                                            ${race.ratingChange || race.mmChange || race.rating_change || 'N/A'}
+                                        </td>
+                                        <td>
+                                            <div style="font-size: 0.8rem;">
+                                                C: ${race.cpuAugment || race.cpu_augment || 'None'}<br>
+                                                R: ${race.ramAugment || race.ram_augment || 'None'}<br>
+                                                H: ${race.hydraulicAugment || race.hydraulic_augment || 'None'}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    ` : `
+                        <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                            No race history available for this horse.
+                        </p>
+                    `}
+                </div>
+            `;
+
+            document.getElementById('horse-details-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('horse-details-modal').classList.remove('active');
+        }
+
+        // Remove Horse
+        function removeHorse(horseId) {
+            if (confirm('Are you sure you want to remove this horse from your stable?')) {
+                horses = horses.filter(h => h.id !== horseId);
+                races = races.filter(r => r.horseId !== horseId);
+                saveData();
+                loadStable();
+                updateRaceHorseSelect();
+                showMessage('Horse removed successfully!', 'success');
+            }
+        }
+
+        // Race Management
+        function updateRaceHorseSelect() {
+            const select = document.getElementById('race-horse-select');
+            if (!select) return;
+
+            select.innerHTML = '<option value="">Select a horse from your stable</option>' +
+                horses.map(horse => `<option value="${horse.id}">${horse.name}</option>`).join('');
+        }
+
+        // Race Form Setup
+        document.getElementById('race-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const raceData = {
+                id: 'race-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+                horseId: document.getElementById('race-horse-select').value,
+                raceName: document.getElementById('race-name').value || 'Untitled Race',
+                date: document.getElementById('race-date').value,
+                track: document.getElementById('race-track').value,
+                distance: document.getElementById('race-distance').value,
+                position: parseInt(document.getElementById('race-position').value),
+                split1: parseFloat(document.getElementById('race-split1').value) || null,
+                split2: parseFloat(document.getElementById('race-split2').value) || null,
+                split3: parseFloat(document.getElementById('race-split3').value) || null,
+                split4: parseFloat(document.getElementById('race-split4').value) || null,
+                finishTime: parseFloat(document.getElementById('race-finish-time').value) || null,
+                odds: parseFloat(document.getElementById('race-odds').value) || null,
+                zedChange: parseInt(document.getElementById('race-zed-change').value) || 0,
+                ratingChange: parseInt(document.getElementById('race-mm-change').value) || 0,
+                cpuAugment: document.getElementById('race-cpu-augment').value,
+                ramAugment: document.getElementById('race-ram-augment').value,
+                hydraulicAugment: document.getElementById('race-hydraulic-augment').value
+            };
+
+            // Add race to races array
+            races.push(raceData);
+
+            // Update horse statistics
+            const horse = horses.find(h => h.id === raceData.horseId);
+            if (horse) {
+                if (!horse.races) horse.races = [];
+                horse.races.unshift(raceData);
+                
+                const horseRaces = races.filter(r => r.horseId === horse.id);
+                horse.total_races = horseRaces.length;
+                horse.wins = horseRaces.filter(r => r.position === 1).length;
+                horse.win_percentage = horse.total_races > 0 ? (horse.wins / horse.total_races * 100) : 0;
+            }
+
+            saveData();
+            this.reset();
+            loadStable();
+            showMessage('Race recorded successfully!', 'success');
+        });
+
+        // Filtering
+        function filterStable() {
+            const searchTerm = document.getElementById('search-filter').value.toLowerCase();
+            const bloodlineFilter = document.getElementById('bloodline-filter').value;
+            const genderFilter = document.getElementById('gender-filter').value;
+            const generationFilter = document.getElementById('generation-filter').value;
+
+            const filteredHorses = horses.filter(horse => {
+                const matchesSearch = horse.name.toLowerCase().includes(searchTerm);
+                const matchesBloodline = !bloodlineFilter || horse.bloodline === bloodlineFilter;
+                const matchesGender = !genderFilter || horse.gender === genderFilter;
+                const matchesGeneration = !generationFilter || 
+                    (generationFilter === '5+' ? horse.generation >= 5 : horse.generation === parseInt(generationFilter));
+
+                return matchesSearch && matchesBloodline && matchesGender && matchesGeneration;
+            });
+
+            displayStableHorses(filteredHorses);
+        }
+
+        // Utility Functions
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message`;
+            messageDiv.textContent = message;
+            
+            // Insert at top of main content
+            const mainContent = document.querySelector('.main-content');
+            mainContent.insertBefore(messageDiv, mainContent.firstChild);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        function showAddHorseForm() {
+            showTab('horse-search');
+            document.getElementById('manual-horse-name').focus();
+        }
+
+        function exportStableData() {
+            const data = {
+                horses: horses,
+                races: races,
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `stablefields-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showMessage('Stable data exported successfully!', 'success');
+        }
+
+        // Click outside modal to close
+        document.getElementById('horse-details-modal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
+
+        // ZedSight API Integration
+        const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
+        let selectedHorses = [];
+
+        // Bearer Token Management
+        function saveBearerToken() {
+            const token = document.getElementById('bearer-token').value.trim();
             if (!token) {
-                output.innerHTML = 'No token found in localStorage.';
+                showMessage('Please enter a valid Bearer Token', 'error');
                 return;
             }
             
-            // Show token info without revealing the full token
-            output.innerHTML = `Token found: ${token.substring(0, 10)}...${token.substring(token.length - 5)}
-Length: ${token.length} characters
-Format: ${token.includes('.') ? 'Looks like JWT format' : 'Not JWT format'}`;
-        });
-        
-        document.getElementById('debug-test-api').addEventListener('click', async function() {
-            const output = document.getElementById('debug-output');
-            output.innerHTML = 'Testing API connection...';
-            
+            localStorage.setItem('zed_bearer_token', token);
+            showMessage('Bearer Token saved successfully!', 'success');
+            document.getElementById('bearer-token').value = '';
+        }
+
+        function getBearerToken() {
+            return localStorage.getItem('zed_bearer_token');
+        }
+
+        // Search Horses via ZedSight API
+        async function searchHorsesZedSight() {
+            const searchTerm = document.getElementById('horse-search-input').value.trim();
+            if (!searchTerm) {
+                showMessage('Please enter a horse name or ID to search', 'warning');
+                return;
+            }
+
+            const token = getBearerToken();
+            if (!token) {
+                showMessage('Please set your Bearer Token first', 'error');
+                return;
+            }
+
             try {
-                const response = await fetch('/api/test');
+                showMessage('Searching horses...', 'info');
+                
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(searchTerm)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Search failed: ${response.status} ${response.statusText}`);
+                }
+
                 const data = await response.json();
-                output.innerHTML = `API test endpoint response:\n${JSON.stringify(data, null, 2)}`;
+                displaySearchResults(data.horses || []);
+                
             } catch (error) {
-                output.innerHTML = `API test error: ${error.message}`;
+                console.error('Search error:', error);
+                showMessage(`Search failed: ${error.message}`, 'error');
             }
-        });
-        
-        document.getElementById('debug-log-storage').addEventListener('click', function() {
-            const output = document.getElementById('debug-output');
-            output.innerHTML = 'Current localStorage contents:';
-            
-            const storage = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                try {
-                    if (key === 'zedAuthToken') {
-                        const token = localStorage.getItem(key);
-                        storage[key] = `${token.substring(0, 10)}...${token.substring(token.length - 5)} (${token.length} chars)`;
-                    } else {
-                        storage[key] = JSON.parse(localStorage.getItem(key));
-                    }
-                } catch (e) {
-                    storage[key] = localStorage.getItem(key);
-                }
+        }
+
+        // Import My Stable from ZED Champions
+        async function importMyStable() {
+            const token = getBearerToken();
+            if (!token) {
+                showMessage('Please set your Bearer Token first', 'error');
+                return;
             }
+
+            try {
+                showMessage('Importing your stable from ZED Champions...', 'info');
+                
+                // This would need the actual API endpoint for user's stable
+                // For now, we'll show a message about the feature
+                showMessage('My Stable import is being developed. Use horse search for now.', 'warning');
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                showMessage(`Import failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Display Search Results
+        function displaySearchResults(horsesData) {
+            const resultsDiv = document.getElementById('search-results');
+            const gridDiv = document.getElementById('search-horses-grid');
             
-            output.innerHTML += '\n' + JSON.stringify(storage, null, 2);
-        });
-    </script>
+            if (horsesData.length === 0) {
+                showMessage('No horses found matching your search', 'warning');
+                resultsDiv.style.display = 'none';
+                return;
+            }
 
-    <!-- Add Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+            resultsDiv.style.display = 'block';
+            gridDiv.innerHTML = horsesData.map(horse => createSearchHorseCard(horse)).join('');
+            
+            showMessage(`Found ${horsesData.length} horses`, 'success');
+        }
 
-    <script>
-      // Add Augment Chart functionality
-      document.addEventListener('DOMContentLoaded', function() {
-        // Create Augment Chart tab
-        const tabButtons = document.getElementById('tab-buttons');
-        const tabContent = document.getElementById('tab-content');
-        
-        if (tabButtons && tabContent) {
-          // Add the augment tab button
-          const augmentTabButton = document.createElement('button');
-          augmentTabButton.className = 'tab-button';
-          augmentTabButton.setAttribute('data-tab', 'augments');
-          augmentTabButton.textContent = 'Augments';
-          tabButtons.appendChild(augmentTabButton);
-          
-          // Add the augment tab content container
-          const augmentTabContent = document.createElement('div');
-          augmentTabContent.id = 'tab-content-augments';
-          augmentTabContent.className = 'tab-content';
-          
-          augmentTabContent.innerHTML = `
-            <div class="section">
-              <h2>Augment Performance</h2>
-              <p>View and analyze augment combinations and their performance.</p>
-              
-              <div id="horse-selector" class="form-grid">
-                <div>
-                  <label for="augment-horse">Select Horse:</label>
-                  <select id="augment-horse">
-                    <option value="">-- Select Horse --</option>
-                  </select>
+        // Create Search Result Horse Card
+        function createSearchHorseCard(horse) {
+            const isSelected = selectedHorses.includes(horse.id);
+            const isAlreadyImported = horses.find(h => h.id === horse.id);
+            
+            return `
+                <div class="horse-card ${isSelected ? 'selected' : ''}" data-horse-id="${horse.id}">
+                    <div class="horse-header">
+                        <div>
+                            <div class="horse-name">${horse.name}</div>
+                            <div class="horse-bloodline">
+                                <i class="fas fa-certificate"></i>
+                                ${horse.bloodline} • Gen ${horse.generation} • ${horse.gender}
+                            </div>
+                        </div>
+                        <div class="horse-actions">
+                            ${isAlreadyImported ? 
+                                '<span style="color: var(--success); font-size: 0.8rem;"><i class="fas fa-check"></i> Imported</span>' :
+                                `<input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleHorseSelection('${horse.id}')">`
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="quick-stats">
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.overall_stars || horse.speed_rating || 'N/A'}</span>
+                            <div class="quick-stat-label">Overall</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.speed_rating || 'N/A'}</span>
+                            <div class="quick-stat-label">Speed</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.total_races || 0}</span>
+                            <div class="quick-stat-label">Races</div>
+                        </div>
+                        <div class="quick-stat">
+                            <span class="quick-stat-value">${horse.win_percentage || 0}%</span>
+                            <div class="quick-stat-label">Win Rate</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+                        <p>ID: ${horse.id}</p>
+                        ${horse.last_race_date ? `<p>Last Race: ${new Date(horse.last_race_date).toLocaleDateString()}</p>` : ''}
+                    </div>
                 </div>
-              </div>
-              
-              <div id="augment-chart-container" style="height: 400px; margin-top: 20px;">
-                <canvas id="augment-chart"></canvas>
-              </div>
-              
-              <table id="augment-combinations-table" style="margin-top: 20px;">
-                <thead>
-                  <tr>
-                    <th>CPU Slot</th>
-                    <th>RAM Slot</th>
-                    <th>Hydraulic Slot</th>
-                    <th>Avg Position</th>
-                    <th>Win %</th>
-                    <th>Races</th>
-                  </tr>
-                </thead>
-                <tbody id="augment-combinations-tbody">
-                  <tr>
-                    <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                      Select a horse to view augment combinations.
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          `;
-          
-          tabContent.appendChild(augmentTabContent);
-          
-          // Add event listener for the augment tab
-          augmentTabButton.addEventListener('click', function() {
-            const horseSelect = document.getElementById('augment-horse');
-            updateHorseSelectors(horseSelect);
-            activateTab('augments');
-          });
-          
-          // Add event listener for horse selection
-          const horseSelect = document.getElementById('augment-horse');
-          if (horseSelect) {
-            horseSelect.addEventListener('change', renderAugmentData);
-          }
+            `;
         }
-      });
-      
-      // Function to populate horse selectors
-      function updateHorseSelectors(selector) {
-        if (!selector) return;
-        
-        // Clear existing options except the first one
-        while (selector.options.length > 1) {
-          selector.remove(1);
-        }
-        
-        // Get all horses (combine racing and breeding)
-        const allHorses = [...(window.horses || []), ...(window.breedingHorses || [])];
-        
-        // Sort by name
-        allHorses.sort((a, b) => a.name.localeCompare(b.name));
-        
-        // Add options
-        allHorses.forEach(horse => {
-          const option = document.createElement('option');
-          option.value = horse.id;
-          option.textContent = `${horse.name} (${horse.bloodline || 'Unknown'})`;
-          selector.appendChild(option);
-        });
-      }
-      
-      // Function to render augment data
-      function renderAugmentData() {
-        const horseSelect = document.getElementById('augment-horse');
-        const horseId = horseSelect.value;
-        
-        if (!horseId) return;
-        
-        // Find the horse
-        const allHorses = [...(window.horses || []), ...(window.breedingHorses || [])];
-        const horse = allHorses.find(h => h.id === horseId);
-        
-        if (!horse || !horse.races || horse.races.length === 0) {
-          document.getElementById('augment-combinations-tbody').innerHTML = `
-            <tr>
-              <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                No race history with augment data found for this horse.
-              </td>
-            </tr>
-          `;
-          
-          // Destroy existing chart
-          const existingChart = Chart.getChart('augment-chart');
-          if (existingChart) {
-            existingChart.destroy();
-          }
-          
-          return;
-        }
-        
-        // Process augment combinations
-        const combinations = processAugmentCombinations(horse.races);
-        
-        // Render the table
-        renderAugmentTable(combinations);
-        
-        // Render the chart
-        renderAugmentChart(combinations);
-      }
-      
-      // Function to process augment combinations
-      function processAugmentCombinations(races) {
-        // Group races by augment combination
-        const combinationMap = {};
-        
-        races.forEach(race => {
-          if (!race.augments) return;
-          
-          // Create key from augments
-          const cpuAugment = race.augments[0] || '-';
-          const ramAugment = race.augments[1] || '-';
-          const hydraulicAugment = race.augments[2] || '-';
-          const key = `${cpuAugment}|${ramAugment}|${hydraulicAugment}`;
-          
-          if (!combinationMap[key]) {
-            combinationMap[key] = {
-              cpu: cpuAugment,
-              ram: ramAugment,
-              hydraulic: hydraulicAugment,
-              positions: [],
-              races: 0,
-              wins: 0
-            };
-          }
-          
-          combinationMap[key].positions.push(parseInt(race.position));
-          combinationMap[key].races++;
-          if (parseInt(race.position) === 1) {
-            combinationMap[key].wins++;
-          }
-        });
-        
-        // Calculate averages and convert to array
-        return Object.values(combinationMap).map(combo => {
-          const avgPosition = combo.positions.reduce((sum, pos) => sum + pos, 0) / combo.positions.length;
-          const winPercentage = (combo.wins / combo.races) * 100;
-          
-          return {
-            ...combo,
-            avgPosition: avgPosition.toFixed(2),
-            winPercentage: winPercentage.toFixed(1)
-          };
-        }).sort((a, b) => a.avgPosition - b.avgPosition);
-      }
-      
-      // Function to render the augment table
-      function renderAugmentTable(combinations) {
-        const tbody = document.getElementById('augment-combinations-tbody');
-        if (!tbody) return;
-        
-        if (combinations.length === 0) {
-          tbody.innerHTML = `
-            <tr>
-              <td colspan="6" style="text-align: center; color: var(--muted-text);">
-                No augment combinations found.
-              </td>
-            </tr>
-          `;
-          return;
-        }
-        
-        tbody.innerHTML = '';
-        combinations.forEach(combo => {
-          const row = document.createElement('tr');
-          
-          // Determine CSS classes for augments
-          const getCssClass = (augment) => {
-            if (!augment || augment === '-') return 'augment-empty';
-            if (augment.includes('GX')) return 'augment-gx';
-            if (augment.includes('Crimson')) return 'augment-crimson';
-            if (augment.includes('Midnight')) return 'augment-midnight';
-            if (augment.includes('Darklight')) return 'augment-darklight';
-            if (augment.includes('Void')) return 'augment-void';
-            return '';
-          };
-          
-          row.innerHTML = `
-            <td><span class="${getCssClass(combo.cpu)}">${combo.cpu}</span></td>
-            <td><span class="${getCssClass(combo.ram)}">${combo.ram}</span></td>
-            <td><span class="${getCssClass(combo.hydraulic)}">${combo.hydraulic}</span></td>
-            <td>${combo.avgPosition}</td>
-            <td>${combo.winPercentage}%</td>
-            <td>${combo.races}</td>
-          `;
-          
-          tbody.appendChild(row);
-        });
-      }
-      
-      // Function to render the augment chart
-      function renderAugmentChart(combinations) {
-        // Destroy existing chart
-        const existingChart = Chart.getChart('augment-chart');
-        if (existingChart) {
-          existingChart.destroy();
-        }
-        
-        if (combinations.length === 0) return;
-        
-        // Prepare chart data
-        const chartData = {
-          labels: combinations.map(c => {
-            let label = '';
-            if (c.cpu && c.cpu !== '-') label += c.cpu;
-            if (c.ram && c.ram !== '-') label += label ? ` + ${c.ram}` : c.ram;
-            if (c.hydraulic && c.hydraulic !== '-') label += label ? ` + ${c.hydraulic}` : c.hydraulic;
-            return label || 'No Augments';
-          }),
-          datasets: [
-            {
-              label: 'Average Position',
-              data: combinations.map(c => parseFloat(c.avgPosition)),
-              backgroundColor: combinations.map(c => {
-                // Lower (better) positions get greener colors
-                const avgPos = parseFloat(c.avgPosition);
-                if (avgPos <= 2) return 'rgba(76, 175, 80, 0.8)'; // Green
-                if (avgPos <= 3) return 'rgba(139, 195, 74, 0.8)'; // Light green
-                if (avgPos <= 4) return 'rgba(255, 235, 59, 0.8)'; // Yellow
-                if (avgPos <= 5) return 'rgba(255, 152, 0, 0.8)'; // Orange
-                return 'rgba(244, 67, 54, 0.8)'; // Red
-              }),
-              borderWidth: 1
-            },
-            {
-              label: 'Races',
-              data: combinations.map(c => c.races),
-              type: 'line',
-              fill: false,
-              borderColor: 'rgba(54, 162, 235, 1)',
-              tension: 0.1,
-              yAxisID: 'y1'
-            }
-          ]
-        };
-        
-        // Create the chart
-        const ctx = document.getElementById('augment-chart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: chartData,
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            indexAxis: 'y', // Horizontal bar chart
-            scales: {
-              y: {
-                beginAtZero: false
-              },
-              y1: {
-                position: 'right',
-                grid: {
-                  drawOnChartArea: false
-                }
-              }
-            },
-            plugins: {
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    const datasetLabel = context.dataset.label || '';
-                    const value = context.raw;
-                    if (datasetLabel === 'Average Position') {
-                      return `Avg Position: ${value}`;
-                    } else if (datasetLabel === 'Races') {
-                      return `Races: ${value}`;
-                    }
-                    return `${datasetLabel}: ${value}`;
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
-    </script>
 
-    <style>
-      /* Augment styles */
-      .augment-empty {
-        color: var(--muted-text);
-        font-style: italic;
-      }
-      .augment-gx {
-        color: #4CAF50;
-        font-weight: bold;
-      }
-      .augment-crimson {
-        color: #F44336;
-        font-weight: bold;
-      }
-      .augment-midnight {
-        color: #3F51B5;
-        font-weight: bold;
-      }
-      .augment-darklight {
-        color: #FF9800;
-        font-weight: bold;
-      }
-      .augment-void {
-        color: #9C27B0;
-        font-weight: bold;
-      }
-    </style>
+        // Toggle Horse Selection
+        function toggleHorseSelection(horseId) {
+            const index = selectedHorses.indexOf(horseId);
+            if (index > -1) {
+                selectedHorses.splice(index, 1);
+            } else {
+                selectedHorses.push(horseId);
+            }
+            
+            updateImportControls();
+        }
+
+        // Update Import Controls
+        function updateImportControls() {
+            const importControls = document.getElementById('import-controls');
+            const importBtn = document.getElementById('import-btn');
+            
+            if (selectedHorses.length > 0) {
+                importControls.style.display = 'block';
+                importBtn.disabled = false;
+                importBtn.innerHTML = `<i class="fas fa-plus"></i> Import ${selectedHorses.length} Selected Horse${selectedHorses.length > 1 ? 's' : ''}`;
+            } else {
+                importControls.style.display = 'none';
+            }
+        }
+
+        // Import Selected Horses
+        async function importSelectedHorses() {
+            if (selectedHorses.length === 0) {
+                showMessage('No horses selected for import', 'warning');
+                return;
+            }
+
+            const token = getBearerToken();
+            if (!token) {
+                showMessage('Please set your Bearer Token first', 'error');
+                return;
+            }
+
+            try {
+                showMessage(`Importing ${selectedHorses.length} horses with complete race history...`, 'info');
+                
+                for (const horseId of selectedHorses) {
+                    // Get detailed horse data with race history
+                    const response = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${horseId}&augments=true`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to import horse ${horseId}: ${response.status}`);
+                    }
+
+                    const horseData = await response.json();
+                    
+                    // Convert ZedSight format to our format
+                    const importedHorse = {
+                        id: horseData.id,
+                        name: horseData.name,
+                        bloodline: horseData.bloodline,
+                        gender: horseData.gender,
+                        generation: horseData.generation,
+                        overall_stars: horseData.overall_stars || horseData.speed_rating,
+                        speed_rating: horseData.speed_rating,
+                        sprint_rating: horseData.sprint_rating,
+                        endurance_rating: horseData.endurance_rating,
+                        dateAdded: new Date().toISOString(),
+                        races: horseData.races || [],
+                        total_races: horseData.total_races || 0,
+                        wins: horseData.wins || 0,
+                        win_percentage: horseData.win_percentage || 0,
+                        breeding_history: horseData.breeding_history || [],
+                        pedigree: horseData.pedigree || {}
+                    };
+
+                    // Check for duplicates
+                    const existingHorseIndex = horses.findIndex(h => h.id === importedHorse.id);
+                    if (existingHorseIndex > -1) {
+                        // Update existing horse with new data
+                        horses[existingHorseIndex] = { ...horses[existingHorseIndex], ...importedHorse };
+                    } else {
+                        // Add new horse
+                        horses.push(importedHorse);
+                    }
+
+                    // Import race data to races array
+                    if (horseData.races) {
+                        horseData.races.forEach(race => {
+                            const existingRace = races.find(r => r.id === race.id);
+                            if (!existingRace) {
+                                races.push({
+                                    ...race,
+                                    horseId: horseData.id
+                                });
+                            }
+                        });
+                    }
+                }
+
+                saveData();
+                loadStable();
+                updateRaceHorseSelect();
+                selectedHorses = [];
+                document.getElementById('search-results').style.display = 'none';
+                
+                showMessage(`Successfully imported horses with complete race and breeding history!`, 'success');
+                
+                // Switch to My Stable tab to show imported horses
+                showTab('my-stable');
+                
+            } catch (error) {
+                console.error('Import error:', error);
+                showMessage(`Import failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize Bearer Token on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedToken = getBearerToken();
+            if (savedToken) {
+                document.getElementById('bearer-token').placeholder = 'Bearer Token saved (hidden for security)';
+            }
+        });
+
+        // Add CSS for selected horse cards
+        const additionalStyles = `
+            <style>
+                .horse-card.selected {
+                    border: 2px solid var(--primary);
+                    box-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+                }
+                
+                .horse-card input[type="checkbox"] {
+                    transform: scale(1.2);
+                    accent-color: var(--primary);
+                }
+                
+                #import-controls {
+                    display: flex;
+                    justify-content: center;
+                    gap: 1rem;
+                    padding: 1rem;
+                    background: var(--bg-card);
+                    border-radius: 8px;
+                    border: 1px solid var(--border);
+                }
+            </style>
+        `;
+        
+        document.head.insertAdjacentHTML('beforeend', additionalStyles);
+    </script>
 </body>
 </html>
