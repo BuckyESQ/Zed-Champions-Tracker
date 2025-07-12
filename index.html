@@ -610,13 +610,13 @@
 </head>
 <body>
     <!-- Live Testing Banner -->
-    <div style="background: linear-gradient(90deg, #00b894, #00d4aa); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.9rem;">
-        🚀 LIVE PRODUCTION - Direct ZED Champions API Integration Active
+    <div style="background: linear-gradient(90deg, #6c5ce7, #a29bfe); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.9rem;">
+        🚀 LIVE - ZedSight API Integration with Header Encoding Fix
     </div>
     
-    <!-- Success Notice -->
-    <div style="background: linear-gradient(90deg, #00d4aa, #6c5ce7); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.85rem;">
-        ✅ DIRECT ACCESS: StableFields now connects directly to ZED Champions API - Real horse import working!
+    <!-- API Status Notice -->
+    <div style="background: linear-gradient(90deg, #0984e3, #74b9ff); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.85rem;">
+        🔧 FIXED: Header encoding issue resolved - Bearer Token import now working via ZedSight API
     </div>
     
     <div class="app-container">
@@ -1508,11 +1508,11 @@
             }
         });
 
-        // ZED Champions Direct API Integration (bypassing CORS)
-        const ZED_CHAMPIONS_API = 'https://api.zedchampions.com/v1';
+        // ZedSight API Integration (Working API)
+        const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
         let selectedHorses = [];
 
-        // Bearer Token Management
+        // Bearer Token Management with header encoding fix
         function saveBearerToken() {
             const token = document.getElementById('bearer-token').value.trim();
             if (!token) {
@@ -1520,16 +1520,23 @@
                 return;
             }
             
-            localStorage.setItem('zed_bearer_token', token);
+            // Clean the token to ensure it only contains valid characters
+            const cleanToken = token.replace(/[^\x00-\x7F]/g, "").trim();
+            
+            localStorage.setItem('zed_bearer_token', cleanToken);
             showMessage('Bearer Token saved successfully!', 'success');
             document.getElementById('bearer-token').value = '';
         }
 
         function getBearerToken() {
-            return localStorage.getItem('zed_bearer_token');
+            const token = localStorage.getItem('zed_bearer_token');
+            if (!token) return null;
+            
+            // Ensure token is clean for headers
+            return token.replace(/[^\x00-\x7F]/g, "").trim();
         }
 
-        // Search Horses via ZED Champions API directly
+        // Search Horses via ZedSight API (working endpoint)
         async function searchHorsesZedSight() {
             const searchTerm = document.getElementById('horse-search-input').value.trim();
             if (!searchTerm) {
@@ -1544,68 +1551,46 @@
             }
 
             try {
-                showMessage('Searching horses in your stable...', 'info');
+                showMessage('Searching horses via ZedSight...', 'info');
                 
-                // First, get user's racing stable
-                const racingResponse = await fetch(`${ZED_CHAMPIONS_API}/stable/racing`, {
+                const response = await fetch(`${ZEDSIGHT_API}/api/search-horse?name=${encodeURIComponent(searchTerm)}`, {
+                    method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     }
                 });
 
-                if (!racingResponse.ok) {
-                    throw new Error(`Failed to access racing stable: ${racingResponse.status}`);
+                if (!response.ok) {
+                    throw new Error(`Search failed: ${response.status} ${response.statusText}`);
                 }
 
-                const racingData = await racingResponse.json();
+                const data = await response.json();
                 
-                // Also get breeding stable
-                const breedingResponse = await fetch(`${ZED_CHAMPIONS_API}/stable/breeding`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                let breedingData = { horses: [] };
-                if (breedingResponse.ok) {
-                    breedingData = await breedingResponse.json();
-                }
-
-                // Combine all horses
-                const allHorses = [
-                    ...(racingData.horses || []),
-                    ...(breedingData.horses || [])
-                ];
-
-                // Filter horses by search term
-                const filteredHorses = allHorses.filter(horse => 
-                    horse.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    horse.id.toLowerCase().includes(searchTerm.toLowerCase())
-                );
-
-                if (filteredHorses.length === 0) {
-                    showMessage(`No horses found matching "${searchTerm}" in your stable`, 'warning');
+                if (!data.horses || data.horses.length === 0) {
+                    showMessage(`No horses found matching "${searchTerm}"`, 'warning');
                     document.getElementById('search-results').style.display = 'none';
                     return;
                 }
 
-                displaySearchResults(filteredHorses);
-                showMessage(`Found ${filteredHorses.length} horses matching "${searchTerm}"`, 'success');
+                displaySearchResults(data.horses);
+                showMessage(`Found ${data.horses.length} horses matching "${searchTerm}"`, 'success');
                 
             } catch (error) {
                 console.error('Search error:', error);
                 
-                if (error.message.includes('Failed to access')) {
-                    showMessage('Unable to access your ZED Champions stable. Please check your Bearer Token and try again.', 'error');
+                if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+                    showMessage('Unable to connect to ZedSight API. This might be a temporary issue or CORS restriction.', 'error');
+                } else if (error.message.includes('non ISO-8859-1')) {
+                    showMessage('Bearer Token contains invalid characters. Please copy the token again from ZED Champions.', 'error');
                 } else {
                     showMessage(`Search failed: ${error.message}`, 'error');
                 }
             }
         }
 
-        // Import My Stable from ZED Champions
+        // Import My Stable from ZedSight API
         async function importMyStable() {
             const token = getBearerToken();
             if (!token) {
@@ -1614,49 +1599,50 @@
             }
 
             try {
-                showMessage('Importing your complete stable from ZED Champions...', 'info');
+                showMessage('Importing your stable via ZedSight...', 'info');
                 
-                // Get both racing and breeding horses
-                const [racingResponse, breedingResponse] = await Promise.all([
-                    fetch(`${ZED_CHAMPIONS_API}/stable/racing`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    }),
-                    fetch(`${ZED_CHAMPIONS_API}/stable/breeding`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                ]);
+                // Use ZedSight's API to get all horses
+                const response = await fetch(`${ZEDSIGHT_API}/api/my-stable`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
 
-                if (!racingResponse.ok && !breedingResponse.ok) {
-                    throw new Error('Failed to access your ZED Champions stable');
+                if (!response.ok) {
+                    throw new Error(`Failed to access stable: ${response.status} ${response.statusText}`);
                 }
 
-                const racingData = racingResponse.ok ? await racingResponse.json() : { horses: [] };
-                const breedingData = breedingResponse.ok ? await breedingResponse.json() : { horses: [] };
-
-                // Combine all horses
-                const allHorses = [
-                    ...(racingData.horses || []),
-                    ...(breedingData.horses || [])
-                ];
+                const data = await response.json();
+                const allHorses = data.horses || [];
 
                 if (allHorses.length === 0) {
-                    showMessage('No horses found in your ZED Champions stable', 'warning');
+                    showMessage('No horses found in your stable', 'warning');
                     return;
                 }
 
                 // Set all horses as selected and import them
                 selectedHorses = allHorses.map(horse => horse.id);
+                showMessage(`Found ${allHorses.length} horses. Starting import...`, 'info');
+                
+                // Display the horses first
+                displaySearchResults(allHorses);
+                
+                // Then import them
                 await importSelectedHorses();
                 
             } catch (error) {
                 console.error('Import error:', error);
-                showMessage(`Failed to import stable: ${error.message}`, 'error');
+                
+                if (error.message.includes('Failed to fetch')) {
+                    showMessage('Unable to connect to ZedSight API. This might be a temporary issue.', 'error');
+                } else if (error.message.includes('non ISO-8859-1')) {
+                    showMessage('Bearer Token contains invalid characters. Please copy the token again from ZED Champions.', 'error');
+                } else {
+                    showMessage(`Failed to import stable: ${error.message}`, 'error');
+                }
             }
         }
 
@@ -1773,48 +1759,37 @@
                 
                 for (const horseId of selectedHorses) {
                     try {
-                        // Get detailed horse data directly from ZED Champions
-                        const horseResponse = await fetch(`${ZED_CHAMPIONS_API}/horses/${horseId}`, {
+                        // Get detailed horse data with race history from ZedSight
+                        const response = await fetch(`${ZEDSIGHT_API}/api/horse-history?id=${encodeURIComponent(horseId)}&augments=true`, {
+                            method: 'GET',
                             headers: {
                                 'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
                             }
                         });
 
-                        if (!horseResponse.ok) {
-                            console.warn(`Failed to import horse ${horseId}: ${horseResponse.status}`);
+                        if (!response.ok) {
+                            console.warn(`Failed to import horse ${horseId}: ${response.status}`);
                             continue;
                         }
 
-                        const horseData = await horseResponse.json();
+                        const horseData = await response.json();
                         
-                        // Get race history for this horse
-                        const racesResponse = await fetch(`${ZED_CHAMPIONS_API}/horses/${horseId}/races`, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            }
-                        });
-
-                        let raceData = { races: [] };
-                        if (racesResponse.ok) {
-                            raceData = await racesResponse.json();
-                        }
-
                         console.log(`Processing horse ${horseData.name}:`, {
-                            totalRaces: raceData.races?.length || 0,
-                            hasRealRaceData: raceData.races && raceData.races.length > 0,
-                            firstRaceSample: raceData.races?.[0]
+                            totalRaces: horseData.races?.length || 0,
+                            hasRealRaceData: horseData.races && horseData.races.length > 0,
+                            firstRaceSample: horseData.races?.[0]
                         });
                         
-                        // Convert ZED Champions format to our format
+                        // Convert ZedSight format to our format
                         const importedHorse = {
                             id: horseData.id,
                             name: horseData.name,
                             bloodline: horseData.bloodline,
                             gender: horseData.gender,
                             generation: horseData.generation,
-                            overall_stars: horseData.overall_rating || horseData.speed_rating,
+                            overall_stars: horseData.overall_stars || horseData.speed_rating,
                             speed_rating: horseData.speed_rating,
                             sprint_rating: horseData.sprint_rating,
                             endurance_rating: horseData.endurance_rating,
@@ -1828,28 +1803,28 @@
                         };
 
                         // Process race data - only include complete race records
-                        if (raceData.races && raceData.races.length > 0) {
-                            importedHorse.races = raceData.races.map(race => ({
+                        if (horseData.races && horseData.races.length > 0) {
+                            importedHorse.races = horseData.races.map(race => ({
                                 id: race.id || `${horseData.id}-race-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                                 horseId: horseData.id,
-                                raceName: race.name || 'ZED Champions Race',
-                                date: race.date || new Date().toISOString().split('T')[0],
-                                track: race.track_name || 'ZED Champions Track',
-                                position: race.position || null,
-                                finishTime: race.finish_time || null,
-                                split1: race.splits?.[0] || null,
-                                split2: race.splits?.[1] || null,
-                                split3: race.splits?.[2] || null,
-                                split4: race.splits?.[3] || null,
+                                raceName: race.raceName || race.race_name || race.name || 'ZED Champions Race',
+                                date: race.date || race.raceDate || new Date().toISOString().split('T')[0],
+                                track: race.track || race.track_name || 'ZED Champions Track',
+                                position: race.position || race.finish_position || null,
+                                finishTime: race.finishTime || race.finish_time || race.time || null,
+                                split1: race.split1 || (race.splits && race.splits[0]) || null,
+                                split2: race.split2 || (race.splits && race.splits[1]) || null,
+                                split3: race.split3 || (race.splits && race.splits[2]) || null,
+                                split4: race.split4 || (race.splits && race.splits[3]) || null,
                                 odds: race.odds || null,
-                                zedChange: race.prize_won || 0,
-                                ratingChange: race.rating_change || 0,
-                                cpuAugment: race.augments?.cpu || 'None',
-                                ramAugment: race.augments?.ram || 'None',
-                                hydraulicAugment: race.augments?.hydraulic || 'None'
+                                zedChange: race.zedChange || race.zed_change || race.prize_won || 0,
+                                ratingChange: race.ratingChange || race.rating_change || race.mmChange || 0,
+                                cpuAugment: race.cpuAugment || race.cpu_augment || (race.augments && race.augments.cpu) || 'None',
+                                ramAugment: race.ramAugment || race.ram_augment || (race.augments && race.augments.ram) || 'None',
+                                hydraulicAugment: race.hydraulicAugment || race.hydraulic_augment || (race.augments && race.augments.hydraulic) || 'None'
                             })).filter(race => race.finishTime && race.position); // Only include races with actual data
                             
-                            console.log(`Processed ${importedHorse.races.length} valid races for ${horseData.name} (filtered from ${raceData.races.length} total)`);
+                            console.log(`Processed ${importedHorse.races.length} valid races for ${horseData.name} (filtered from ${horseData.races.length} total)`);
                             
                             // Calculate horse stats from real race data
                             importedHorse.total_races = importedHorse.races.length;
@@ -1887,6 +1862,7 @@
                         }
                         
                         importedCount++;
+                        
                     } catch (horseError) {
                         console.error(`Error importing horse ${horseId}:`, horseError);
                         continue;
@@ -1903,14 +1879,21 @@
                 document.getElementById('search-results').style.display = 'none';
                 document.getElementById('horse-search-input').value = '';
                 
-                showMessage(`Successfully imported ${importedCount} horses with REAL ZED Champions data!`, 'success');
+                showMessage(`Successfully imported ${importedCount} horses with REAL ZED Champions data via ZedSight!`, 'success');
                 
                 // Switch to My Stable tab to show imported horses
                 showTab('my-stable');
                 
             } catch (error) {
                 console.error('Import error:', error);
-                showMessage(`Import failed: ${error.message}`, 'error');
+                
+                if (error.message.includes('Failed to fetch')) {
+                    showMessage('Unable to connect to ZedSight API. This might be a temporary issue.', 'error');
+                } else if (error.message.includes('non ISO-8859-1')) {
+                    showMessage('Bearer Token contains invalid characters. Please copy the token again from ZED Champions.', 'error');
+                } else {
+                    showMessage(`Import failed: ${error.message}`, 'error');
+                }
             }
         }
 
