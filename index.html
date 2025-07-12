@@ -614,6 +614,11 @@
         🚀 LIVE TESTING - Bearer Token Import Functionality Active
     </div>
     
+    <!-- CORS Notice -->
+    <div style="background: linear-gradient(90deg, #e84393, #fd79a8); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.85rem;">
+        ⚠️ API ACCESS ISSUE: ZedSight API needs to whitelist stablefields.com domain for CORS. Demo mode available for testing.
+    </div>
+    
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
@@ -1018,6 +1023,10 @@
         function loadData() {
             horses = JSON.parse(localStorage.getItem('horses') || '[]');
             races = JSON.parse(localStorage.getItem('races') || '[]');
+            
+            // Clean up any corrupted horse data
+            horses = horses.filter(horse => horse && horse.name && horse.name.trim() !== '');
+            
             console.log(`Loaded ${horses.length} horses and ${races.length} races`);
         }
 
@@ -1428,6 +1437,9 @@
             const generationFilter = document.getElementById('generation-filter').value;
 
             const filteredHorses = horses.filter(horse => {
+                // Safety checks for undefined properties
+                if (!horse || !horse.name) return false;
+                
                 const matchesSearch = horse.name.toLowerCase().includes(searchTerm);
                 const matchesBloodline = !bloodlineFilter || horse.bloodline === bloodlineFilter;
                 const matchesGender = !genderFilter || horse.gender === genderFilter;
@@ -1542,7 +1554,74 @@
                 
             } catch (error) {
                 console.error('Search error:', error);
-                showMessage(`Search failed: ${error.message}`, 'error');
+                
+                if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+                    showMessage('CORS Error: Using demo mode. Contact ZedSight to whitelist stablefields.com for real API access.', 'warning');
+                    
+                    // Demo mode: Show sample horses for testing
+                    const demoHorses = [
+                        {
+                            id: `demo-${Date.now()}-1`,
+                            name: `${searchTerm} (Demo 1)`,
+                            bloodline: 'Nakamoto',
+                            gender: 'Stallion',
+                            generation: 3,
+                            overall_stars: 4.2,
+                            races: [
+                                {
+                                    id: `demo-race-1`,
+                                    raceName: 'ZED Champions Demo Race',
+                                    date: '2024-12-01',
+                                    track: 'Demo Track',
+                                    position: 2,
+                                    finishTime: '41.25',
+                                    split1: '9.12',
+                                    split2: '18.45',
+                                    split3: '29.78',
+                                    split4: '41.25',
+                                    odds: '3.2',
+                                    zedChange: 150,
+                                    ratingChange: 25,
+                                    cpuAugment: 'Crimson C',
+                                    ramAugment: 'None',
+                                    hydraulicAugment: 'None'
+                                }
+                            ]
+                        },
+                        {
+                            id: `demo-${Date.now()}-2`,
+                            name: `${searchTerm} (Demo 2)`,
+                            bloodline: 'Szabo',
+                            gender: 'Mare',
+                            generation: 4,
+                            overall_stars: 3.8,
+                            races: [
+                                {
+                                    id: `demo-race-2`,
+                                    raceName: 'ZED Champions Demo Race 2',
+                                    date: '2024-12-02',
+                                    track: 'Demo Track',
+                                    position: 1,
+                                    finishTime: '39.87',
+                                    split1: '8.91',
+                                    split2: '17.23',
+                                    split3: '28.45',
+                                    split4: '39.87',
+                                    odds: '2.1',
+                                    zedChange: 250,
+                                    ratingChange: 35,
+                                    cpuAugment: 'GX-Core C',
+                                    ramAugment: 'Void C100',
+                                    hydraulicAugment: 'None'
+                                }
+                            ]
+                        }
+                    ];
+                    
+                    displaySearchResults(demoHorses);
+                } else {
+                    showMessage(`Search failed: ${error.message}`, 'error');
+                }
             }
         }
 
@@ -1797,7 +1876,12 @@
                 
             } catch (error) {
                 console.error('Import error:', error);
-                showMessage(`Import failed: ${error.message}`, 'error');
+                
+                if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+                    showMessage('CORS Error: Cannot import from ZedSight API. Contact ZedSight to whitelist stablefields.com domain.', 'error');
+                } else {
+                    showMessage(`Import failed: ${error.message}`, 'error');
+                }
             }
         }
 
