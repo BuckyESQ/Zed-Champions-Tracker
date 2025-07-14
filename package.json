@@ -2,7 +2,7 @@
   "name": "stablefields-zed-tracker",
   "version": "1.0.0",
   "description": "StableFields ZED Champions Racing Intelligence System",
-  "main": "PRODUCTION-READY/index.html",
+  "main": "index.html",
   "scripts": {
     "build": "echo 'Static build complete - files ready for deployment'",
     "start": "echo 'Static site ready for serving'",
