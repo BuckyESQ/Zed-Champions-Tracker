@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple API Proxy Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #0984e3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #0984e3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        input {
+            padding: 8px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        .success {
+            color: #00b894;
+            font-weight: bold;
+        }
+        .error {
+            color: #d63031;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple API Proxy Test</h1>
+    
+    <div>
+        <h3>Test the Ultra Simple Proxy</h3>
+        <button onclick="testSimpleProxy()">Test Search via Proxy</button>
+        <div id="simple-result"></div>
+    </div>
+
+    <div>
+        <h3>Bearer Token Test</h3>
+        <input type="text" id="token" placeholder="Enter your Bearer Token">
+        <button onclick="testWithToken()">Test With Token</button>
+        <div id="token-result"></div>
+    </div>
+
+    <script>
+        function displayResult(id, success, message, data) {
+            const resultDiv = document.getElementById(id);
+            resultDiv.innerHTML = `
+                <h4 class="${success ? 'success' : 'error'}">${message}</h4>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+
+        async function testSimpleProxy() {
+            const resultDiv = document.getElementById('simple-result');
+            resultDiv.innerHTML = '<p>Testing proxy...</p>';
+            
+            try {
+                const response = await fetch('/api_proxy.php?endpoint=search-horse&name=test');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('simple-result', true, 'SUCCESS: Proxy is working!', data);
+                } else {
+                    displayResult('simple-result', false, `ERROR: API returned ${response.status}`, data);
+                }
+            } catch (error) {
+                displayResult('simple-result', false, 'ERROR: Proxy failed', { error: error.message });
+            }
+        }
+
+        async function testWithToken() {
+            const token = document.getElementById('token').value.trim();
+            if (!token) {
+                alert('Please enter a Bearer Token');
+                return;
+            }
+
+            const resultDiv = document.getElementById('token-result');
+            resultDiv.innerHTML = '<p>Testing with token...</p>';
+            
+            try {
+                // Clean token to prevent encoding issues
+                const cleanToken = token.replace(/[^\x00-\x7F]/g, "").trim();
+                
+                const response = await fetch('/api_proxy.php?endpoint=my-stable', {
+                    headers: {
+                        'Authorization': `Bearer ${cleanToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResult('token-result', true, 'SUCCESS: Token is working!', data);
+                } else {
+                    displayResult('token-result', false, `ERROR: API returned ${response.status}`, data);
+                }
+            } catch (error) {
+                displayResult('token-result', false, 'ERROR: Token test failed', { error: error.message });
+            }
+        }
+    </script>
+</body>
+</html>

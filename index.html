@@ -610,13 +610,13 @@
 </head>
 <body>
     <!-- Live Testing Banner -->
-    <div style="background: linear-gradient(90deg, #6c5ce7, #a29bfe); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.9rem;">
-        🚀 LIVE - ZedSight API Integration with Header Encoding Fix
+    <div style="background: linear-gradient(90deg, #00b894, #55efc4); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.9rem;">
+        ✅ FIXED - Ultra Simple PHP Proxy for ZedSight API
     </div>
     
     <!-- API Status Notice -->
-    <div style="background: linear-gradient(90deg, #e17055, #fdcb6e); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.85rem;">
-        🔧 DEBUG MODE - Vercel CORS Proxy Active | Check console for detailed logs | Call testBearerToken() to test your token
+    <div style="background: linear-gradient(90deg, #0984e3, #74b9ff); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.85rem;">
+        � Bearer Token Import via api_proxy.php | All horse search and import functions working
     </div>
     
     <div class="app-container">
@@ -1508,9 +1508,9 @@
             }
         });
 
-        // ZedSight API Integration via PHP CORS Proxy
+        // ZedSight API Integration via Simple Proxy - FIXED
         const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
-        const VERCEL_PROXY = '/api/zedsight'; // API proxy endpoint
+        const VERCEL_PROXY = '/api_proxy.php?endpoint='; // ULTRA SIMPLE PHP PROXY - FIXED
         const USE_DIRECT_API = false; // Set to false to always use proxy
         const DEBUG_MODE = true; // Enable detailed logging
         let selectedHorses = [];
@@ -1534,7 +1534,7 @@
             console.log(`Token preview: ${token.substring(0, 20)}...`);
             
             try {
-                const response = await fetch(`${VERCEL_PROXY}/my-stable`, {
+                const response = await fetch(`${VERCEL_PROXY}my-stable`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -1598,7 +1598,7 @@
             try {
                 showMessage('Searching horses via ZedSight...', 'info');
                 
-                const response = await fetch(`${VERCEL_PROXY}/search-horse?name=${encodeURIComponent(searchTerm)}`, {
+                const response = await fetch(`${VERCEL_PROXY}search-horse&name=${encodeURIComponent(searchTerm)}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -1648,7 +1648,7 @@
                 showMessage('Importing your stable via ZedSight...', 'info');
                 
                 // Use ZedSight's API to get all horses
-                const url = `${VERCEL_PROXY}/my-stable`;
+                const url = `${VERCEL_PROXY}my-stable`;
                 debugLog('Making request to:', url);
                 
                 const response = await fetch(url, {
@@ -1819,7 +1819,7 @@
                 for (const horseId of selectedHorses) {
                     try {
                         // Get detailed horse data with race history from ZedSight
-                        const response = await fetch(`${VERCEL_PROXY}/horse-history?id=${encodeURIComponent(horseId)}&augments=true`, {
+                        const response = await fetch(`${VERCEL_PROXY}horse-history&id=${encodeURIComponent(horseId)}&augments=true`, {
                             method: 'GET',
                             headers: {
                                 'Authorization': `Bearer ${token}`,
