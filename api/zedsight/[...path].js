@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
   try {
     // Extract the API path from query parameters
-    const { path } = req.query;
+    const { path, ...queryParams } = req.query;
     
     if (!path || path.length === 0) {
       return res.status(400).json({ error: 'API path is required' });
@@ -21,7 +21,16 @@ export default async function handler(req, res) {
     
     // Reconstruct the full path
     const apiPath = Array.isArray(path) ? path.join('/') : path;
-    const zedsightUrl = `https://pqchju22ku.us-east-1.awsapprunner.com/api/${apiPath}`;
+    
+    // Build query string from remaining parameters
+    const queryString = new URLSearchParams();
+    Object.keys(queryParams).forEach(key => {
+      if (queryParams[key]) {
+        queryString.append(key, queryParams[key]);
+      }
+    });
+    
+    const zedsightUrl = `https://pqchju22ku.us-east-1.awsapprunner.com/api/${apiPath}${queryString.toString() ? '?' + queryString.toString() : ''}`;
     
     // Forward headers from the original request
     const headers = {
@@ -32,6 +41,9 @@ export default async function handler(req, res) {
     if (req.headers.authorization) {
       headers.Authorization = req.headers.authorization;
     }
+    
+    console.log(`Proxying request to: ${zedsightUrl}`);
+    console.log(`Headers: ${JSON.stringify(headers)}`);
     
     // Make the request to ZedSight API
     const response = await fetch(zedsightUrl, {

@@ -615,8 +615,8 @@
     </div>
     
     <!-- API Status Notice -->
-    <div style="background: linear-gradient(90deg, #00b894, #00cec9); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.85rem;">
-        � NEW: Vercel CORS Proxy Enabled - Bearer Token import bypasses CORS restrictions for reliable data access
+    <div style="background: linear-gradient(90deg, #e17055, #fdcb6e); color: white; text-align: center; padding: 0.5rem; font-weight: 600; font-size: 0.85rem;">
+        🔧 DEBUG MODE - Vercel CORS Proxy Active | Check console for detailed logs | Call testBearerToken() to test your token
     </div>
     
     <div class="app-container">
@@ -1511,7 +1511,50 @@
         // ZedSight API Integration via Vercel CORS Proxy
         const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
         const VERCEL_PROXY = '/api/zedsight'; // Use Vercel proxy to bypass CORS
+        const DEBUG_MODE = true; // Enable detailed logging
         let selectedHorses = [];
+
+        function debugLog(message, data = null) {
+            if (DEBUG_MODE) {
+                console.log(`[ZED DEBUG] ${message}`, data || '');
+            }
+        }
+
+        // Test function you can call from browser console
+        window.testBearerToken = async function() {
+            const token = getBearerToken();
+            if (!token) {
+                console.log('❌ No Bearer Token found');
+                return;
+            }
+            
+            console.log('🔑 Testing Bearer Token...');
+            console.log(`Token length: ${token.length}`);
+            console.log(`Token preview: ${token.substring(0, 20)}...`);
+            
+            try {
+                const response = await fetch(`${VERCEL_PROXY}/my-stable`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log(`Response status: ${response.status}`);
+                console.log(`Response ok: ${response.ok}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Success! Data received:', data);
+                } else {
+                    const errorText = await response.text();
+                    console.log('❌ Error response:', errorText);
+                }
+            } catch (error) {
+                console.log('❌ Request failed:', error.message);
+            }
+        };
 
         // Bearer Token Management with header encoding fix
         function saveBearerToken() {
@@ -1600,10 +1643,14 @@
             }
 
             try {
+                debugLog('Starting stable import...', { tokenLength: token.length });
                 showMessage('Importing your stable via ZedSight...', 'info');
                 
                 // Use ZedSight's API to get all horses
-                const response = await fetch(`${VERCEL_PROXY}/my-stable`, {
+                const url = `${VERCEL_PROXY}/my-stable`;
+                debugLog('Making request to:', url);
+                
+                const response = await fetch(url, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -1611,13 +1658,21 @@
                         'Accept': 'application/json'
                     }
                 });
+                
+                debugLog('Response status:', response.status);
+                debugLog('Response headers:', Object.fromEntries(response.headers.entries()));
 
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    debugLog('Error response:', { status: response.status, statusText: response.statusText, body: errorText });
                     throw new Error(`Failed to access stable: ${response.status} ${response.statusText}`);
                 }
 
                 const data = await response.json();
+                debugLog('API Response data:', data);
+                
                 const allHorses = data.horses || [];
+                debugLog('Extracted horses:', { count: allHorses.length, horses: allHorses });
 
                 if (allHorses.length === 0) {
                     showMessage('No horses found in your stable', 'warning');
@@ -1626,6 +1681,7 @@
 
                 // Set all horses as selected and import them
                 selectedHorses = allHorses.map(horse => horse.id);
+                debugLog('Selected horse IDs:', selectedHorses);
                 showMessage(`Found ${allHorses.length} horses. Starting import...`, 'info');
                 
                 // Display the horses first
@@ -1635,6 +1691,7 @@
                 await importSelectedHorses();
                 
             } catch (error) {
+                debugLog('Import error occurred:', { error: error.message, stack: error.stack });
                 console.error('Import error:', error);
                 
                 if (error.message.includes('Failed to fetch')) {
