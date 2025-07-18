@@ -1508,9 +1508,10 @@
             }
         });
 
-        // ZedSight API Integration via Vercel CORS Proxy
+        // ZedSight API Integration via PHP CORS Proxy
         const ZEDSIGHT_API = 'https://pqchju22ku.us-east-1.awsapprunner.com';
-        const VERCEL_PROXY = '/api/zedsight'; // Use Vercel proxy to bypass CORS
+        const VERCEL_PROXY = '/api/zedsight'; // API proxy endpoint
+        const USE_DIRECT_API = false; // Set to false to always use proxy
         const DEBUG_MODE = true; // Enable detailed logging
         let selectedHorses = [];
 

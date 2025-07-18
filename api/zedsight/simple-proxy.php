@@ -1,6 +1,6 @@
 <?php
-// ZedSight API Proxy for standard PHP hosting (non-Vercel)
-// This fixes CORS issues and allows direct API access from the browser
+// Simple ZedSight API Proxy that doesn't require .htaccess or URL rewriting
+// For use on basic PHP hosting environments
 
 // Allow from any origin
 header("Access-Control-Allow-Origin: *");
@@ -13,22 +13,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Get the endpoint from the URL
-$requestUri = $_SERVER['REQUEST_URI'];
-$endpoint = '';
+// Get the endpoint from the query parameter
+$endpoint = isset($_GET['endpoint']) ? $_GET['endpoint'] : '';
 
-// Extract the endpoint after /api/zedsight/
-if (preg_match('/\/api\/zedsight\/(.+)/', $requestUri, $matches)) {
-    $endpoint = $matches[1];
-} else {
+if (empty($endpoint)) {
     http_response_code(400);
-    echo json_encode(['error' => 'Invalid API endpoint']);
+    echo json_encode(['error' => 'Missing endpoint parameter']);
     exit();
 }
 
 // ZedSight base URL
 $apiBaseUrl = 'https://pqchju22ku.us-east-1.awsapprunner.com/api/';
 $apiUrl = $apiBaseUrl . $endpoint;
+
+// Forward query parameters except 'endpoint'
+$query = [];
+foreach ($_GET as $key => $value) {
+    if ($key !== 'endpoint') {
+        $query[] = urlencode($key) . '=' . urlencode($value);
+    }
+}
+
+if (!empty($query)) {
+    $apiUrl .= '?' . implode('&', $query);
+}
 
 // Forward the request with all headers
 $headers = [];

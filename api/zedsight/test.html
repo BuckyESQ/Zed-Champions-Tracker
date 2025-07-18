@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZedSight API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .test-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        input {
+            padding: 8px;
+            width: 300px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ZedSight API Test Tool</h1>
+    
+    <div class="test-section">
+        <h2>Test Direct API</h2>
+        <button onclick="testDirectAPI()">Test Direct ZedSight API</button>
+        <div id="direct-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Standard Proxy</h2>
+        <button onclick="testProxy()">Test PHP Proxy</button>
+        <div id="proxy-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Simple Proxy</h2>
+        <button onclick="testSimpleProxy()">Test Simple PHP Proxy</button>
+        <div id="simple-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Bearer Token Test</h2>
+        <input type="text" id="token" placeholder="Enter Bearer Token">
+        <button onclick="testWithToken()">Test With Token</button>
+        <div id="token-result"></div>
+    </div>
+
+    <script>
+        function displayResult(id, status, data) {
+            const resultDiv = document.getElementById(id);
+            resultDiv.innerHTML = `
+                <h3>Status: ${status}</h3>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+
+        function displayError(id, error) {
+            const resultDiv = document.getElementById(id);
+            resultDiv.innerHTML = `
+                <h3>Error</h3>
+                <pre style="color: red">${error}</pre>
+            `;
+        }
+
+        async function testDirectAPI() {
+            try {
+                const response = await fetch('https://pqchju22ku.us-east-1.awsapprunner.com/api/search-horse?name=test');
+                const data = await response.json();
+                displayResult('direct-result', response.status, data);
+            } catch (error) {
+                displayError('direct-result', error);
+            }
+        }
+
+        async function testProxy() {
+            try {
+                const response = await fetch('/api/zedsight/search-horse?name=test');
+                const data = await response.json();
+                displayResult('proxy-result', response.status, data);
+            } catch (error) {
+                displayError('proxy-result', error);
+            }
+        }
+
+        async function testSimpleProxy() {
+            try {
+                const response = await fetch('/api/zedsight/simple-proxy.php?endpoint=search-horse&name=test');
+                const data = await response.json();
+                displayResult('simple-result', response.status, data);
+            } catch (error) {
+                displayError('simple-result', error);
+            }
+        }
+
+        async function testWithToken() {
+            const token = document.getElementById('token').value.trim();
+            if (!token) {
+                alert('Please enter a Bearer Token');
+                return;
+            }
+
+            try {
+                // Clean token to prevent encoding issues
+                const cleanToken = token.replace(/[^\x00-\x7F]/g, "").trim();
+                
+                const response = await fetch('/api/zedsight/simple-proxy.php?endpoint=my-stable', {
+                    headers: {
+                        'Authorization': `Bearer ${cleanToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                displayResult('token-result', response.status, data);
+            } catch (error) {
+                displayError('token-result', error);
+            }
+        }
+    </script>
+</body>
+</html>
