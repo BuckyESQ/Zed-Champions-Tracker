@@ -1,6 +1,19 @@
 <?php
-// The simplest possible proxy - just a single file
-// Put this in your root directory as "api_proxy.php"
+// Ultra Simple API Proxy for ZED Champions
+// THIS FILE SHOULD BE PLACED DIRECTLY IN YOUR ROOT DIRECTORY (same level as index.html)
+// No special server configuration needed!
+
+// Show PHP errors during testing (remove in production)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Test if this file is directly accessible
+if (!isset($_GET['endpoint'])) {
+    echo "<h1>ZedSight API Proxy</h1>";
+    echo "<p>This file is working correctly! It should be accessed via JavaScript fetch calls.</p>";
+    echo "<p>Example usage: <code>fetch('/api_proxy.php?endpoint=search-horse&name=test')</code></p>";
+    exit();
+}
 
 // Enable CORS for all domains
 header("Access-Control-Allow-Origin: *");
@@ -14,14 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Get the endpoint and parameters from the query string
-$endpoint = isset($_GET['endpoint']) ? $_GET['endpoint'] : '';
+$endpoint = $_GET['endpoint'];
 $apiBase = 'https://pqchju22ku.us-east-1.awsapprunner.com/api/';
-
-if (empty($endpoint)) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Missing endpoint parameter']);
-    exit();
-}
 
 // Construct the full API URL
 $apiUrl = $apiBase . $endpoint;

@@ -48,19 +48,36 @@
     </style>
 </head>
 <body>
-    <h1>Simple API Proxy Test</h1>
+    <h1>API Access Troubleshooting Tool</h1>
+    
+    <div id="api-status" style="background-color: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+        <p>Click a test button below to check your API access</p>
+    </div>
     
     <div>
-        <h3>Test the Ultra Simple Proxy</h3>
-        <button onclick="testSimpleProxy()">Test Search via Proxy</button>
+        <h3>1. Test Direct API Access</h3>
+        <button onclick="testSimpleProxy()">Test Direct ZedSight API</button>
         <div id="simple-result"></div>
     </div>
 
     <div>
-        <h3>Bearer Token Test</h3>
+        <h3>2. Test API with Bearer Token</h3>
         <input type="text" id="token" placeholder="Enter your Bearer Token">
         <button onclick="testWithToken()">Test With Token</button>
         <div id="token-result"></div>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <h3>3. Next Steps</h3>
+        <div id="recommendations">
+            <p><strong>If direct API access works:</strong> Great! You don't need a proxy.</p>
+            <p><strong>If direct API fails with CORS error:</strong> You need to set up the PHP proxy.</p>
+            <ol>
+                <li>Upload <code>api_proxy.php</code> to your server root</li>
+                <li>Ensure PHP is enabled on your server</li>
+                <li>Update index.html to use the proxy</li>
+            </ol>
+        </div>
     </div>
 
     <script>
@@ -77,16 +94,19 @@
             resultDiv.innerHTML = '<p>Testing proxy...</p>';
             
             try {
-                const response = await fetch('/api_proxy.php?endpoint=search-horse&name=test');
+                // Try direct API access first
+                const response = await fetch('https://pqchju22ku.us-east-1.awsapprunner.com/api/search-horse?name=test');
                 const data = await response.json();
                 
                 if (response.ok) {
-                    displayResult('simple-result', true, 'SUCCESS: Proxy is working!', data);
+                    displayResult('simple-result', true, 'SUCCESS: Direct API access works!', data);
+                    document.getElementById('api-status').innerHTML = '<p class="success">✅ Direct API access works! No proxy needed.</p>';
                 } else {
                     displayResult('simple-result', false, `ERROR: API returned ${response.status}`, data);
                 }
             } catch (error) {
-                displayResult('simple-result', false, 'ERROR: Proxy failed', { error: error.message });
+                displayResult('simple-result', false, 'Direct API access failed (likely CORS error)', { error: error.message });
+                document.getElementById('api-status').innerHTML = '<p class="error">❌ Direct API failed. Need to set up PHP proxy.</p>';
             }
         }
 
@@ -104,7 +124,8 @@
                 // Clean token to prevent encoding issues
                 const cleanToken = token.replace(/[^\x00-\x7F]/g, "").trim();
                 
-                const response = await fetch('/api_proxy.php?endpoint=my-stable', {
+                // Try direct API access with token
+                const response = await fetch('https://pqchju22ku.us-east-1.awsapprunner.com/api/my-stable', {
                     headers: {
                         'Authorization': `Bearer ${cleanToken}`
                     }
